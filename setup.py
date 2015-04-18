@@ -9,12 +9,12 @@ except ImportError:
 setup(
     name='mongorest',
     packages=['mongorest'],
-    version='0.0',
+    version='0.1',
     description='Easy REST APIs using MongoDB.',
     author='Luis Vieira',
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
-    #download_url='https://github.com/lvieirajr/mongorest/tarball/0.0',
+    download_url='https://github.com/lvieirajr/mongorest/tarball/0.1',
     keywords=['mongodb', 'mongo', 'rest', 'api'],
     classifiers=[
         'License :: OSI Approved :: BSD License',

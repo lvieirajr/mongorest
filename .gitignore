@@ -7,18 +7,22 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+bin
 env/
 build/
 develop-eggs/
 dist/
 downloads/
+.DS_Store
 eggs/
 .eggs/
 .idea/
+include/
 lib/
 lib64/
 parts/
 sdist/
+share/
 var/
 *.egg-info/
 .installed.cfg
@@ -59,4 +63,3 @@ docs/_build/
 target/
 
 #Other
-.DS_Store
