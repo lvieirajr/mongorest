@@ -2,14 +2,14 @@
 
 from pymongo import MongoClient
 
-from .settings import settings
+from mongorest.settings import settings
 
 __all__ = [
     'db',
 ]
 
 
-def _connect_to_db():
+def _get_db():
     """
     Connects to the database.
     This function should not be called outside of this file.
@@ -31,4 +31,4 @@ def _connect_to_db():
     return None
 
 
-db = _connect_to_db()
+db = _get_db()

@@ -19,7 +19,7 @@ DEFAULT = {
 class Settings(object):
 
     def __init__(self, settings=None):
-        self.settings = dict(DEFAULT, **settings)
+        self.settings = dict(DEFAULT, **(settings or {}))
 
     def __getattr__(self, attr):
         if attr not in self.settings.keys():
