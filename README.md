@@ -21,7 +21,7 @@
     
 # License
 
-Copyright (c) 2015, Luis Antônio Vieira Junior
+Copyright (c) 2015, Luis Antônio Vieira Junior.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
