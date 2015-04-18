@@ -6,7 +6,7 @@
 
 # Overview
 
-[MongoRest][mongorest] is a [Framework][framework] built on top of [PyMongo][pymongo] to ease the use of [MongoDB][mongodb] on a [REST][rest] [API][api].
+[MongoRest][mongorest] is a [Framework][framework] written in [Python][python] built on top of [PyMongo][pymongo] to ease the use of [MongoDB][mongodb] on a [REST][rest] [API][api].
 
 
 # Requirements
@@ -34,7 +34,7 @@ modification, are permitted provided that the following conditions are met:
     this list of conditions and the following disclaimer in the documentation
     and/or other materials provided with the distribution.
 
-\*  Neither the name of mongorest nor the names of its
+\*  Neither the name of MongoRest nor the names of its
     contributors may be used to endorse or promote products derived from
     this software without specific prior written permission.
 
@@ -58,4 +58,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [mongorest]: https://github.com/lvieirajr/mongorest/
 [framework]: https://en.wikipedia.org/wiki/Software_framework
+[python]: https://www.python.org/
 [pymongo]: https://github.com/mongodb/mongo-python-driver/ 
