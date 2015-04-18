@@ -2,9 +2,7 @@
 
 [![pypi-version]][pypi]
 
-# -
 **Easy [REST][rest] [APIs][api] using [MongoDB][mongodb].**
-# -
 
 # Overview
 
