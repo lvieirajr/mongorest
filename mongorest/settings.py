@@ -28,17 +28,20 @@ class Settings(object):
     Settings are store
     """
 
-    def __init__(self):
-        settings = import_module(environ['MONGOREST_SETTINGS_MODULE'])
+    _settings = DEFAULT
 
-        self._settings = dict(
-            DEFAULT,
-            **{
-                name: setting
-                for (name, setting) in getmembers(settings)
-                if name.isupper()
-            }
-        )
+    def __init__(self):
+        if 'MONGOREST_SETTINGS_MODULE' in environ:
+            settings = import_module(environ['MONGOREST_SETTINGS_MODULE'])
+
+            self._settings = dict(
+                self._settings,
+                **{
+                    name: setting
+                    for (name, setting) in getmembers(settings)
+                    if name.isupper()
+                }
+            )
 
     def __getattr__(self, attr):
         if attr not in self._settings:

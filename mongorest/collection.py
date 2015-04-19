@@ -84,7 +84,7 @@ class Collection(object, metaclass=CollectionMeta):
         Returns the all the inserted documents' _ids
         Will return the serialized _ids if serialized=True
         """
-        _ids = cls.collection.insert_many(documents, ordered).inserted_ids
+        _ids = list(cls.collection.insert_many(documents, ordered).inserted_ids)
         return serialize(_ids) if serialized else _ids
 
     @classmethod
@@ -104,7 +104,7 @@ class Collection(object, metaclass=CollectionMeta):
         Returns the updated documents' dicts
         Will return the serialized document dicts if serialized=True
         """
-        updated = cls.collection.udpate_many(filter, update, upsert).raw_result
+        updated = list(cls.collection.udpate_many(filter, update, upsert).raw_result)
         return serialize(updated) if serialized else updated
 
     @classmethod
@@ -124,7 +124,7 @@ class Collection(object, metaclass=CollectionMeta):
         Returns the deleted documents' dicts
         Will return the serialized document dicts if serialized=True
         """
-        deleted = cls.collection.delete_many(filter).raw_result
+        deleted = list(cls.collection.delete_many(filter).raw_result)
         return serialize(deleted) if serialized else deleted
 
     @classmethod
@@ -170,7 +170,7 @@ class Document(object):
         elif attr in self._fields:
             return self._fields[attr]
         elif hasattr(self._cls, attr):
-            return object.__getattribute__(self._cls, attr)
+            return getattr(self._cls, attr)
         else:
             return object.__getattribute__(self, attr)
 
