@@ -25,7 +25,7 @@ class TestCollection(TestCase):
 
     def test_find_one_returns_none_if_no_document_passes_filter(self):
         document = {'_id': ObjectId()}
-        self.db.collection.insert_one(document)
+        self.collection.insert_one(document)
 
         found_document = self.collection.find_one({'_id': 'test'})
 
@@ -33,7 +33,7 @@ class TestCollection(TestCase):
 
     def test_find_one_returns_non_serialized_dict_if_not_serialized(self):
         document = {'_id': ObjectId()}
-        self.db.collection.insert_one(document)
+        self.collection.insert_one(document)
 
         found_document = self.collection.find_one({}, serialized=False)
 
@@ -41,7 +41,7 @@ class TestCollection(TestCase):
 
     def test_find_one_returns_serialized_dict_if_serialized(self):
         document = {'_id': ObjectId()}
-        self.db.collection.insert_one(document)
+        self.collection.insert_one(document)
 
         found_document = self.collection.find_one({}, serialized=True)
 
@@ -49,7 +49,7 @@ class TestCollection(TestCase):
 
     def test_find_returns_empty_list_if_no_document_passes_filter(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
-        self.db.collection.insert_many(documents)
+        self.collection.insert_many(documents)
 
         found_documents = self.collection.find({'_id': 'test'})
 
@@ -57,7 +57,7 @@ class TestCollection(TestCase):
 
     def test_find_returns_non_serialized_dicts_if_not_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
-        self.db.collection.insert_many(documents)
+        self.collection.insert_many(documents)
 
         found_documents = self.collection.find({}, serialized=False)
 
@@ -65,7 +65,7 @@ class TestCollection(TestCase):
 
     def test_find_returns_serialized_dicts_if_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
-        self.db.collection.insert_many(documents)
+        self.collection.insert_many(documents)
 
         found_documents = self.collection.find({}, serialized=True)
 
@@ -73,7 +73,7 @@ class TestCollection(TestCase):
 
     def test_aggregate_returns_empty_list_if_pipeline_results_in_nothing(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
-        self.db.collection.insert_many(documents)
+        self.collection.insert_many(documents)
 
         found_documents = self.collection.aggregate(
             [{'$match': {'_id': 'test'}}]
@@ -83,7 +83,7 @@ class TestCollection(TestCase):
 
     def test_aggregate_returns_non_serialized_dicts_if_not_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
-        self.db.collection.insert_many(documents)
+        self.collection.insert_many(documents)
 
         found_documents = self.collection.aggregate([], serialized=False)
 
@@ -91,7 +91,7 @@ class TestCollection(TestCase):
 
     def test_aggregate_returns_serialized_dicts_if_serialized_is_true(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
-        self.db.collection.insert_many(documents)
+        self.collection.insert_many(documents)
 
         found_documents = self.collection.aggregate([], serialized=True)
 
