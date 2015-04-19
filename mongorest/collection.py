@@ -170,20 +170,47 @@ class Document(object):
             self._process()
 
     def __getattr__(self, attr):
-        if attr in ('_cls', '_fields', '_errors'):
+        """
+        Tries to get the attribute on the following order:
+        First checks if the attribute is one of:
+        (__new__, _cls, _fields, _errors, get)
+        Second checks if the attribute is in _fields
+        Third checks if the attribute is in _cls
+        If none of them is found, tries to get the attribute from self
+        """
+        if attr in ('__new__', '_cls', '_fields', '_errors', 'get'):
             return object.__getattribute__(self, attr)
+
         elif attr in self._fields:
             return self._fields[attr]
+
         elif hasattr(self._cls, attr):
             return getattr(self._cls, attr)
+
         else:
             return object.__getattribute__(self, attr)
 
     def __setattr__(self, attr, value):
+        """
+        Tries to set the value to attr in the following order:
+        Checks if the attribute is one of (_cls, _fields, _errors)
+        If it is not, it will set the value in _fields[attr]
+        """
         if attr in ('_cls', '_fields', '_errors'):
             object.__setattr__(self, attr, value)
+
         else:
-            self._fields[attr] = value
+            self._fields[attr] =value
+
+    def __repr__(self):
+        """
+        Returns the representation of the Object formated like:
+        <{Collection Name}Document object at {hex memory location of the object}>
+        """
+        return '<{}Document object at {}>'.format(
+            self._cls.__name__,
+            hex(id(self)),
+        )
 
     def _validate(self):
         """
@@ -211,9 +238,23 @@ class Document(object):
         Does this in order to process the values on the fields
         So they will be ready to be saved on the Database
         """
-        for (name, member) in getmembers(self.cls):
+        for (name, member) in getmembers(self._cls):
             if name.lower().startswith('process'):
                 member()
+
+    def get(self, field, serialized=False):
+        """
+        Returns the field if it exists in _fields, returns None otherwise
+        Will return the serialized field if serialized=True
+        """
+        field = self._fields.get(field)
+        return serialize(field) if serialized else field
+
+    def is_valid(self):
+        """
+        Returns True if no errors have been found, False otherwise.
+        """
+        return len(self._errors) == 0
 
     def save(self, serialized=False):
         """
@@ -232,16 +273,3 @@ class Document(object):
             return self.pk(serialized)
         else:
             return self._errors
-
-    def is_valid(self):
-        """
-        Returns True if no errors have been found, False otherwise.
-        """
-        return len(self._errors) == 0
-
-    def pk(self, serialized=False):
-        """
-        Returns the non-serialized PK
-        """
-        _id = self._fields.get('_id')
-        return serialize(_id) if serialized else _id
