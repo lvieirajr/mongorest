@@ -143,7 +143,7 @@ class Collection(object, metaclass=CollectionMeta):
         Returns None otherwise
         """
         document = Document(cls, cls.find_one(filter), processed=True)
-        return document if document.pk else None
+        return document if document.pk() else None
 
 
 class Document(object):
@@ -222,27 +222,26 @@ class Document(object):
         If the Document does not contain an _id it will insert a new Document
         If the Document contains an _id it will be updated instead of inserted
         """
-        if self.is_valid and self.pk:
-            self.update_one({'_id': self.pk}, self._fields)
+        if self.is_valid() and self.pk():
+            self.update_one({'_id': self.pk()}, self._fields)
 
             return serialize(self._fields) if serialized else self._fields
         elif self.is_valid:
             self._fields['_id'] = self.insert_one(self._fields).inserted_id
 
-            return serialize(self.pk) if serialized else self.pk
+            return self.pk(serialized)
         else:
             return self._errors
 
-    @property
     def is_valid(self):
         """
         Returns True if no errors have been found, False otherwise.
         """
         return len(self._errors) == 0
 
-    @property
-    def pk(self):
+    def pk(self, serialized=False):
         """
         Returns the non-serialized PK
         """
-        return self._fields.get('_id')
+        _id = self._fields.get('_id')
+        return serialize(_id) if serialized else _id
