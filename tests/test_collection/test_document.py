@@ -98,9 +98,6 @@ class TestDocument(TestCase):
 
         self.assertIsInstance(document.get('test', serialized=True), str)
 
-    def test_save(self):
-        pass
-
     def test_errors_returns_documents_errors(self):
         document = Document(Collection)
         document._errors = {'test': 'test'}
