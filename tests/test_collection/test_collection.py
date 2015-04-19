@@ -35,7 +35,7 @@ class TestCollection(TestCase):
         document = {'_id': ObjectId()}
         self.db.collection.insert_one(document)
 
-        found_document = self.collection.find_one({}, False)
+        found_document = self.collection.find_one({}, serialized=False)
 
         self.assertEqual(document, found_document)
 
@@ -43,7 +43,7 @@ class TestCollection(TestCase):
         document = {'_id': ObjectId()}
         self.db.collection.insert_one(document)
 
-        found_document = self.collection.find_one({}, True)
+        found_document = self.collection.find_one({}, serialized=True)
 
         self.assertEqual(serialize(document), found_document)
 
@@ -59,7 +59,7 @@ class TestCollection(TestCase):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.db.collection.insert_many(documents)
 
-        found_documents = self.collection.find({}, False)
+        found_documents = self.collection.find({}, serialized=False)
 
         self.assertEqual(documents, found_documents)
 
@@ -67,7 +67,7 @@ class TestCollection(TestCase):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.db.collection.insert_many(documents)
 
-        found_documents = self.collection.find({}, True)
+        found_documents = self.collection.find({}, serialized=True)
 
         self.assertEqual(serialize(documents), found_documents)
 
@@ -85,7 +85,7 @@ class TestCollection(TestCase):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.db.collection.insert_many(documents)
 
-        found_documents = self.collection.aggregate([], False)
+        found_documents = self.collection.aggregate([], serialized=False)
 
         self.assertEqual(documents, found_documents)
 
@@ -93,6 +93,44 @@ class TestCollection(TestCase):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.db.collection.insert_many(documents)
 
-        found_documents = self.collection.aggregate([], True)
+        found_documents = self.collection.aggregate([], serialized=True)
 
         self.assertEqual(serialize(documents), found_documents)
+
+    def test_insert_one_returns_non_serialized_inserted_id_if_not_serialized(self):
+        self.assertEqual(self.collection.count(), 0)
+
+        document = {'_id': ObjectId()}
+        inserted_id = self.collection.insert_one(document, serialized=False)
+
+        self.assertEqual(self.collection.count(), 1)
+        self.assertEqual(document['_id'], inserted_id)
+
+    def test_insert_one_returns_serialized_inserted_id_if_serialized(self):
+        self.assertEqual(self.collection.count(), 0)
+
+        document = {'_id': ObjectId()}
+        inserted_id = self.collection.insert_one(document, serialized=True)
+
+        self.assertEqual(self.collection.count(), 1)
+        self.assertEqual(serialize(document['_id']), inserted_id)
+
+    def test_insert_many_returns_non_serialized_inserted_ids_if_not_serialized(self):
+        self.assertEqual(self.collection.count(), 0)
+
+        documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
+        inserted_ids = self.collection.insert_many(documents, serialized=False)
+
+        self.assertEqual(self.collection.count(), 2)
+        self.assertEqual([doc['_id'] for doc in documents], inserted_ids)
+
+    def test_insert_many_returns_serialized_inserted_ids_if_serialized(self):
+        self.assertEqual(self.collection.count(), 0)
+
+        documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
+        inserted_ids = self.collection.insert_many(documents, serialized=True)
+
+        self.assertEqual(self.collection.count(), 2)
+        self.assertEqual(
+            serialize([doc['_id'] for doc in documents]), inserted_ids
+        )
