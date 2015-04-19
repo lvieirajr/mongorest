@@ -162,7 +162,7 @@ class TestCollection(TestCase):
             {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(updated['upserted'], str)
+        self.assertIsInstance(updated['upserted']['$oid'], str)
 
     # update_many
     def test_update_many_returns_non_serialized_raw_result_if_not_serialized(self):
@@ -177,7 +177,7 @@ class TestCollection(TestCase):
             {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(updated['upserted'], str)
+        self.assertIsInstance(updated['upserted']['$oid'], str)
 
     # replace_one
     def test_replace_one_returns_non_serialized_raw_result_if_not_serialized(self):
@@ -192,7 +192,7 @@ class TestCollection(TestCase):
             {}, {'_id': ObjectId()}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(replaced['upserted'], str)
+        self.assertIsInstance(replaced['upserted']['$oid'], str)
 
     # DELETE_ONE, DELETE_MANY
     # These functions functionalities are not actually being tested here|

@@ -96,7 +96,9 @@ class TestDocument(TestCase):
     def test_get_returns_serialized_field_if_serialized(self):
         document = Document(Collection, {'test': ObjectId()})
 
-        self.assertIsInstance(document.get('test', serialized=True), str)
+        self.assertIsInstance(
+            document.get('test', serialized=True)['$oid'], str
+        )
 
     def test_errors_returns_documents_errors(self):
         document = Document(Collection)
