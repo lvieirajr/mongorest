@@ -39,3 +39,6 @@ class TestDocument(TestCase):
         document = Document(Collection, processed=True)
 
         self.assertEqual(process.call_count, 0)
+
+    # __getattr__, __setattr__ and __repr__ are not being formally tested.
+    # Their usage on the other tested functions will make sure they work.
