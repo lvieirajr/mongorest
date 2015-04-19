@@ -248,6 +248,13 @@ class Document(object):
             if name.lower().startswith('process'):
                 member()
 
+    def fields(self, serialized=False):
+        """
+        Returns the document's fields
+        Will return the serialized fields if serialized=True
+        """
+        return serialize(self._fields) if serialized else self._fields
+
     def get(self, field, serialized=False):
         """
         Returns the field if it exists in _fields, returns None otherwise
@@ -256,12 +263,6 @@ class Document(object):
         field = self._fields.get(field)
         return serialize(field) if serialized else field
 
-    def is_valid(self):
-        """
-        Returns True if no errors have been found, False otherwise.
-        """
-        return len(self._errors) == 0
-
     def save(self, serialized=False):
         """
         Saves the Document to the database if it is valid.
@@ -269,7 +270,7 @@ class Document(object):
         If the Document does not contain an _id it will insert a new Document
         If the Document contains an _id it will be updated instead of inserted
         """
-        if self.is_valid() and self.pk:
+        if self.is_valid and self.pk:
             if self.pk:
                 self.replace_one({'_id': self.pk}, self._fields, upsert=True)
             else:
@@ -278,6 +279,21 @@ class Document(object):
             return serialize(self.pk) if serialized else self.pk
         else:
             return serialize(self._errors) if serialized else self._errors
+
+    @property
+    def errors(self):
+        """
+        Returns the document's errors
+        Will return the serialized errors if serialized=True
+        """
+        return self._errors
+
+    @property
+    def is_valid(self):
+        """
+        Returns True if no errors have been found, False otherwise.
+        """
+        return len(self._errors) == 0
 
     @property
     def pk(self):
