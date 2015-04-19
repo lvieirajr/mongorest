@@ -14,6 +14,7 @@ class CollectionMeta(type):
     Prepares the member dict adding the correct collection based on the name,
     And adds the required_fields dict.
     """
+
     @classmethod
     def __prepare__(mcs, name, bases):
         """
@@ -31,61 +32,114 @@ class Collection(object, metaclass=CollectionMeta):
     Base class for Collections.
     Can Serialize and De-Serialize the data.
     """
+
     def __new__(cls, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
+        """
+        Instantiating a Collection will return a Document from that Collection
+        """
         return Document(cls, *args, **kwargs)
 
     @classmethod
     def find_one(cls, filter=None, serialized=False):
+        """
+        Returns one document dict if at least one passes the filter
+        Otherwise returns None
+        Will return the serialized dict if serialized=True
+        """
         document = cls.collection.find_one(filter)
         return serialize(document) if serialized else document
 
     @classmethod
     def find(cls, filter=None, serialized=False):
+        """
+        Returns all document dicts that pass the filter
+        Will return the serialized dict if serialized=True
+        """
         documents = list(cls.collection.find(filter))
         return serialize(documents) if serialized else documents
 
     @classmethod
     def aggregate(cls, pipeline, serialized=False):
+        """
+        Returns the list of document dicts returned from the Aggregate Pipeline
+        Will return the serialized document dicts if serialized=True
+        """
         documents = list(cls.collection.aggregate(pipeline))
         return serialize(documents) if serialized else documents
 
     @classmethod
     def insert_one(cls, document, serialized=False):
+        """
+        Inserts a document into the Collection
+        Returns the inserted document's _id
+        Will return the serialized _id if serialized=True
+        """
         _id = cls.collection.insert_one(document).inserted_id
         return serialize(_id) if serialized else _id
 
     @classmethod
     def insert_many(cls, documents, ordered=True, serialized=False):
+        """
+        Inserts a list of documents into the Collection
+        Returns the all the inserted documents' _ids
+        Will return the serialized _ids if serialized=True
+        """
         _ids = cls.collection.insert_many(documents, ordered).inserted_ids
         return serialize(_ids) if serialized else _ids
 
     @classmethod
     def update_one(cls, filter, update, upsert=False, serialized=False):
+        """
+        Updates a document that passes the filter
+        Returns the updated document's dict
+        Will return the serialized document dict if serialized=True
+        """
         updated = cls.collection.udpate_one(filter, update, upsert).raw_result
         return serialize(updated) if serialized else updated
 
     @classmethod
     def update_many(cls, filter, update, upsert=False, serialized=False):
+        """
+        Updates all the documents that pass the filter
+        Returns the updated documents' dicts
+        Will return the serialized document dicts if serialized=True
+        """
         updated = cls.collection.udpate_many(filter, update, upsert).raw_result
         return serialize(updated) if serialized else updated
 
     @classmethod
     def delete_one(cls, filter, serialized=False):
+        """
+        Deletes a document that passes the filter
+        Returns the deleted document's dict
+        Will return the serialized document dict if serialized=True
+        """
         deleted = cls.collection.delete_one(filter).raw_result
         return serialize(deleted) if serialized else deleted
 
     @classmethod
     def delete_many(cls, filter, serialized=False):
+        """
+        Deletes all the documents that pass the filter
+        Returns the deleted documents' dicts
+        Will return the serialized document dicts if serialized=True
+        """
         deleted = cls.collection.delete_many(filter).raw_result
         return serialize(deleted) if serialized else deleted
 
     @classmethod
     def count(cls, filter=None):
+        """
+        Returns the number of documents that pass the filter
+        """
         return len(cls.find(filter))
 
     @classmethod
     def get(cls, filter=None):
+        """
+        Returns a Document Object if any document passes the filter
+        Returns None otherwise
+        """
         document = Document(cls=cls, fields=cls.find_one(filter))
         return document if document.pk else None
 
@@ -98,6 +152,10 @@ class Document(object):
     """
 
     def __init__(self, cls, fields=None, errors=None):
+        """
+        Initializes the Document Object with the given attributes
+        Then validates the fields based on the Collection
+        """
         super(Document, self).__init__()
 
         self._cls = cls
@@ -142,13 +200,16 @@ class Document(object):
             else:
                 self.errors[field] = 'Field \'{}\' is required.'.format(field)
 
-    def save(self):
-        pass
-
     @property
     def is_valid(self):
+        """
+        Returns True if no errors have been set, False otherwise.
+        """
         return len(self._errors) == 0
 
     @property
     def pk(self):
+        """
+        Returns the non-serialized PK
+        """
         return self._fields.get('_id')

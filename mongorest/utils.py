@@ -9,6 +9,10 @@ __all__ = [
 
 
 def serialize(to_serialize):
+    """
+    Recursively serializes the passed value (to_serialize)
+    Converting all the values to JSON-Accepted values.
+    """
     if isinstance(to_serialize, (str, int, float)):
         return to_serialize
 
@@ -33,6 +37,10 @@ def serialize(to_serialize):
 
 
 def deserialize(to_deserialize):
+    """
+    Recursively deserializes the passed value (to_deserialize)
+    Converting all the possible values back to its original forms
+    """
     if isinstance(to_deserialize, str):
         if to_deserialize == str(ObjectId(to_deserialize)):
             return ObjectId(to_deserialize)

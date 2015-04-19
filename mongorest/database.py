@@ -11,9 +11,9 @@ __all__ = [
 
 def _get_db():
     """
-    Connects to the database.
+    Returns the connection to the database using the settings.
     This function should not be called outside of this file.
-    Use db instead.
+    Use 'db' instead.
     """
     db_settings = settings.DATABASE
 
