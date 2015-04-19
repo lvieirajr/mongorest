@@ -2,7 +2,7 @@
 
 from pymongo import MongoClient
 
-from mongorest.settings import settings
+from .settings import settings
 
 __all__ = [
     'db',

@@ -1,7 +1,9 @@
 # -*- encoding: UTF-8 -*-
 
-from mongorest.database import db
-from mongorest.utils import serialize
+from inspect import getmembers
+
+from .database import db
+from .utils import serialize
 
 __all__ = [
     'Collection',
@@ -140,7 +142,7 @@ class Collection(object, metaclass=CollectionMeta):
         Returns a Document Object if any document passes the filter
         Returns None otherwise
         """
-        document = Document(cls=cls, fields=cls.find_one(filter))
+        document = Document(cls, cls.find_one(filter), processed=True)
         return document if document.pk else None
 
 
@@ -151,7 +153,7 @@ class Document(object):
     Will use the required_fields of the Collection to do so.
     """
 
-    def __init__(self, cls, fields=None, errors=None):
+    def __init__(self, cls, fields=None, processed=False):
         """
         Initializes the Document Object with the given attributes
         Then validates the fields based on the Collection
@@ -160,9 +162,12 @@ class Document(object):
 
         self._cls = cls
         self._fields = fields or {}
-        self._errors = errors or {}
+        self._errors = {}
 
         self._validate()
+
+        if not processed:
+            self._process()
 
     def __getattr__(self, attr):
         if attr in ('_cls', '_fields', '_errors'):
@@ -200,10 +205,38 @@ class Document(object):
             else:
                 self.errors[field] = 'Field \'{}\' is required.'.format(field)
 
+    def _process(self):
+        """
+        Calls every collection method that starts with process.
+        Does this in order to process the values on the fields
+        So they will be ready to be saved on the Database
+        """
+        for (name, member) in getmembers(self.cls):
+            if name.lower().startswith('process'):
+                member()
+
+    def save(self, serialized=False):
+        """
+        Saves the Document to the database if it is valid.
+        Returns the error dict otherwise.
+        If the Document does not contain an _id it will insert a new Document
+        If the Document contains an _id it will be updated instead of inserted
+        """
+        if self.is_valid and self.pk:
+            self.update_one({'_id': self.pk}, self._fields)
+
+            return serialize(self._fields) if serialized else self._fields
+        elif self.is_valid:
+            self._fields['_id'] = self.insert_one(self._fields).inserted_id
+
+            return serialize(self.pk) if serialized else self.pk
+        else:
+            return self._errors
+
     @property
     def is_valid(self):
         """
-        Returns True if no errors have been set, False otherwise.
+        Returns True if no errors have been found, False otherwise.
         """
         return len(self._errors) == 0
 
