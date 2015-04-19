@@ -16,13 +16,16 @@ class TestCollection(TestCase):
     def setUp(self):
         self.collection = Collection
 
+    # CollectionMeta
     def test_collection_meta_sets_correct_collection_and_required_fields(self):
         self.assertEqual(Collection.collection, self.db['collection'])
         self.assertEqual(Collection.required_fields, {})
 
+    # __new__
     def test_new_returns_a_document_object(self):
         self.assertIsInstance(Collection(), Document)
 
+    # find_one
     def test_find_one_returns_none_if_no_document_passes_filter(self):
         document = {'_id': ObjectId()}
         self.collection.insert_one(document)
@@ -47,6 +50,7 @@ class TestCollection(TestCase):
 
         self.assertEqual(serialize(document), found_document)
 
+    # find
     def test_find_returns_empty_list_if_no_document_passes_filter(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.collection.insert_many(documents)
@@ -71,6 +75,7 @@ class TestCollection(TestCase):
 
         self.assertEqual(serialize(documents), found_documents)
 
+    # aggregate
     def test_aggregate_returns_empty_list_if_pipeline_results_in_nothing(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.collection.insert_many(documents)
@@ -97,6 +102,7 @@ class TestCollection(TestCase):
 
         self.assertEqual(serialize(documents), found_documents)
 
+    # insert_one
     def test_insert_one_returns_non_serialized_inserted_id_if_not_serialized(self):
         self.assertEqual(self.collection.count(), 0)
 
@@ -115,6 +121,7 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 1)
         self.assertEqual(serialize(document['_id']), inserted_id)
 
+    # insert_many
     def test_insert_many_returns_non_serialized_inserted_ids_if_not_serialized(self):
         self.assertEqual(self.collection.count(), 0)
 
@@ -134,3 +141,94 @@ class TestCollection(TestCase):
         self.assertEqual(
             serialize([doc['_id'] for doc in documents]), inserted_ids
         )
+
+    # UPDATE_ONE, UPDATE_MANY, REPLACE_ONE
+    # These functions functionalities are not actually being tested here
+    # Just if the output is being serialized or not
+    # Because the function only calls pymongo's function with the same name
+    # The only difference is in the output that will be the raw_result
+    # That will be serialized or not, depending on the 'serialized' parameter
+
+    # update_one
+    def test_update_one_returns_non_serialized_raw_result_if_not_serialized(self):
+        updated = self.collection.update_one(
+            {}, {'$set': {'test': 'test'}}, upsert=True, serialized=False
+        )
+
+        self.assertIsInstance(updated['upserted'], ObjectId)
+
+    def test_update_one_returns_serialized_raw_result_if_serialized(self):
+        updated = self.collection.update_one(
+            {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
+        )
+
+        self.assertIsInstance(updated['upserted'], str)
+
+    # update_many
+    def test_update_many_returns_non_serialized_raw_result_if_not_serialized(self):
+        updated = self.collection.update_many(
+            {}, {'$set': {'test': 'test'}}, upsert=True, serialized=False
+        )
+
+        self.assertIsInstance(updated['upserted'], ObjectId)
+
+    def test_update_many_returns_serialized_raw_result_if_serialized(self):
+        updated = self.collection.update_many(
+            {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
+        )
+
+        self.assertIsInstance(updated['upserted'], str)
+
+    # replace_one
+    def test_replace_one_returns_non_serialized_raw_result_if_not_serialized(self):
+        replaced = self.collection.replace_one(
+            {}, {'_id': ObjectId()}, upsert=True, serialized=False
+        )
+
+        self.assertIsInstance(replaced['upserted'], ObjectId)
+
+    def test_replace_one_returns_serialized_raw_result_if_serialized(self):
+        replaced = self.collection.replace_one(
+            {}, {'_id': ObjectId()}, upsert=True, serialized=True
+        )
+
+        self.assertIsInstance(replaced['upserted'], str)
+
+    # DELETE_ONE, DELETE_MANY
+    # These functions functionalities are not actually being tested here|
+    # Only the output, to check if it is really the raw_result dict
+    # Instead of pymongo's Result Object
+
+    # delete_one
+    def test_delete_one_returns_raw_result(self):
+        deleted = self.collection.delete_one({})
+
+        self.assertIsInstance(deleted, dict)
+
+    # delete_one
+    def test_delete_many_returns_raw_result(self):
+        deleted = self.collection.delete_one({})
+
+        self.assertIsInstance(deleted, dict)
+
+    # count
+    def test_count_returns_number_of_documents_that_pass_the_filter(self):
+        self.collection.insert_many([{'1': '1'}, {'1': '1'}, {'1': '2'}, {}])
+
+        self.assertEqual(self.collection.count({'1': '1'}), 2)
+        self.assertEqual(self.collection.count({'1': '2'}), 1)
+
+    # get
+    def test_get_returns_a_document_object_if_at_least_one_passes_filter(self):
+        self.collection.insert_one({'test': 'test'})
+
+        document = self.collection.get({'test': 'test'})
+
+        self.assertIsInstance(document, Document)
+
+    def test_get_returns_none_if_no_documents_pass_the_filter(self):
+        self.collection.insert_one({'test': 'test'})
+
+        document = self.collection.get({'test': 'not_test'})
+
+        self.assertIsNone(document)

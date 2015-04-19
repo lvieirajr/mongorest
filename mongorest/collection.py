@@ -29,7 +29,7 @@ class CollectionMeta(type):
         }
 
 
-class Collection(object, metaclass=CollectionMeta):
+class Collection(metaclass=CollectionMeta):
     """
     Base class for Collections.
     Can Serialize and De-Serialize the data.
@@ -93,41 +93,47 @@ class Collection(object, metaclass=CollectionMeta):
     def update_one(cls, filter, update, upsert=False, serialized=False):
         """
         Updates a document that passes the filter
-        Returns the updated document's dict
-        Will return the serialized document dict if serialized=True
+        Returns the raw result of the update
+        Will return the serialized raw result if serialized=True
         """
-        updated = cls.collection.udpate_one(filter, update, upsert).raw_result
+        updated = cls.collection.update_one(filter, update, upsert).raw_result
         return serialize(updated) if serialized else updated
 
     @classmethod
     def update_many(cls, filter, update, upsert=False, serialized=False):
         """
         Updates all the documents that pass the filter
-        Returns the updated documents' dicts
-        Will return the serialized document dicts if serialized=True
+        Returns the raw result of the update
+        Will return the serialized raw result if serialized=True
         """
-        updated = list(cls.collection.udpate_many(filter, update, upsert).raw_result)
+        updated = cls.collection.update_many(filter, update, upsert).raw_result
         return serialize(updated) if serialized else updated
 
     @classmethod
-    def delete_one(cls, filter, serialized=False):
+    def replace_one(cls, filter, replacement, upsert=False, serialized=False):
         """
-        Deletes a document that passes the filter
-        Returns the deleted document's dict
-        Will return the serialized document dict if serialized=True
+        replaces a document that passes the filter
+        Returns the raw result of the replace
+        Will return the serialized raw result if serialized=True
         """
-        deleted = cls.collection.delete_one(filter).raw_result
-        return serialize(deleted) if serialized else deleted
+        replaced = cls.collection.replace_one(filter, replacement, upsert).raw_result
+        return serialize(replaced) if serialized else replaced
 
     @classmethod
-    def delete_many(cls, filter, serialized=False):
+    def delete_one(cls, filter):
+        """
+        Deletes a document that passes the filter
+        Returns the raw result of the delete
+        """
+        return cls.collection.delete_one(filter).raw_result
+
+    @classmethod
+    def delete_many(cls, filter):
         """
         Deletes all the documents that pass the filter
-        Returns the deleted documents' dicts
-        Will return the serialized document dicts if serialized=True
+        Returns the raw result of the delete
         """
-        deleted = list(cls.collection.delete_many(filter).raw_result)
-        return serialize(deleted) if serialized else deleted
+        return cls.collection.delete_many(filter).raw_result
 
     @classmethod
     def count(cls, filter=None):
@@ -143,7 +149,7 @@ class Collection(object, metaclass=CollectionMeta):
         Returns None otherwise
         """
         document = Document(cls, cls.find_one(filter), processed=True)
-        return document if document.pk() else None
+        return document if document.pk else None
 
 
 class Document(object):
@@ -263,13 +269,16 @@ class Document(object):
         If the Document does not contain an _id it will insert a new Document
         If the Document contains an _id it will be updated instead of inserted
         """
-        if self.is_valid() and self.pk():
-            self.update_one({'_id': self.pk()}, self._fields)
+        if self.is_valid() and self.pk:
+            if self.pk:
+                self.replace_one({'_id': self.pk}, self._fields, upsert=True)
+            else:
+                self._fields['_id'] = self.insert_one(self._fields).inserted_id
 
-            return serialize(self._fields) if serialized else self._fields
-        elif self.is_valid:
-            self._fields['_id'] = self.insert_one(self._fields).inserted_id
-
-            return self.pk(serialized)
+            return serialize(self.pk) if serialized else self.pk
         else:
-            return self._errors
+            return serialize(self._errors) if serialized else self._errors
+
+    @property
+    def pk(self):
+        return self._fields.get('_id')
