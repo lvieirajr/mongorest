@@ -232,11 +232,11 @@ class Document(object):
                     if hasattr(type_or_tuple, '__iter__'):
                         types = ' or '.join([t.__name__ for t in type_or_tuple])
 
-                    self.errors[field] = 'Field \'{}\' must be of type(s): {}.'.format(
+                    self._errors[field] = 'Field \'{}\' must be of type(s): {}.'.format(
                         field, types
                     )
             else:
-                self.errors[field] = 'Field \'{}\' is required.'.format(field)
+                self._errors[field] = 'Field \'{}\' is required.'.format(field)
 
     def _process(self):
         """
