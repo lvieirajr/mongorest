@@ -270,11 +270,11 @@ class Document(object):
         If the Document does not contain an _id it will insert a new Document
         If the Document contains an _id it will be updated instead of inserted
         """
-        if self.is_valid and self.pk:
+        if self.is_valid:
             if self.pk:
                 self.replace_one({'_id': self.pk}, self._fields, upsert=True)
             else:
-                self._fields['_id'] = self.insert_one(self._fields).inserted_id
+                self._fields['_id'] = self.insert_one(self._fields)
 
             return serialize(self.pk) if serialized else self.pk
         else:
