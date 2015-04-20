@@ -193,10 +193,12 @@ class Document(object):
             return self._fields[attr]
 
         elif hasattr(self._cls, attr):
-            if type(self._cls.__dict__[attr]) == FunctionType:
-                return MethodType(getattr(self._cls, attr), self)
+            attribute = getattr(self._cls, attr)
 
-            return getattr(self._cls, attr)
+            if type(attribute) == FunctionType:
+                return MethodType(attribute, self)
+
+            return attribute
 
         else:
             return object.__getattribute__(self, attr)
