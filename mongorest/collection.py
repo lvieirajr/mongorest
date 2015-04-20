@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-from inspect import getmembers
+from types import MethodType, FunctionType
 
 from .database import db
 from .settings import settings
@@ -193,6 +193,9 @@ class Document(object):
             return self._fields[attr]
 
         elif hasattr(self._cls, attr):
+            if type(self._cls.__dict__[attr]) == FunctionType:
+                return MethodType(getattr(self._cls, attr), self)
+
             return getattr(self._cls, attr)
 
         else:
@@ -246,9 +249,9 @@ class Document(object):
         Does this in order to process the values on the fields
         So they will be ready to be saved on the Database
         """
-        for (name, member) in getmembers(self._cls):
-            if name.lower().startswith('process'):
-                member(self)
+        for attr in dir(self._cls):
+            if attr.lower().startswith('process'):
+                self.__getattr__(attr)()
 
     def fields(self, serialized=settings.SERIALIZED):
         """
