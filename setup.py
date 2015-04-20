@@ -13,8 +13,6 @@ setup(
     description='Easy REST APIs using MongoDB.',
     author='Luis Vieira',
     author_email='lvieira@lvieira.com',
-    mantainer='Luis Vieira',
-    mantainer_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='https://github.com/lvieirajr/mongorest/tarball/0.1',
     keywords=['python', 'mongodb', 'mongo', 'pymongo', 'rest', 'api'],
