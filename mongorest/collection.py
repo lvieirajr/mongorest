@@ -3,10 +3,12 @@
 from inspect import getmembers
 
 from .database import db
+from .settings import settings
 from .utils import serialize
 
 __all__ = [
     'Collection',
+    'Document',
 ]
 
 
@@ -42,7 +44,7 @@ class Collection(metaclass=CollectionMeta):
         return Document(cls, *args, **kwargs)
 
     @classmethod
-    def find_one(cls, filter=None, serialized=False):
+    def find_one(cls, filter=None, serialized=settings.SERIALIZED):
         """
         Returns one document dict if at least one passes the filter
         Otherwise returns None
@@ -52,7 +54,7 @@ class Collection(metaclass=CollectionMeta):
         return serialize(document) if serialized else document
 
     @classmethod
-    def find(cls, filter=None, serialized=False):
+    def find(cls, filter=None, serialized=settings.SERIALIZED):
         """
         Returns all document dicts that pass the filter
         Will return the serialized dict if serialized=True
@@ -61,7 +63,7 @@ class Collection(metaclass=CollectionMeta):
         return serialize(documents) if serialized else documents
 
     @classmethod
-    def aggregate(cls, pipeline, serialized=False):
+    def aggregate(cls, pipeline, serialized=settings.SERIALIZED):
         """
         Returns the list of document dicts returned from the Aggregate Pipeline
         Will return the serialized document dicts if serialized=True
@@ -70,7 +72,7 @@ class Collection(metaclass=CollectionMeta):
         return serialize(documents) if serialized else documents
 
     @classmethod
-    def insert_one(cls, document, serialized=False):
+    def insert_one(cls, document, serialized=settings.SERIALIZED):
         """
         Inserts a document into the Collection
         Returns the inserted document's _id
@@ -80,7 +82,7 @@ class Collection(metaclass=CollectionMeta):
         return serialize(_id) if serialized else _id
 
     @classmethod
-    def insert_many(cls, documents, ordered=True, serialized=False):
+    def insert_many(cls, documents, ordered=True, serialized=settings.SERIALIZED):
         """
         Inserts a list of documents into the Collection
         Returns the all the inserted documents' _ids
@@ -90,7 +92,7 @@ class Collection(metaclass=CollectionMeta):
         return serialize(_ids) if serialized else _ids
 
     @classmethod
-    def update_one(cls, filter, update, upsert=False, serialized=False):
+    def update_one(cls, filter, update, upsert=False, serialized=settings.SERIALIZED):
         """
         Updates a document that passes the filter
         Returns the raw result of the update
@@ -100,7 +102,7 @@ class Collection(metaclass=CollectionMeta):
         return serialize(updated) if serialized else updated
 
     @classmethod
-    def update_many(cls, filter, update, upsert=False, serialized=False):
+    def update_many(cls, filter, update, upsert=False, serialized=settings.SERIALIZED):
         """
         Updates all the documents that pass the filter
         Returns the raw result of the update
@@ -110,7 +112,7 @@ class Collection(metaclass=CollectionMeta):
         return serialize(updated) if serialized else updated
 
     @classmethod
-    def replace_one(cls, filter, replacement, upsert=False, serialized=False):
+    def replace_one(cls, filter, replacement, upsert=False, serialized=settings.SERIALIZED):
         """
         replaces a document that passes the filter
         Returns the raw result of the replace
@@ -246,16 +248,16 @@ class Document(object):
         """
         for (name, member) in getmembers(self._cls):
             if name.lower().startswith('process'):
-                member()
+                member(self)
 
-    def fields(self, serialized=False):
+    def fields(self, serialized=settings.SERIALIZED):
         """
         Returns the document's fields
         Will return the serialized fields if serialized=True
         """
         return serialize(self._fields) if serialized else self._fields
 
-    def get(self, field, serialized=False):
+    def get(self, field, serialized=settings.SERIALIZED):
         """
         Returns the field if it exists in _fields, returns None otherwise
         Will return the serialized field if serialized=True
@@ -263,7 +265,7 @@ class Document(object):
         field = self._fields.get(field)
         return serialize(field) if serialized else field
 
-    def save(self, serialized=False):
+    def save(self, serialized=settings.SERIALIZED):
         """
         Saves the Document to the database if it is valid.
         Returns the error dict otherwise.

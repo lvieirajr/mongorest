@@ -16,7 +16,8 @@ DEFAULT = {
         'NAME': 'mongorest',
         'USER': '',
         'PASSWORD': '',
-    }
+    },
+    'SERIALIZED': False,
 }
 
 
