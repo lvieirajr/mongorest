@@ -208,7 +208,7 @@ class Document(object):
             object.__setattr__(self, attr, value)
 
         else:
-            self._fields[attr] =value
+            self._fields[attr] = value
 
     def __repr__(self):
         """
@@ -285,8 +285,7 @@ class Document(object):
     @property
     def errors(self):
         """
-        Returns the document's errors
-        Will return the serialized errors if serialized=True
+        Returns the non-serialized document's errors
         """
         return self._errors
 
@@ -299,4 +298,7 @@ class Document(object):
 
     @property
     def pk(self):
+        """
+        Returns the non-serialized document's _id
+        """
         return self._fields.get('_id')
