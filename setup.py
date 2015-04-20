@@ -19,7 +19,7 @@ setup(
     download_url='https://github.com/lvieirajr/mongorest/tarball/0.1',
     keywords=['python', 'mongodb', 'mongo', 'pymongo', 'rest', 'api'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
