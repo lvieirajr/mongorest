@@ -231,7 +231,7 @@ class Document(object):
                 if not isinstance(self._fields[field], type_or_tuple):
                     types = type_or_tuple
 
-                    if hasattr(type_or_tuple, '__iter__'):
+                    if isinstance(type_or_tuple, (tuple, list)):
                         types = ' or '.join([t.__name__ for t in type_or_tuple])
 
                     self._errors[field] = 'Field \'{}\' must be of type(s): {}.'.format(
