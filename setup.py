@@ -15,6 +15,7 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='https://github.com/lvieirajr/mongorest/tarball/0.1',
+    install_requires=['pymongo'],
     keywords=['python', 'mongodb', 'mongo', 'pymongo', 'rest', 'api'],
     classifiers=[
         'Development Status :: 4 - Beta',
