@@ -32,7 +32,7 @@ class TestCollection(TestCase):
 
         found_document = self.collection.find_one({'_id': 'test'})
 
-        self.assertIsNone(found_document)
+        self.assertEqual('null', found_document)
 
     def test_find_one_returns_non_serialized_dict_if_not_serialized(self):
         document = {'_id': ObjectId()}
@@ -57,7 +57,7 @@ class TestCollection(TestCase):
 
         found_documents = self.collection.find({'_id': 'test'})
 
-        self.assertEqual([], found_documents)
+        self.assertEqual('[]', found_documents)
 
     def test_find_returns_non_serialized_dicts_if_not_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
@@ -84,7 +84,7 @@ class TestCollection(TestCase):
             [{'$match': {'_id': 'test'}}]
         )
 
-        self.assertEqual([], found_documents)
+        self.assertEqual('[]', found_documents)
 
     def test_aggregate_returns_non_serialized_dicts_if_not_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
@@ -162,7 +162,7 @@ class TestCollection(TestCase):
             {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(updated['upserted']['$oid'], str)
+        self.assertIsInstance(updated, str)
 
     # update_many
     def test_update_many_returns_non_serialized_raw_result_if_not_serialized(self):
@@ -177,7 +177,7 @@ class TestCollection(TestCase):
             {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(updated['upserted']['$oid'], str)
+        self.assertIsInstance(updated, str)
 
     # replace_one
     def test_replace_one_returns_non_serialized_raw_result_if_not_serialized(self):
@@ -192,7 +192,7 @@ class TestCollection(TestCase):
             {}, {'_id': ObjectId()}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(replaced['upserted']['$oid'], str)
+        self.assertIsInstance(replaced, str)
 
     # DELETE_ONE, DELETE_MANY
     # These functions functionalities are not actually being tested here|
@@ -205,7 +205,7 @@ class TestCollection(TestCase):
 
         self.assertIsInstance(deleted, dict)
 
-    # delete_one
+    # delete_many
     def test_delete_many_returns_raw_result(self):
         deleted = self.collection.delete_one({})
 

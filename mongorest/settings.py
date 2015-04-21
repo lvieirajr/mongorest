@@ -17,7 +17,7 @@ DEFAULT = {
         'USER': '',
         'PASSWORD': '',
     },
-    'SERIALIZED': False,
+    'SERIALIZE': True,
 }
 
 

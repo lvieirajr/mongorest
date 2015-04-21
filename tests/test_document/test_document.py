@@ -3,7 +3,8 @@
 from bson.objectid import ObjectId
 from unittest.mock import patch
 
-from mongorest.collection import Collection, Document
+from mongorest.collection import Collection
+from mongorest.document import Document
 from mongorest.testcase import TestCase
 from mongorest.utils import serialize
 
@@ -14,6 +15,7 @@ __all__ = [
 
 class TestDocument(TestCase):
 
+    # __init__
     def test_init_sets_correct_collection(self):
         document = Document(Collection)
 
@@ -45,6 +47,7 @@ class TestDocument(TestCase):
     # __getattr__, __setattr__ and __repr__ are not being formally tested.
     # Their usage on the other tested functions will make sure they work.
 
+    # _validate
     def test_validate_sets_error_if_field_is_not_present_on_document(self):
         class TestCollection(Collection):
             required_fields = {'test': (str, int)}
@@ -61,6 +64,7 @@ class TestDocument(TestCase):
 
         self.assertEqual(len(document._errors), 1)
 
+    # _process
     def test_process_calls_collections_process_functions(self):
         class TestCollection(Collection):
             def process1(self):
@@ -71,6 +75,19 @@ class TestDocument(TestCase):
 
             self.assertEqual(process1.call_count, 1)
 
+    # is_valid
+    def test_is_valid_returns_true_if_no_errors(self):
+        document = Document(Collection)
+
+        self.assertTrue(document.is_valid)
+
+    def test_is_valid_returns_false_if_there_are_errors(self):
+        document = Document(Collection)
+        document._errors = {'test': 'test'}
+
+        self.assertFalse(document.is_valid)
+
+    # fields
     def test_fields_returns_non_serialized_fields_if_not_serialized(self):
         document = Document(Collection, {'test': ObjectId()})
 
@@ -83,23 +100,44 @@ class TestDocument(TestCase):
             serialize(document._fields), document.fields(serialized=True)
         )
 
+    # errors
+    def test_errors_returns_non_serialized_errors_if_not_serialized(self):
+        class TestCollection(Collection):
+            required_fields = {'test': (str, int)}
+
+        document = Document(TestCollection, {'test': ObjectId()})
+
+        self.assertEqual(document._errors, document.errors(serialized=False))
+
+    def test_errors_returns_serialized_errors_if_serialized(self):
+        class TestCollection(Collection):
+            required_fields = {'test': (str, int)}
+
+        document = Document(TestCollection, {'test': ObjectId()})
+
+        self.assertEqual(
+            serialize(document._errors), document.errors(serialized=True)
+        )
+
+    # get
     def test_get_returns_none_if_field_does_not_exist(self):
         document = Document(Collection)
 
-        self.assertIsNone(document.get('test'))
+        self.assertEqual('null', document.get('test'))
 
     def test_get_returns_non_serialized_field_if_not_serialized(self):
         document = Document(Collection, {'test': ObjectId()})
 
-        self.assertIsInstance(document.get('test'), ObjectId)
+        self.assertIsInstance(document.get('test', serialized=False), ObjectId)
 
     def test_get_returns_serialized_field_if_serialized(self):
         document = Document(Collection, {'test': ObjectId()})
 
-        self.assertIsInstance(
-            document.get('test', serialized=True)['$oid'], str
+        self.assertEqual(
+            document.get('test', serialized=True), serialize(document.test)
         )
 
+    # save
     def test_save_returns_non_serialized_errors_if_document_is_not_valid_and_not_serialized(self):
         class TestCollection(Collection):
             required_fields = {'test': str}
@@ -118,50 +156,28 @@ class TestDocument(TestCase):
             errors, serialize({'test': 'Field \'test\' is required.'})
         )
 
-    def test_save_returns_non_serialized_pk_if_document_is_valid_and_not_serialized_without_pk(self):
+    def test_save_returns_non_serialized_id_if_document_is_valid_and_not_serialized_without_id(self):
         document = Document(Collection)
-        pk = document.save(serialized=False)
+        _id = document.save(serialized=False)
 
-        self.assertEqual(pk, document.pk)
+        self.assertEqual(_id, document._id)
 
-    def test_save_returns_serialized_pk_if_document_is_valid_and_serialized_without_pk(self):
+    def test_save_returns_serialized_id_if_document_is_valid_and_serialized_without_id(self):
         document = Document(Collection)
-        pk = document.save(serialized=True)
+        _id = document.save(serialized=True)
 
-        self.assertEqual(pk, serialize(document.pk))
+        self.assertEqual(_id, serialize(document._id))
 
-    def test_save_returns_non_serialized_pk_if_document_is_valid_and_not_serialized_with_pk(self):
-        document = Document(Collection)
-        document._id = ObjectId()
-        pk = document.save(serialized=False)
-
-        self.assertEqual(pk, document.pk)
-
-    def test_save_returns_serialized_pk_if_document_is_valid_and_serialized_with_pk(self):
+    def test_save_returns_non_serialized_id_if_document_is_valid_and_not_serialized_with_id(self):
         document = Document(Collection)
         document._id = ObjectId()
-        pk = document.save(serialized=True)
+        _id = document.save(serialized=False)
 
-        self.assertEqual(pk, serialize(document.pk))
+        self.assertEqual(_id, document._id)
 
-    def test_errors_returns_documents_errors(self):
+    def test_save_returns_serialized_id_if_document_is_valid_and_serialized_with_id(self):
         document = Document(Collection)
-        document._errors = {'test': 'test'}
+        document._id = ObjectId()
+        _id = document.save(serialized=True)
 
-        self.assertEqual(document.errors, document._errors)
-
-    def test_is_valid_returns_true_if_no_errors(self):
-        document = Document(Collection)
-
-        self.assertTrue(document.is_valid)
-
-    def test_is_valid_returns_false_if_there_are_errors(self):
-        document = Document(Collection)
-        document._errors = {'test': 'test'}
-
-        self.assertFalse(document.is_valid)
-
-    def test_pk_returns_the_non_serialized__id(self):
-        document = Document(Collection, {'_id': ObjectId()})
-
-        self.assertEqual(document.pk, document.get('_id', serialized=False))
+        self.assertEqual(_id, serialize(document._id))
