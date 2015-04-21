@@ -9,11 +9,11 @@ from .wsgi import WSGIWrapper
 
 __all__ = [
     'Resource',
-    'ListResource',
-    'CreateResource',
-    'RetrieveResource',
-    'UpdateResource',
-    'DeleteResource',
+    'ListResourceMixin',
+    'CreateResourceMixin',
+    'RetrieveResourceMixin',
+    'UpdateResourceMixin',
+    'DeleteResourceMixin',
 ]
 
 
@@ -21,22 +21,26 @@ class ResourceMeta(type):
 
     @classmethod
     def __prepare__(mcs, name, bases):
+        urls = [
+            rule
+            for base in bases
+            for rule in base.rules
+            if hasattr(base, 'rules')
+        ]
+
         return {
-            'url_map': Map([
-                rule
-                for base in bases
-                for rule in base.rules
-                if hasattr(base, 'rules')
-            ]),
+            'urls': urls,
+            'url_map': Map(urls),
+            'collection': Collection,
+            'endpoint': 'collections',
         }
 
 
 class Resource(WSGIWrapper, metaclass=ResourceMeta):
-    collection = Collection
-    endpoint = 'collections'
+    pass
 
 
-class ListResource(Resource):
+class ListResourceMixin(Resource):
     rules = [Rule('/', methods=['GET'], endpoint='list')]
 
     def list(self, request):
@@ -47,7 +51,7 @@ class ListResource(Resource):
         )
 
 
-class CreateResource(Resource):
+class CreateResourceMixin(Resource):
     rules = [Rule('/', methods=['POST'], endpoint='create')]
 
     def create(self, request):
@@ -61,7 +65,7 @@ class CreateResource(Resource):
             return Response(
                 document.save(serialized=True),
                 content_type='application/json',
-                status=200
+                status=201
             )
         else:
             return Response(
@@ -71,7 +75,7 @@ class CreateResource(Resource):
             )
 
 
-class RetrieveResource(Resource):
+class RetrieveResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['GET'], endpoint='retrieve')]
 
     def retrieve(self, request, _id=None):
@@ -85,14 +89,14 @@ class RetrieveResource(Resource):
         )
 
 
-class UpdateResource(Resource):
+class UpdateResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['PUT'], endpoint='update')]
 
     def update(self, request, _id=None):
         return Response(255)
 
 
-class DeleteResource(Resource):
+class DeleteResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['DELETE'], endpoint='delete')]
 
     def delete(self, request, _id=None):
