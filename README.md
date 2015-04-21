@@ -11,10 +11,10 @@
 
 # Requirements
 
-* Python 3
-* MongoDB
-* PyMongo
-* Werkzeug
+* Python >= 3.4.0
+* MongoDB >= 3.0
+* PyMongo >= 3.0
+* Werkzeug >= 0.10.0
 
 # Installation
 
