@@ -55,12 +55,8 @@ class CreateResourceMixin(Resource):
     rules = [Rule('/', methods=['POST'], endpoint='create')]
 
     def create(self, request):
-        fields = {
-            key: request.form.get(key)
-            for key in request.form
-        }
+        document = self.collection(deserialize(request.data.decode('utf-8')))
 
-        document = self.collection(fields)
         if document.is_valid:
             return Response(
                 document.save(serialized=True),
@@ -78,7 +74,7 @@ class CreateResourceMixin(Resource):
 class RetrieveResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['GET'], endpoint='retrieve')]
 
-    def retrieve(self, request, _id=None):
+    def retrieve(self, request, _id):
         return Response(
             self.collection.find_one(
                 {'_id': deserialize(_id)},
@@ -92,12 +88,12 @@ class RetrieveResourceMixin(Resource):
 class UpdateResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['PUT'], endpoint='update')]
 
-    def update(self, request, _id=None):
+    def update(self, request, _id):
         return Response(255)
 
 
 class DeleteResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['DELETE'], endpoint='delete')]
 
-    def delete(self, request, _id=None):
+    def delete(self, request, _id):
         return Response(355)
