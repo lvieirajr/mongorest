@@ -28,6 +28,7 @@ class WSGIWrapper(object):
         except HTTPException as exc:
             if hasattr(exc, 'get_response'):
                 response = exc.get_response(environ)
+
             else:
                 response = Response(
                     serialize({'error': exc.description}),

@@ -55,8 +55,9 @@ class CreateResourceMixin(Resource):
     rules = [Rule('/', methods=['POST'], endpoint='create')]
 
     def create(self, request):
-        document = self.collection(deserialize(request.data.decode('utf-8')))
+        fields = deserialize(request.data.decode('utf-8'))
 
+        document = self.collection(fields)
         if document.is_valid:
             return Response(
                 document.save(serialized=True),
@@ -75,25 +76,70 @@ class RetrieveResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['GET'], endpoint='retrieve')]
 
     def retrieve(self, request, _id):
-        return Response(
-            self.collection.find_one(
-                {'_id': deserialize(_id)},
-                serialized=True,
-            ),
-            content_type='application/json',
-            status=200
-        )
+        document = self.collection.get({'_id': deserialize(_id)})
+
+        if document:
+            return Response(
+                document.fields(serialized=True),
+                content_type='application/json',
+                status=200
+            )
+        else:
+            return Response(
+                {'error': 'The given _id is not related to a document.'},
+                status=400
+            )
 
 
 class UpdateResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['PUT'], endpoint='update')]
 
     def update(self, request, _id):
-        return Response(255)
+        document = self.collection.get({'_id': deserialize(_id)})
+
+        if document:
+            fields = dict(
+                document.fields(serialized=False),
+                **deserialize(request.data.decode('utf-8'))
+            )
+
+            document = self.collection(fields)
+            if document.is_valid:
+                return Response(
+                    document.save(serialized=True),
+                    content_type='application/json',
+                    status=200
+                )
+            else:
+                return Response(
+                    document.errors(serialized=True),
+                    content_type='application/json',
+                    status=400
+                )
+        else:
+            return Response(
+                {'error': 'The given _id is not related to a document.'},
+                status=400
+            )
 
 
 class DeleteResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['DELETE'], endpoint='delete')]
 
     def delete(self, request, _id):
-        return Response(355)
+        document = self.collection.get({'_id': deserialize(_id)})
+
+        if document:
+            return Response(
+                self.collection.delete_one(
+                    {'_id': document._id},
+                    serialized=True
+                ),
+                content_type='application/json',
+                status=200
+            )
+        else:
+            return Response(
+                {'error': 'The given _id is not related to a document.'},
+                status=400
+            )
