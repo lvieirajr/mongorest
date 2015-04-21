@@ -97,7 +97,3 @@ class DeleteResource(Resource):
 
     def delete(self, request, _id=None):
         return Response(355)
-
-
-class Test(ListResource, CreateResource, RetrieveResource, UpdateResource, DeleteResource):
-    pass
