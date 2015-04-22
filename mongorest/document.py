@@ -14,7 +14,7 @@ class Document(object):
     """
     Document Class
     It will know how to validate its fields
-    Will use the required_fields of the Collection to do so.
+    Will use the meta of the Collection to do so.
     """
 
     def __init__(self, cls, fields=None, processed=False):
@@ -87,7 +87,7 @@ class Document(object):
         Validates if the required fields are of the correct types
         If one of these two validations fail, add an error to self._errors
         """
-        for (field, type_or_tuple) in self.required_fields.items():
+        for (field, type_or_tuple) in self.meta.get('required', {}).items():
             if field in self._fields:
                 if not isinstance(self._fields[field], type_or_tuple):
                     types = type_or_tuple

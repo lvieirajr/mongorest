@@ -50,7 +50,10 @@ class TestDocument(TestCase):
     # _validate
     def test_validate_sets_error_if_field_is_not_present_on_document(self):
         class TestCollection(Collection):
-            required_fields = {'test': (str, int)}
+            meta = {
+                'required': {'test': (str, int)},
+                'optional': {}
+            }
 
         document = Document(TestCollection)
 
@@ -58,7 +61,10 @@ class TestDocument(TestCase):
 
     def test_validate_sets_error_if_field_has_wrong_type(self):
         class TestCollection(Collection):
-            required_fields = {'test': (str, int)}
+            meta = {
+                'required': {'test': (str, int)},
+                'optional': {}
+            }
 
         document = Document(TestCollection, {'test': 1.1})
 
@@ -103,7 +109,10 @@ class TestDocument(TestCase):
     # errors
     def test_errors_returns_non_serialized_errors_if_not_serialized(self):
         class TestCollection(Collection):
-            required_fields = {'test': (str, int)}
+            meta = {
+                'required': {'test': (str, int)},
+                'optional': {}
+            }
 
         document = Document(TestCollection, {'test': ObjectId()})
 
@@ -111,7 +120,10 @@ class TestDocument(TestCase):
 
     def test_errors_returns_serialized_errors_if_serialized(self):
         class TestCollection(Collection):
-            required_fields = {'test': (str, int)}
+            meta = {
+                'required': {'test': (str, int)},
+                'optional': {}
+            }
 
         document = Document(TestCollection, {'test': ObjectId()})
 
@@ -140,7 +152,10 @@ class TestDocument(TestCase):
     # save
     def test_save_returns_non_serialized_errors_if_document_is_not_valid_and_not_serialized(self):
         class TestCollection(Collection):
-            required_fields = {'test': str}
+            meta = {
+                'required': {'test': str},
+                'optional': {}
+            }
 
         errors = Document(TestCollection).save(serialized=False)
 
@@ -148,7 +163,10 @@ class TestDocument(TestCase):
 
     def test_save_returns_serialized_errors_if_document_is_not_valid_and_serialized(self):
         class TestCollection(Collection):
-            required_fields = {'test': str}
+            meta = {
+                'required': {'test': str},
+                'optional': {}
+            }
 
         errors = Document(TestCollection).save(serialized=True)
 

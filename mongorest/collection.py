@@ -14,18 +14,21 @@ class CollectionMeta(type):
     """
     MetaClass for the Collection Class.
     Prepares the member dict adding the correct collection based on the name,
-    And adds the required_fields dict.
+    And the meta dict, with empty required and optional (fields)
     """
 
     @classmethod
     def __prepare__(mcs, name, bases):
         """
         Returns the collection based on the name of the Class
-        Also an empty required_fields dict to serve as a base
+        Also the meta dict to serve as a base
         """
         return {
             'collection': db[name.lower()],
-            'required_fields': {},
+            'meta': {
+                'required': {},
+                'optional': {},
+            },
         }
 
 
