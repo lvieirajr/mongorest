@@ -16,7 +16,7 @@ setup(
     url='https://github.com/lvieirajr/mongorest',
     download_url='https://github.com/lvieirajr/mongorest/tarball/1.1.0',
     install_requires=['pymongo', 'werkzeug'],
-    keywords=['python', 'mongodb', 'mongo', 'pymongo', 'rest', 'api'],
+    keywords=['python', 'mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: BSD License',
