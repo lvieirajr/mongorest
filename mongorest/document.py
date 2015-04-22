@@ -87,7 +87,12 @@ class Document(object):
         Validates if the required fields are of the correct types
         If one of these two validations fail, add an error to self._errors
         """
-        for (field, type_or_tuple) in self.meta.get('required', {}).items():
+        fields = dict(
+            self.meta.get('optional', {}),
+            **self.meta.get('required', {})
+        )
+
+        for (field, type_or_tuple) in fields.items():
             if field in self._fields:
                 if not isinstance(self._fields[field], type_or_tuple):
                     types = type_or_tuple
@@ -98,7 +103,7 @@ class Document(object):
                     self._errors[field] = 'Field \'{}\' must be of type(s): {}.'.format(
                         field, types
                     )
-            else:
+            elif field in self.meta.get('required', {}):
                 self._errors[field] = 'Field \'{}\' is required.'.format(field)
 
     def _process(self):
