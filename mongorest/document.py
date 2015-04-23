@@ -74,7 +74,7 @@ class Document(object):
     def __repr__(self):
         """
         Returns the representation of the Object formated like:
-        <{Collection Name}Document object at {hex memory location of the object}>
+        <{Collection Name}Document object at {hex location of the object}>
         """
         return '<{}Document object at {}>'.format(
             self._cls.__name__,
@@ -98,10 +98,11 @@ class Document(object):
                     types = type_or_tuple
 
                     if isinstance(type_or_tuple, (tuple, list)):
-                        types = ' or '.join([t.__name__ for t in type_or_tuple])
+                        types = ' or '.join(t.__name__ for t in type_or_tuple)
 
-                    self._errors[field] = 'Field \'{}\' must be of type(s): {}.'.format(
-                        field, types
+                    self._errors[field] = \
+                        'Field \'{}\' must be of type(s): {}.'.format(
+                            field, types
                     )
             elif field in self.meta.get('required', {}):
                 self._errors[field] = 'Field \'{}\' is required.'.format(field)
