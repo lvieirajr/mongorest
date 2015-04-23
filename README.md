@@ -4,6 +4,7 @@
 
 **Easy [REST][rest] [APIs][api] using [MongoDB][mongodb].**
 
+
 # Overview
 
 [MongoRest][mongorest] is a [Framework][framework] written in [Python][python] built on top of [PyMongo][pymongo] and [Werkzeug][werkzeug] to ease the creation of [REST][rest] [APIs][api] using [MongoDB][mongodb].
@@ -16,84 +17,83 @@
 * PyMongo >= 3.0
 * Werkzeug >= 0.10.0
 
+
 # Installation
 
     pip install mongorest
     
+    
 # Usage
 
-This is a basic example where we are creating a simple API for a library, where we can list all our books, add new books and retrieve a single book:
+Here is a basic example of how easy it is to create an API with **MongoRest**:
+
 
     from mongorest.collection import Collection
-    from mongorest.resource import (
-        ListResourceMixin,
-        CreateResourceMixin,
-        RetrieveResourceMixin,
-    )
-    from mongorest.wsgi import WSGIDispatcher
-    from werkzeug.serving import run_simple
 
-
-    # Our Base Collection
     class Book(Collection):
         meta = {
             'required': {
-               'name': str,
-               'author': str,
-               'genre': str
+               'name': str, 'author': str, 'genre': str
             }
             'optional': {
-               'number_of_pages': int,
-               'date_of_release': datetime,
+               'number_of_pages': int, 'date_of_release': datetime,
             }
         }
-        
-    
-    # Our API
+
+First we created our Book collection, that inherited from the `Collection` class. <br />
+We added a meta to specify the required and optional fields, and their types.
+
+
+    from mongorest.resource import (
+        ListResourceMixin, CreateResourceMixin, RetrieveResourceMixin,
+    )
+
+
     class BookResource(ListResourceMixin, CreateResourceMixin, RetrieveResourceMixin):
         collection = Book
         endpoint = 'books'
         
-    
-    # Creating the app and Running the Server
+Here we created our Resource. By inheriting from these Mixins we already have the list, create and retrieve actions. <br />
+In the Resource we defined what will be the collection and the endpoint this Resource refers to.
+
+        
+    from mongorest.wsgi import WSGIDispatcher
+    from werkzeug.serving import run_simple
+
+
     if __name__ == '__main__':
         app = WSGIDispatcher([BookResource])
         run_simple('localhost', 8000, app)
     
-All we did was: Created a collection to represent our books, the collection has a `meta` specifying the required fields and the optional ones.
-Also we created a Resource inheriting from the Resource Mixins. All we had to do for the Resource was chose the collection that will be used and what will be the endpoint.
-After that we are just creating the app, passing it our list of resources and running the server.
-
-`MongoRest` also includes builtin Delete and Update mixins that were not used in this example.
+Now we just had to instantiate the app as a `WSGIDispatcher` passing it our list of resources. <br />
+Then we started our server and the API is ready.
 
 
-Let's show a more complex example where we create a customized Resource with a nested route:
+Now lets go for an example that is a little bit more complex:
 
     from mongorest.collection import Collection
-    from mongorest.resource import Resource
-    from mongorest.utils import deserialize
-    from werkzeug.wrappers import Response
+    
     
     class School(Collection):
         meta = {
-            'required': {
-               'name': str,
-            }
-            'optional': {
-               'principal': str,
-            }
+            'required': {'name': str}
+            'optional': {'principal': str}
         }
         
-        
+ 
     class Student(Collection):
         meta = {
             'required': {
-               'name': str,
-               'age': int,
-               'school': ObjectId,
-               'grade': int,
+               'name': str, 'age': int, 'school': ObjectId, 'grade': int,
             }
         }
+        
+Again, here we are simply defining our collections.
+
+
+    from mongorest.resource import Resource
+    from mongorest.utils import deserialize, serialize
+    from werkzeug.wrappers import Response
     
     class SchoolResource(Resource):
         collection = School
@@ -106,23 +106,23 @@ Let's show a more complex example where we create a customized Resource with a n
             
             if school:
                 return Response(
-                    Students.find({
-                        'school': school['_id'],
-                        'grade': deserialize(grade),
-                    }),
+                    Students.find(
+                        {'school': school['_id'], 'grade': deserialize(grade)}
+                        serialized=True
+                    ),
                     content_type='application/json',
                     status=200
                 )
             else:
                 return Response(
-                    {'error': 'School does not exist.'},
+                    serialize({'error': 'School does not exist.'}),
                     status=400
                 )
-        
-In this example, we created a nested route on our customized Resource. All we had to do was inherit from resource, chose the collection and the endpoint and add an URL for our view.
-And with `MongoRest` you can easily do much more.
-    
-    
+                
+Now we have created a custom Resource, inheriting from the `Resource` class. <br />
+Again we defined the collection and the endpoint for the resource, but we also defined the urls for the views we created. Only one in this case. <br />
+Then comes the view itself, that is a view with a nested route that returns all students who go to that school from a given grade.
+
     
 # License
 
