@@ -22,7 +22,7 @@
     
 # Usage
 
-This is a basic example where we are creating a simple API for a library, where we can list all our books, add new books and retrieve a single book.
+This is a basic example where we are creating a simple API for a library, where we can list all our books, add new books and retrieve a single book:
 
     from mongorest.collection import Collection
     from mongorest.resource import (
@@ -60,14 +60,14 @@ This is a basic example where we are creating a simple API for a library, where 
         app = WSGIDispatcher([BookResource])
         run_simple('localhost', 8000, app)
     
-All we did was: Created a collection to represent our books, the collection has a `meta specifying the required fields and the optional ones.
+All we did was: Created a collection to represent our books, the collection has a `meta` specifying the required fields and the optional ones.
 Also we created a Resource inheriting from the Resource Mixins. All we had to do for the Resource was chose the collection that will be used and what will be the endpoint.
-After that we are just creating the app passing it our list of resources and running the server.
+After that we are just creating the app, passing it our list of resources and running the server.
 
-MongoRest also includes builtin Delete and Update mixins that were not used in this example.
+`MongoRest` also includes builtin Delete and Update mixins that were not used in this example.
 
 
-Let's show a more complex example where we create a customized Resource with a nested route
+Let's show a more complex example where we create a customized Resource with a nested route:
 
     from mongorest.collection import Collection
     from mongorest.resource import Resource
@@ -119,8 +119,8 @@ Let's show a more complex example where we create a customized Resource with a n
                     status=400
                 )
         
-In this example, we created a nested route on our customized Resource.
-And with MongoRest you can do much more.
+In this example, we created a nested route on our customized Resource. All we had to do was inherit from resource, chose the collection and the endpoint and add an URL for our view.
+And with `MongoRest` you can easily do much more.
     
     
     
