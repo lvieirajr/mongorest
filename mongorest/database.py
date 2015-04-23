@@ -24,8 +24,7 @@ def _get_db():
     password = db_settings['PASSWORD']
 
     database = MongoClient(host, port)[name]
-    if not (user and password) or (user and password and
-                                       database.authenticate(user, password)):
+    if not user or (user and database.authenticate(user, password)):
         return database
 
     return None
