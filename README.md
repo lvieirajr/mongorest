@@ -49,7 +49,8 @@ We added a `meta` to specify the required and optional fields, and their types. 
     )
 
 
-    class BookResource(ListResourceMixin, CreateResourceMixin, RetrieveResourceMixin):
+    class BookResource(ListResourceMixin, CreateResourceMixin, 
+                                                RetrieveResourceMixin):
         collection = Book
         endpoint = 'books'
         
@@ -99,7 +100,13 @@ Again, here we are simply defining our collections. <br />
         collection = School
         endpoint = 'schools'
         
-        urls = [Rule('/<_id>/students/<grade>/', methods=['GET'], endpoint='grade_students')]
+        urls = [
+            Rule(
+                '/<_id>/students/<grade>/',
+                methods=['GET'],
+                endpoint='grade_students'
+            )
+        ]
         
         def grade_students(request, _id, grade):
             school = self.collection.find_one({'_id': deserialize(_id)})
