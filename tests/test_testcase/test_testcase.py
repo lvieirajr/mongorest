@@ -33,4 +33,3 @@ class TestTestCase(TestCase):
 
         self.assertTrue(test().wasSuccessful())
         self.assertEqual(test.db.test.count(), 0)
-
