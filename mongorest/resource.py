@@ -61,8 +61,14 @@ class ListResourceMixin(Resource):
     rules = [Rule('/', methods=['GET'], endpoint='list')]
 
     def list(self, request):
+        """
+        Returns a serialized list of documents _ids from the collection
+        """
         return Response(
-            self.collection.find(serialized=True),
+            self.collection.aggregate(
+                [{'$project': {'_id': 1}}],
+                serialized=True
+            ),
             content_type='application/json',
             status=200
         )
@@ -75,6 +81,9 @@ class CreateResourceMixin(Resource):
     rules = [Rule('/', methods=['POST'], endpoint='create')]
 
     def create(self, request):
+        """
+        Creates a new document based on the given data
+        """
         fields = deserialize(request.data.decode('utf-8'))
 
         document = self.collection(fields)
@@ -99,6 +108,9 @@ class RetrieveResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['GET'], endpoint='retrieve')]
 
     def retrieve(self, request, _id):
+        """
+        Returns the serialized document with the given _id
+        """
         document = self.collection.get({'_id': deserialize(_id)})
 
         if document:
@@ -121,6 +133,9 @@ class UpdateResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['PUT'], endpoint='update')]
 
     def update(self, request, _id):
+        """
+        Updates the document with the given _id using the given data
+        """
         document = self.collection.get({'_id': deserialize(_id)})
 
         if document:
@@ -156,6 +171,9 @@ class DeleteResourceMixin(Resource):
     rules = [Rule('/<_id>/', methods=['DELETE'], endpoint='delete')]
 
     def delete(self, request, _id):
+        """
+        Deletes the document with the given _id
+        """
         document = self.collection.get({'_id': deserialize(_id)})
 
         if document:
