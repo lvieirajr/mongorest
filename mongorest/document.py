@@ -67,7 +67,6 @@ class Document(object):
         """
         if attr in ('_cls', '_fields', '_errors'):
             object.__setattr__(self, attr, value)
-
         else:
             self._fields[attr] = value
 

@@ -26,13 +26,25 @@ class TestCollection(TestCase):
         self.assertIsInstance(Collection(), Document)
 
     # find_one
-    def test_find_one_returns_none_if_no_document_passes_filter(self):
+    def test_find_one_returns_null_if_no_document_passes_filter_and_serialized(self):
         document = {'_id': ObjectId()}
         self.collection.insert_one(document)
 
-        found_document = self.collection.find_one({'_id': 'test'})
+        found_document = self.collection.find_one(
+            {'_id': 'test'}, serialized=True
+        )
 
         self.assertEqual('null', found_document)
+
+    def test_find_one_returns_none_if_no_document_passes_filter_and_not_serialized(self):
+        document = {'_id': ObjectId()}
+        self.collection.insert_one(document)
+
+        found_document = self.collection.find_one(
+            {'_id': 'test'}, serialized=False
+        )
+
+        self.assertIsNone(found_document)
 
     def test_find_one_returns_non_serialized_dict_if_not_serialized(self):
         document = {'_id': ObjectId()}
@@ -51,13 +63,25 @@ class TestCollection(TestCase):
         self.assertEqual(serialize(document), found_document)
 
     # find
-    def test_find_returns_empty_list_if_no_document_passes_filter(self):
+    def test_find_returns_serialized_empty_list_if_no_document_passes_filter_and_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.collection.insert_many(documents)
 
-        found_documents = self.collection.find({'_id': 'test'})
+        found_documents = self.collection.find(
+            {'_id': 'test'}, serialized=True
+        )
 
         self.assertEqual('[]', found_documents)
+
+    def test_find_returns_empty_list_if_no_document_passes_filter_and_not_serialized(self):
+        documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
+        self.collection.insert_many(documents)
+
+        found_documents = self.collection.find(
+            {'_id': 'test'}, serialized=False
+        )
+
+        self.assertEqual([], found_documents)
 
     def test_find_returns_non_serialized_dicts_if_not_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
@@ -76,15 +100,25 @@ class TestCollection(TestCase):
         self.assertEqual(serialize(documents), found_documents)
 
     # aggregate
-    def test_aggregate_returns_empty_list_if_pipeline_results_in_nothing(self):
+    def test_aggregate_returns_serialized_empty_list_if_pipeline_results_in_nothing_and_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
         self.collection.insert_many(documents)
 
         found_documents = self.collection.aggregate(
-            [{'$match': {'_id': 'test'}}]
+            [{'$match': {'_id': 'test'}}], serialized=True
         )
 
         self.assertEqual('[]', found_documents)
+
+    def test_aggregate_returns_empty_list_if_pipeline_results_in_nothing_and_not_serialized(self):
+        documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
+        self.collection.insert_many(documents)
+
+        found_documents = self.collection.aggregate(
+            [{'$match': {'_id': 'test'}}], serialized=False
+        )
+
+        self.assertEqual([], found_documents)
 
     def test_aggregate_returns_non_serialized_dicts_if_not_serialized(self):
         documents = [{'_id': ObjectId()}, {'_id': ObjectId()}]
