@@ -15,6 +15,12 @@ __all__ = [
 
 
 class WSGIWrapper(object):
+    """
+    Wrapper for WSGI Elements.
+    This class is the base for Class Based Views.
+    For example the ones created on resource.py
+    It knows how to route its requests to the correct views using the url_map
+    """
 
     rules = []
     url_map = Map()
@@ -40,6 +46,11 @@ class WSGIWrapper(object):
 
 
 class WSGIDispatcher(DispatcherMiddleware):
+    """
+    Basic dispatcher class.
+    This class should be created as your app for running on your WSGI Server.
+    It defines the endpoints for each of the WSGIWrapper classes.
+    """
 
     def __init__(self, resources):
         super(WSGIDispatcher, self).__init__(

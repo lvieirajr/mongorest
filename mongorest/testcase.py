@@ -15,6 +15,9 @@ __all__ = [
 
 
 class TestCase(BaseTestCase):
+    """
+    Base TestCase class for users of the framework to use when testing.
+    """
 
     def __init__(self, methodName='runtest'):
         super(TestCase, self).__init__(methodName)

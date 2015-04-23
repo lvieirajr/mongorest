@@ -10,13 +10,13 @@ __all__ = [
 
 def serialize(to_serialize):
     """
-    Serializes a PyMongo BSON into a serialized JSON
+    Serializes a PyMongo BSON into a string
     """
     return dumps(to_serialize)
 
 
 def deserialize(to_deserialize):
     """
-    Deserializes a serialized JSON into a PyMongo BSON
+    Deserializes a string into a PyMongo BSON
     """
     return loads(to_deserialize)

@@ -18,9 +18,19 @@ __all__ = [
 
 
 class ResourceMeta(type):
+    """
+    MetaClass for the resource.
+    Adds some neat functionalities to the resource classes.
+    Adds together urls from all the bases, sets collection and endpoint...
+    """
 
     @classmethod
     def __prepare__(mcs, name, bases):
+        """
+        Puts together all the urls from each base class
+        Adds them to a map and returns it on the member dict
+        Together with the base collection and endpoint
+        """
         urls = [
             rule
             for base in bases
@@ -37,10 +47,17 @@ class ResourceMeta(type):
 
 
 class Resource(WSGIWrapper, metaclass=ResourceMeta):
+    """
+    Just a class that puts together te WSGIWrapper and the ResourceMeta
+    To be used as base for any resource to be created.
+    """
     pass
 
 
 class ListResourceMixin(Resource):
+    """
+    Resource Mixin that provides the list action for your endpoint.
+    """
     rules = [Rule('/', methods=['GET'], endpoint='list')]
 
     def list(self, request):
@@ -52,6 +69,9 @@ class ListResourceMixin(Resource):
 
 
 class CreateResourceMixin(Resource):
+    """
+    Resource Mixin that provides the create action for your endpoint.
+    """
     rules = [Rule('/', methods=['POST'], endpoint='create')]
 
     def create(self, request):
@@ -73,6 +93,9 @@ class CreateResourceMixin(Resource):
 
 
 class RetrieveResourceMixin(Resource):
+    """
+    Resource Mixin that provides the retrieve action for your endpoint.
+    """
     rules = [Rule('/<_id>/', methods=['GET'], endpoint='retrieve')]
 
     def retrieve(self, request, _id):
@@ -92,6 +115,9 @@ class RetrieveResourceMixin(Resource):
 
 
 class UpdateResourceMixin(Resource):
+    """
+    Resource Mixin that provides the update action for your endpoint.
+    """
     rules = [Rule('/<_id>/', methods=['PUT'], endpoint='update')]
 
     def update(self, request, _id):
@@ -124,6 +150,9 @@ class UpdateResourceMixin(Resource):
 
 
 class DeleteResourceMixin(Resource):
+    """
+    Resource Mixin that provides the delete action for your endpoint.
+    """
     rules = [Rule('/<_id>/', methods=['DELETE'], endpoint='delete')]
 
     def delete(self, request, _id):
