@@ -4,8 +4,6 @@ import logging
 
 from unittest import TestCase as BaseTestCase
 from werkzeug.test import Client
-from werkzeug.testapp import test_app
-from werkzeug.wrappers import BaseResponse
 
 from .database import db
 
@@ -23,7 +21,7 @@ class TestCase(BaseTestCase):
         super(TestCase, self).__init__(methodName)
 
         self.db = db
-        self.client = Client(test_app, BaseResponse)
+        self.client = Client
 
         logging.disable(logging.CRITICAL)
 

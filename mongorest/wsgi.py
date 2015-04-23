@@ -21,7 +21,7 @@ class WSGIWrapper(object):
     For example the ones created on resource.py
     It knows how to route its requests to the correct views using the url_map
     """
-
+    endpoint = '/'
     rules = []
     url_map = Map()
 
@@ -56,7 +56,9 @@ class WSGIDispatcher(DispatcherMiddleware):
         super(WSGIDispatcher, self).__init__(
             NotFound(),
             {
-                '/{}'.format(resource.endpoint): resource()
+                '/{}'.format(
+                    resource.endpoint.lstrip('/')
+                ).rstrip('/'): resource()
                 for resource in resources
             }
         )

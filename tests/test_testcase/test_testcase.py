@@ -16,8 +16,8 @@ class TestTestCase(TestCase):
     def test_testcase_has_instance_of_pymongos_database(self):
         self.assertIsInstance(self.test_case.db, Database)
 
-    def test_testcase_has_instance_of_werkzeugs_test_client(self):
-        self.assertIsInstance(self.test_case.client, Client)
+    def test_testcase_has_werkzeugs_test_client(self):
+        self.assertEqual(self.test_case.client, Client)
 
     def test_testcase_disables_all_logging(self):
         self.assertFalse(getLogger().isEnabledFor(CRITICAL))
