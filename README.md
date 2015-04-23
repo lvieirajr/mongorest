@@ -41,7 +41,7 @@ Here is a basic example of how easy it is to create an API with **MongoRest**:
         }
 
 First we created our Book collection, that inherited from the `Collection` class. <br />
-We added a meta to specify the required and optional fields, and their types.
+We added a `meta` to specify the required and optional fields, and their types. <br />
 
 
     from mongorest.resource import (
@@ -53,8 +53,8 @@ We added a meta to specify the required and optional fields, and their types.
         collection = Book
         endpoint = 'books'
         
-Here we created our Resource. By inheriting from these Mixins we already have the list, create and retrieve actions. <br />
-In the Resource we defined what will be the collection and the endpoint this Resource refers to.
+Here, by inheriting from these Mixins our Resource already has the list, create and retrieve actions. <br />
+We also defined what will be the collection and endpoint this Resource refers to. <br />
 
         
     from mongorest.wsgi import WSGIDispatcher
@@ -66,7 +66,7 @@ In the Resource we defined what will be the collection and the endpoint this Res
         run_simple('localhost', 8000, app)
     
 Now we just had to instantiate the app as a `WSGIDispatcher` passing it our list of resources. <br />
-Then we started our server and the API is ready.
+Then we started our server and the API is ready. <br />
 
 
 Now lets go for an example that is a little bit more complex:
@@ -88,7 +88,7 @@ Now lets go for an example that is a little bit more complex:
             }
         }
         
-Again, here we are simply defining our collections.
+Again, here we are simply defining our collections. <br />
 
 
     from mongorest.resource import Resource
