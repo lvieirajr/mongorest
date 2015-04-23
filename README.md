@@ -40,14 +40,13 @@ Here is a basic example of how easy it is to create an API with **MongoRest**:
             }
         }
 
-First we created our Book collection, that inherited from the `Collection` class. <br />
+First we created our Book collection that inherited from the `Collection` class. <br />
 We added a `meta` to specify the required and optional fields, and their types. <br />
 
 
     from mongorest.resource import (
         ListResourceMixin, CreateResourceMixin, RetrieveResourceMixin,
     )
-
 
     class BookResource(ListResourceMixin, CreateResourceMixin, 
                                                 RetrieveResourceMixin):
@@ -61,7 +60,6 @@ We also defined what will be the collection and endpoint this Resource refers to
     from mongorest.wsgi import WSGIDispatcher
     from werkzeug.serving import run_simple
 
-
     if __name__ == '__main__':
         app = WSGIDispatcher([BookResource])
         run_simple('localhost', 8000, app)
@@ -74,14 +72,12 @@ Now lets go for an example that is a little bit more complex:
 
     from mongorest.collection import Collection
     
-    
     class School(Collection):
         meta = {
             'required': {'name': str}
             'optional': {'principal': str}
         }
         
- 
     class Student(Collection):
         meta = {
             'required': {
