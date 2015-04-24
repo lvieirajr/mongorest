@@ -7,7 +7,7 @@ from mongorest.testcase import TestCase
 from mongorest.wsgi import WSGIWrapper, WSGIDispatcher
 
 
-class TestWSGIWrapper(TestCase):
+class TestWSGIDispatcher(TestCase):
 
     def test_wsgi_dispatcher_init_returns_werkzeug_app_with_mounted_resources(self):
         class WSGIWrapperTest(WSGIWrapper):
