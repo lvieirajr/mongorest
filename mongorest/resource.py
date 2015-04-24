@@ -31,7 +31,7 @@ class ResourceMeta(type):
         Adds them to a map and returns it on the member dict
         Together with the base collection and endpoint
         """
-        urls = [
+        rules = [
             rule
             for base in bases
             for rule in base.rules
@@ -39,8 +39,8 @@ class ResourceMeta(type):
         ]
 
         return {
-            'urls': urls,
-            'url_map': Map(urls),
+            'rules': rules,
+            'url_map': Map(rules),
             'collection': Collection,
             'endpoint': 'collections',
         }
