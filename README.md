@@ -1,6 +1,6 @@
 # MongoRest
 
-[![pypi-version]][pypi][![codacy-grade]][codacy]
+[![pypi-version]][pypi] [![pypi-downloads]][pypi] [![codacy-grade]][codacy]
 
 **Easy [REST][rest] [APIs][api] using [MongoDB][mongodb].**
 
@@ -158,6 +158,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [pypi-version]: https://pypip.in/version/mongorest/badge.svg
+[pypi-downloads]: https://pypip.in/download/mongorest/badge.svg
 [pypi]: https://pypi.python.org/pypi/mongorest
 
 [codacy-grade]: https://www.codacy.com/project/badge/de84ced5bfa241b3a1a64f73146a03e3
