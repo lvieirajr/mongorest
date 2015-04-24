@@ -1,6 +1,6 @@
 # MongoRest
 
-[![pypi-version]][pypi]
+[![pypi-version]][pypi][![codacy-grade]][codacy]
 
 **Easy [REST][rest] [APIs][api] using [MongoDB][mongodb].**
 
@@ -159,6 +159,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [pypi-version]: https://pypip.in/version/mongorest/badge.svg
 [pypi]: https://pypi.python.org/pypi/mongorest
+
+[codacy-grade]: https://www.codacy.com/project/badge/de84ced5bfa241b3a1a64f73146a03e3
+[codacy]: https://www.codacy.com/app/lvieira/mongorest
 
 [rest]: https://en.wikipedia.org/wiki/Rest
 [api]: https://en.wikipedia.org/wiki/Application_programming_interface

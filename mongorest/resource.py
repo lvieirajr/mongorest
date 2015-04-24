@@ -42,8 +42,15 @@ class ResourceMeta(type):
             'rules': rules,
             'url_map': Map(rules),
             'collection': Collection,
-            'endpoint': 'collections',
+            'endpoint': '/',
         }
+
+    def __call__(self, *args, **kwargs):
+        if not len(list(self.url_map.iter_rules())):
+            for rule in self.rules:
+                self.url_map.add(rule)
+
+        return super(self.__class__, self).__call__(*args, **kwargs)
 
 
 class Resource(WSGIWrapper, metaclass=ResourceMeta):
