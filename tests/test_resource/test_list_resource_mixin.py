@@ -31,6 +31,6 @@ class TestResource(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.data,
-            b'[{"_id": {"$oid": "0123456789ab0123456789ab"}}]'
+            response.get_data(as_text=True),
+            '[{"_id": {"$oid": "0123456789ab0123456789ab"}}]'
         )

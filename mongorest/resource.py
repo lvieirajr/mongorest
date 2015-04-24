@@ -48,7 +48,11 @@ class ResourceMeta(type):
     def __call__(self, *args, **kwargs):
         if not len(list(self.url_map.iter_rules())):
             for rule in self.rules:
-                self.url_map.add(rule)
+                self.url_map.add(Rule(
+                    rule.rule,
+                    methods=rule.methods,
+                    endpoint=rule.endpoint
+                ))
 
         return super(self.__class__, self).__call__(*args, **kwargs)
 
@@ -91,7 +95,7 @@ class CreateResourceMixin(Resource):
         """
         Creates a new document based on the given data
         """
-        fields = deserialize(request.data.decode('utf-8'))
+        fields = deserialize(request.get_data(as_text=True))
 
         document = self.collection(fields)
         if document.is_valid:
@@ -129,6 +133,7 @@ class RetrieveResourceMixin(Resource):
         else:
             return Response(
                 {'error': 'The given _id is not related to a document.'},
+                content_type='application/json',
                 status=400
             )
 
@@ -148,7 +153,7 @@ class UpdateResourceMixin(Resource):
         if document:
             fields = dict(
                 document.fields(serialized=False),
-                **deserialize(request.data.decode('utf-8'))
+                **deserialize(request.get_data(as_text=True))
             )
 
             document = self.collection(fields)
@@ -167,6 +172,7 @@ class UpdateResourceMixin(Resource):
         else:
             return Response(
                 {'error': 'The given _id is not related to a document.'},
+                content_type='application/json',
                 status=400
             )
 
@@ -195,5 +201,6 @@ class DeleteResourceMixin(Resource):
         else:
             return Response(
                 {'error': 'The given _id is not related to a document.'},
+                content_type='application/json',
                 status=400
             )
