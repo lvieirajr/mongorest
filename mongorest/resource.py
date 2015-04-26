@@ -20,34 +20,32 @@ __all__ = [
 class ResourceMeta(type):
     """
     MetaClass for the resource.
-    Adds some neat functionalities to the resource classes.
-    Adds together urls from all the bases, sets collection and endpoint...
+    Handles all the url rules for the Resource class and its Childs
     """
+
     def __new__(mcs, *args, **kwargs):
-        class_name = args[0]
+        """
+        Handles the url_map generation based on the rules from the base classes
+        Added to the class' own rules
+        """
+        name = args[0]
         bases = args[1]
+        members = args[2].copy()
 
-        member_dict = args[2].copy()
-        member_dict['rules'] = member_dict.get('rules', [])
-        member_dict['url_map'] = member_dict.get('url_map', Map())
+        rules = members.get('rules', [])
+        for base in (base for base in bases if hasattr(base, 'rules')):
+            rules.extend(base.rules)
 
-        for base in bases:
-            if hasattr(base, 'rules'):
-                member_dict['rules'].extend(base.rules)
-
-        for rule in member_dict['rules']:
-            rule = Rule(
-                rule.rule,
-                methods=rule.methods,
-                endpoint=rule.endpoint
+        url_map = members.get('url_map', Map())
+        for rule in rules:
+            url_map.add(
+                Rule(rule.rule, methods=rule.methods, endpoint=rule.endpoint)
             )
-            member_dict['url_map'].add(rule)
 
-        return super(mcs, mcs).__new__(
-            mcs,
-            *(class_name, bases, member_dict),
-            **kwargs
-        )
+        members['rules'] = list(url_map.iter_rules())
+        members['url_map'] = url_map
+
+        return super(mcs, mcs).__new__(mcs, *(name, bases, members), **kwargs)
 
 
 class Resource(six.with_metaclass(ResourceMeta, WSGIWrapper)):
