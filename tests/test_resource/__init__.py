@@ -1,5 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
+from .test_resource_meta import *
 from .test_resource import *
 from .test_list_resource_mixin import *
 from .test_create_resource_mixin import *

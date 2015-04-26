@@ -1,5 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
+import six
+
 from .database import db
 from .document import Document
 from .settings import settings
@@ -32,7 +34,7 @@ class CollectionMeta(type):
         }
 
 
-class Collection(object, metaclass=CollectionMeta):
+class Collection(six.with_metaclass(CollectionMeta, object)):
     """
     Base class for Collections.
     Can Serialize and De-Serialize the data.

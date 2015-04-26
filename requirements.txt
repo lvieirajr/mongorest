@@ -1,4 +1,6 @@
 pymongo
 werkzeug
+mock
 tox
 six
+ipdb

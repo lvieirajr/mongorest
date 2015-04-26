@@ -16,11 +16,6 @@ class TestCollection(TestCase):
     def setUp(self):
         self.collection = Collection
 
-    # CollectionMeta
-    def test_collection_meta_sets_correct_collection_and_meta(self):
-        self.assertEqual(Collection.collection, self.db['collection'])
-        self.assertEqual(Collection.meta, {'required': {}, 'optional': {}})
-
     # __new__
     def test_new_returns_a_document_object(self):
         self.assertIsInstance(Collection(), Document)

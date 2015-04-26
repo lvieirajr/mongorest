@@ -1,7 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
 from bson.objectid import ObjectId
-from unittest.mock import patch
+from mock import patch
 
 from mongorest.collection import Collection
 from mongorest.document import Document
