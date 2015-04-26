@@ -3,15 +3,17 @@
 import six
 
 from werkzeug.routing import Map, Rule
+from werkzeug.wrappers import Response
 
 from .collection import Collection
+from .utils import deserialize, serialize
 from .wsgi import WSGIWrapper
 
 __all__ = [
     'Resource',
-    # 'ListResourceMixin',
+    'ListResourceMixin',
     # 'CreateResourceMixin',
-    # 'RetrieveResourceMixin',
+    'RetrieveResourceMixin',
     # 'UpdateResourceMixin',
     # 'DeleteResourceMixin',
 ]
@@ -56,26 +58,26 @@ class Resource(six.with_metaclass(ResourceMeta, WSGIWrapper)):
     collection = Collection
 
 
-# class ListResourceMixin(Resource):
-#     """
-#     Resource Mixin that provides the list action for your endpoint.
-#     """
-#     rules = [Rule('/', methods=['GET'], endpoint='list')]
-#
-#     def list(self, request):
-#         """
-#         Returns a serialized list of documents _ids from the collection
-#         """
-#         return Response(
-#             self.collection.aggregate(
-#                 [{'$project': {'_id': 1}}],
-#                 serialized=True
-#             ),
-#             content_type='application/json',
-#             status=200
-#         )
-#
-#
+class ListResourceMixin(Resource):
+    """
+    Resource Mixin that provides the list action for your endpoint.
+    """
+    rules = [Rule('/', methods=['GET'], endpoint='list')]
+
+    def list(self, request):
+        """
+        Returns a serialized list of documents _ids from the collection
+        """
+        return Response(
+            self.collection.aggregate(
+                [{'$project': {'_id': 1}}],
+                serialized=True
+            ),
+            content_type='application/json',
+            status=200
+        )
+
+
 # class CreateResourceMixin(Resource):
 #     """
 #     Resource Mixin that provides the create action for your endpoint.
@@ -103,32 +105,37 @@ class Resource(six.with_metaclass(ResourceMeta, WSGIWrapper)):
 #             )
 #
 #
-# class RetrieveResourceMixin(Resource):
-#     """
-#     Resource Mixin that provides the retrieve action for your endpoint.
-#     """
-#     rules = [Rule('/<_id>/', methods=['GET'], endpoint='retrieve')]
-#
-#     def retrieve(self, request, _id):
-#         """
-#         Returns the serialized document with the given _id
-#         """
-#         document = self.collection.get({'_id': deserialize(_id)})
-#
-#         if document:
-#             return Response(
-#                 document.fields(serialized=True),
-#                 content_type='application/json',
-#                 status=200
-#             )
-#         else:
-#             return Response(
-#                 {'error': 'The given _id is not related to a document.'},
-#                 content_type='application/json',
-#                 status=400
-#             )
-#
-#
+class RetrieveResourceMixin(Resource):
+    """
+    Resource Mixin that provides the retrieve action for your endpoint.
+    """
+    rules = [Rule('/<_id>/', methods=['GET'], endpoint='retrieve')]
+
+    def retrieve(self, request, _id):
+        """
+        Returns the serialized document with the given _id
+        """
+        document = self.collection.find_one(
+            {'_id': deserialize(_id)},
+            serialized=True
+        )
+
+        if document != 'null':
+            return Response(
+                document,
+                content_type='application/json',
+                status=200
+            )
+        else:
+            return Response(
+                serialize({
+                    'error': 'The given _id is not related to a document.'
+                }),
+                content_type='application/json',
+                status=400
+            )
+
+
 # class UpdateResourceMixin(Resource):
 #     """
 #     Resource Mixin that provides the update action for your endpoint.
