@@ -115,25 +115,14 @@ class RetrieveResourceMixin(Resource):
         """
         Returns the serialized document with the given _id
         """
-        document = self.collection.find_one(
-            {'_id': deserialize(_id)},
-            serialized=True
+        return Response(
+            self.collection.find_one(
+                {'_id': deserialize(_id)},
+                serialized=True
+            ),
+            content_type='application/json',
+            status=200
         )
-
-        if document != 'null':
-            return Response(
-                document,
-                content_type='application/json',
-                status=200
-            )
-        else:
-            return Response(
-                serialize({
-                    'error': 'The given _id is not related to a document.'
-                }),
-                content_type='application/json',
-                status=400
-            )
 
 
 # class UpdateResourceMixin(Resource):

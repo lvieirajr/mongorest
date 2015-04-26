@@ -19,7 +19,7 @@ class TestResourceMeta(TestCase):
         for rule in ResourceChild.rules:
             self.assertTrue(rule in list(ResourceChild.url_map.iter_rules()))
 
-    def test_meta_adds_url_map_to_class_that_inherits_from_resource_child_classes(self):
+    def test_meta_adds_url_map_to_class_that_inherits_from_resources_child_classes(self):
         class ResourceChild1(Resource):
             rules = [Rule('/', methods=['GET'], endpoint='test1')]
 
