@@ -3,19 +3,17 @@
 import six
 
 from werkzeug.routing import Map, Rule
-from werkzeug.wrappers import Response
 
 from .collection import Collection
-from .utils import deserialize
 from .wsgi import WSGIWrapper
 
 __all__ = [
     'Resource',
-    'ListResourceMixin',
-    'CreateResourceMixin',
-    'RetrieveResourceMixin',
-    'UpdateResourceMixin',
-    'DeleteResourceMixin',
+    # 'ListResourceMixin',
+    # 'CreateResourceMixin',
+    # 'RetrieveResourceMixin',
+    # 'UpdateResourceMixin',
+    # 'DeleteResourceMixin',
 ]
 
 
