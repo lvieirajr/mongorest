@@ -5,7 +5,7 @@ from werkzeug.wrappers import Response
 from mongorest.resource import DeleteResourceMixin
 from mongorest.testcase import TestCase
 from mongorest.wsgi import WSGIDispatcher
-from mongorest.utils import deserialize, serialize
+from mongorest.utils import deserialize
 
 
 class TestDeleteResourceMixin(TestCase):
