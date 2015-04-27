@@ -12,9 +12,9 @@ from .wsgi import WSGIWrapper
 __all__ = [
     'Resource',
     'ListResourceMixin',
-    # 'CreateResourceMixin',
+    'CreateResourceMixin',
     'RetrieveResourceMixin',
-    # 'UpdateResourceMixin',
+    'UpdateResourceMixin',
     # 'DeleteResourceMixin',
 ]
 
@@ -78,33 +78,33 @@ class ListResourceMixin(Resource):
         )
 
 
-# class CreateResourceMixin(Resource):
-#     """
-#     Resource Mixin that provides the create action for your endpoint.
-#     """
-#     rules = [Rule('/', methods=['POST'], endpoint='create')]
-#
-#     def create(self, request):
-#         """
-#         Creates a new document based on the given data
-#         """
-#         fields = deserialize(request.get_data(as_text=True))
-#
-#         document = self.collection(fields)
-#         if document.is_valid:
-#             return Response(
-#                 document.save(serialized=True),
-#                 content_type='application/json',
-#                 status=201
-#             )
-#         else:
-#             return Response(
-#                 document.errors(serialized=True),
-#                 content_type='application/json',
-#                 status=400
-#             )
-#
-#
+class CreateResourceMixin(Resource):
+    """
+    Resource Mixin that provides the create action for your endpoint.
+    """
+    rules = [Rule('/', methods=['POST'], endpoint='create')]
+
+    def create(self, request):
+        """
+        Creates a new document based on the given data
+        """
+        fields = deserialize(request.get_data(as_text=True))
+
+        document = self.collection(fields)
+        if document.is_valid:
+            return Response(
+                document.save(serialized=True),
+                content_type='application/json',
+                status=201
+            )
+        else:
+            return Response(
+                document.errors(serialized=True),
+                content_type='application/json',
+                status=400
+            )
+
+
 class RetrieveResourceMixin(Resource):
     """
     Resource Mixin that provides the retrieve action for your endpoint.
@@ -125,69 +125,79 @@ class RetrieveResourceMixin(Resource):
         )
 
 
-# class UpdateResourceMixin(Resource):
-#     """
-#     Resource Mixin that provides the update action for your endpoint.
-#     """
-#     rules = [Rule('/<_id>/', methods=['PUT'], endpoint='update')]
-#
-#     def update(self, request, _id):
-#         """
-#         Updates the document with the given _id using the given data
-#         """
-#         document = self.collection.get({'_id': deserialize(_id)})
-#
-#         if document:
-#             fields = dict(
-#                 document.fields(serialized=False),
-#                 **deserialize(request.get_data(as_text=True))
-#             )
-#
-#             document = self.collection(fields)
-#             if document.is_valid:
-#                 return Response(
-#                     document.save(serialized=True),
-#                     content_type='application/json',
-#                     status=200
-#                 )
-#             else:
-#                 return Response(
-#                     document.errors(serialized=True),
-#                     content_type='application/json',
-#                     status=400
-#                 )
-#         else:
-#             return Response(
-#                 {'error': 'The given _id is not related to a document.'},
-#                 content_type='application/json',
-#                 status=400
-#             )
-#
-#
-# class DeleteResourceMixin(Resource):
-#     """
-#     Resource Mixin that provides the delete action for your endpoint.
-#     """
-#     rules = [Rule('/<_id>/', methods=['DELETE'], endpoint='delete')]
-#
-#     def delete(self, request, _id):
-#         """
-#         Deletes the document with the given _id
-#         """
-#         document = self.collection.get({'_id': deserialize(_id)})
-#
-#         if document:
-#             return Response(
-#                 self.collection.delete_one(
-#                     {'_id': document._id},
-#                     serialized=True
-#                 ),
-#                 content_type='application/json',
-#                 status=200
-#             )
-#         else:
-#             return Response(
-#                 {'error': 'The given _id is not related to a document.'},
-#                 content_type='application/json',
-#                 status=400
-#             )
+class UpdateResourceMixin(Resource):
+    """
+    Resource Mixin that provides the update action for your endpoint.
+    """
+    rules = [Rule('/<_id>/', methods=['PUT'], endpoint='update')]
+
+    def update(self, request, _id):
+        """
+        Updates the document with the given _id using the given data
+        """
+        document = self.collection.find_one(
+            {'_id': deserialize(_id)},
+            serialized=False
+        )
+
+        if document:
+            fields = dict(
+                document,
+                **deserialize(request.get_data(as_text=True))
+            )
+
+            document = self.collection(fields)
+            if document.is_valid:
+                return Response(
+                    document.save(serialized=True),
+                    content_type='application/json',
+                    status=200
+                )
+            else:
+                return Response(
+                    document.errors(serialized=True),
+                    content_type='application/json',
+                    status=400
+                )
+        else:
+            return Response(
+                serialize({
+                    '_id': 'The given _id is not related to a document.'
+                }),
+                content_type='application/json',
+                status=400
+            )
+
+
+class DeleteResourceMixin(Resource):
+    """
+    Resource Mixin that provides the delete action for your endpoint.
+    """
+    rules = [Rule('/<_id>/', methods=['DELETE'], endpoint='delete')]
+
+    def delete(self, request, _id):
+        """
+        Deletes the document with the given _id
+        """
+        document = self.collection.find_one(
+            {'_id': deserialize(_id)},
+            serialized=False
+        )
+
+        if document:
+            return Response(
+                self.collection.delete_one(
+                    {'_id': document['_id']},
+                    serialized=True
+                ),
+                content_type='application/json',
+                status=200
+            )
+        else:
+            return Response(
+                serialize({
+                    '_id': 'The given _id is not related to a document.'
+                }),
+                content_type='application/json',
+                status=400
+            )

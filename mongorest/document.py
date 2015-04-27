@@ -94,15 +94,15 @@ class Document(object):
         for (field, type_or_tuple) in fields.items():
             if field in self._fields:
                 if not isinstance(self._fields[field], type_or_tuple):
-                    types = type_or_tuple
-
                     if isinstance(type_or_tuple, (tuple, list)):
                         types = ' or '.join(t.__name__ for t in type_or_tuple)
+                    else:
+                        types = type_or_tuple.__name__
 
                     self._errors[field] = \
                         'Field \'{}\' must be of type(s): {}.'.format(
                             field, types
-                    )
+                        )
             elif field in self.meta.get('required', {}):
                 self._errors[field] = 'Field \'{}\' is required.'.format(field)
 

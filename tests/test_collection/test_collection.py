@@ -229,16 +229,26 @@ class TestCollection(TestCase):
     # Instead of pymongo's Result Object
 
     # delete_one
-    def test_delete_one_returns_raw_result(self):
-        deleted = self.collection.delete_one({})
+    def test_delete_one_returns_non_serialized_raw_result_if_not_serialized(self):
+        deleted = self.collection.delete_one({}, serialized=False)
 
         self.assertIsInstance(deleted, dict)
+
+    def test_delete_one_returns_serialized_raw_result_if_serialized(self):
+        deleted = self.collection.delete_one({}, serialized=True)
+
+        self.assertIsInstance(deleted, str)
 
     # delete_many
-    def test_delete_many_returns_raw_result(self):
-        deleted = self.collection.delete_one({})
+    def test_delete_many_returns_non_serialized_raw_result_if_not_serialized(self):
+        deleted = self.collection.delete_one({}, serialized=False)
 
         self.assertIsInstance(deleted, dict)
+
+    def test_delete_many_returns_serialized_raw_result_if_serialized(self):
+        deleted = self.collection.delete_many({}, serialized=True)
+
+        self.assertIsInstance(deleted, str)
 
     # count
     def test_count_returns_number_of_documents_that_pass_the_filter(self):

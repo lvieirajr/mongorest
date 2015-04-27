@@ -125,20 +125,22 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return serialize(replaced) if serialized else replaced
 
     @classmethod
-    def delete_one(cls, filter):
+    def delete_one(cls, filter, serialized=settings.SERIALIZE):
         """
         Deletes a document that passes the filter
         Returns the raw result of the delete
         """
-        return cls.collection.delete_one(filter).raw_result
+        deleted = cls.collection.delete_one(filter).raw_result
+        return serialize(deleted) if serialized else deleted
 
     @classmethod
-    def delete_many(cls, filter):
+    def delete_many(cls, filter, serialized=settings.SERIALIZE):
         """
         Deletes all the documents that pass the filter
         Returns the raw result of the delete
         """
-        return cls.collection.delete_many(filter).raw_result
+        deleted = cls.collection.delete_many(filter).raw_result
+        return serialize(deleted) if serialized else deleted
 
     @classmethod
     def count(cls, filter=None):
