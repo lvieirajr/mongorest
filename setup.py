@@ -22,6 +22,5 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Operating System :: OS Independent',
     ],
 )
