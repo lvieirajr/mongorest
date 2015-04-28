@@ -157,8 +157,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[pypi-version]: https://pypip.in/version/mongorest/badge.svg
-[pypi-downloads]: https://pypip.in/download/mongorest/badge.svg
+[pypi-version]: https://img.shields.io/pypi/v/MongoRest.svg
+[pypi-downloads]: https://img.shields.io/pypi/dm/MongoRest.svg
 [pypi]: https://pypi.python.org/pypi/mongorest
 
 [codacy-grade]: https://www.codacy.com/project/badge/de84ced5bfa241b3a1a64f73146a03e3
