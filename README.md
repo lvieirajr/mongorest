@@ -119,6 +119,7 @@ Again, here we are simply defining our collections. <br />
             else:
                 return Response(
                     serialize({'error': 'School does not exist.'}),
+                    content_type='application/json',
                     status=400
                 )
                 
