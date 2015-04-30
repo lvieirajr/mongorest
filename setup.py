@@ -12,7 +12,7 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='https://github.com/lvieirajr/mongorest/tarball/2.0.0',
-    install_requires=['pymongo', 'werkzeug'],
+    install_requires=['pymongo', 'werkzeug', 'six'],
     keywords=['python', 'mongodb', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

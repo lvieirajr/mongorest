@@ -156,8 +156,10 @@ class Document(object):
             if self.get('_id', serialized=False):
                 self.replace_one({'_id': self._id}, self._fields, upsert=True)
             else:
-                self._fields['_id'] = self.insert_one(self._fields)
+                self._fields['_id'] = self.insert_one(
+                    self._fields, serialized=False
+                )
 
             return self.get('_id', serialized)
         else:
-            return serialize(self._errors) if serialized else self._errors
+            return self.errors(serialized)
