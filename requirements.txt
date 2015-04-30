@@ -1,6 +1,7 @@
 pymongo
 werkzeug
-mock
-tox
 six
+tox
+wheel
+mock
 ipdb

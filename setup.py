@@ -1,9 +1,6 @@
 # -*- encoding: UTF-8 -*-
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 
 setup(
@@ -16,19 +13,23 @@ setup(
     url='https://github.com/lvieirajr/mongorest',
     download_url='https://github.com/lvieirajr/mongorest/tarball/2.0.0',
     install_requires=['pymongo', 'werkzeug'],
-    keywords=['python', 'mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
+    keywords=['python', 'mongodb', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
+        'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: Implementation :: PyPy',
-        'Topic :: Software Development',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Internet :: WWW/HTTP :: WSGI',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )

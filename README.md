@@ -12,7 +12,7 @@
 
 # Requirements
 
-* Python (2.6; 2.7) or Python3 (3.3; 3.4) or PyPy
+* Python (2.6; 2.7; 3.3; 3.4; PyPy)
 * MongoDB >= 3.0.0
 * PyMongo >= 3.0.0
 * Werkzeug >= 0.10.0
