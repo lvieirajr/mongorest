@@ -9,14 +9,14 @@ except ImportError:
 setup(
     name='mongorest',
     packages=['mongorest'],
-    version='1.1.1',
+    version='1.1.2',
     description='Easy REST APIs using MongoDB.',
     author='Luis Vieira',
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
-    download_url='https://github.com/lvieirajr/mongorest/tarball/1.1.1',
-    install_requires=['pymongo', 'werkzeug'],
-    keywords=['python', 'mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
+    download_url='https://github.com/lvieirajr/mongorest/tarball/1.1.2',
+    install_requires=['pymongo', 'werkzeug', 'six'],
+    keywords=['python', 'mongodb', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: BSD License',
