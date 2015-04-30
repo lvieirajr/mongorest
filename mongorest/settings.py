@@ -10,12 +10,14 @@ __all__ = [
 
 
 DEFAULT = {
-    'DATABASE': {
-        'HOST': 'localhost',
-        'PORT': 27017,
-        'NAME': 'mongorest',
-        'USER': '',
+    'MONGODB': {
+        'URI': '',
+        'USERNAME': '',
         'PASSWORD': '',
+        'HOSTS': ['localhost'],
+        'PORTS': [27017],
+        'DATABASE': 'mongorest',
+        'OPTIONS': [],
     },
     'SERIALIZE': True,
 }

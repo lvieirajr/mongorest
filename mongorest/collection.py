@@ -117,7 +117,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
     @classmethod
     def replace_one(cls, filter, replacement, upsert=False, serialized=settings.SERIALIZE):
         """
-        replaces a document that passes the filter
+        Replaces a document that passes the filter
         Returns the raw result of the replace
         Will return the serialized raw result if serialized=True
         """
@@ -129,6 +129,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         Deletes a document that passes the filter
         Returns the raw result of the delete
+        Will return the serialized raw result if serialized=True
         """
         deleted = cls.collection.delete_one(filter).raw_result
         return serialize(deleted) if serialized else deleted
@@ -138,6 +139,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         Deletes all the documents that pass the filter
         Returns the raw result of the delete
+        Will return the serialized raw result if serialized=True
         """
         deleted = cls.collection.delete_many(filter).raw_result
         return serialize(deleted) if serialized else deleted

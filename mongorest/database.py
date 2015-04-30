@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
 from pymongo import MongoClient
+from pymongo.uri_parser import parse_uri
 
 from .settings import settings
 
@@ -15,19 +16,25 @@ def _get_db():
     This function should not be called outside of this file.
     Use 'db' instead.
     """
-    db_settings = settings.DATABASE
+    mongo = settings.MONGODB
 
-    host = db_settings['HOST']
-    port = db_settings['PORT']
-    name = db_settings['NAME']
-    user = db_settings['USER']
-    password = db_settings['PASSWORD']
+    if 'URI' in mongo and mongo['URI']:
+        uri = mongo['URI']
+    else:
+        uri = 'mongodb://'
 
-    database = MongoClient(host, port)[name]
-    if not user or (user and database.authenticate(user, password)):
-        return database
+        if all(mongo.get(key) for key in ('USERNAME', 'PASSWORD')):
+            uri += '{}:{}@'.format(mongo['USERNAME'], mongo['PASSWORD'])
 
-    return None
+        uri += ','.join(
+            '{}:{}'.format(host, port)
+            for (host, port) in zip(mongo['HOSTS'], mongo['PORTS']),
+        ) + '/' + mongo['DATABASE']
+
+        if 'OPTIONS' in mongo and mongo['OPTIONS']:
+            uri += '?{}'.format('&'.join(mongo['OPTIONS']))
+
+    return MongoClient(uri)[parse_uri(uri)['database']]
 
 
 db = _get_db()

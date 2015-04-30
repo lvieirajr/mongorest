@@ -11,12 +11,14 @@ class TestSettings(TestCase):
     def test_settings_has_default_values_for_database(self):
         settings = Settings()
 
-        self.assertIsNotNone(settings.DATABASE)
-        self.assertEqual(settings.DATABASE['HOST'], 'localhost')
-        self.assertEqual(settings.DATABASE['PORT'], 27017)
-        self.assertEqual(settings.DATABASE['NAME'], 'mongorest')
-        self.assertEqual(settings.DATABASE['USER'], '')
-        self.assertEqual(settings.DATABASE['PASSWORD'], '')
+        self.assertIsNotNone(settings.MONGODB)
+        self.assertEqual(settings.MONGODB['URI'], '')
+        self.assertEqual(settings.MONGODB['USERNAME'], '')
+        self.assertEqual(settings.MONGODB['PASSWORD'], '')
+        self.assertEqual(settings.MONGODB['HOSTS'], ['localhost'])
+        self.assertEqual(settings.MONGODB['PORTS'], [27017])
+        self.assertEqual(settings.MONGODB['DATABASE'], 'mongorest')
+        self.assertEqual(settings.MONGODB['OPTIONS'], [])
 
     def test_settings_has_default_value_true_for_serialize(self):
         environ.pop('MONGOREST_SETTINGS_MODULE')
