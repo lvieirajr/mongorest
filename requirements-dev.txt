@@ -1,5 +1,5 @@
+mock
 tox
 wheel
 twine
-mock
 ipdb

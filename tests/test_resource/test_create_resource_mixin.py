@@ -31,7 +31,7 @@ class TestCreateResourceMixin(TestCase):
 
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0].rule, '/')
-        self.assertEqual(rules[0].methods, {'POST'})
+        self.assertEqual(rules[0].methods, set(['POST']))
         self.assertEqual(rules[0].endpoint, 'create')
 
     def test_create_mixin_url_map(self):
@@ -39,7 +39,7 @@ class TestCreateResourceMixin(TestCase):
 
         self.assertEqual(len(urls), 1)
         self.assertEqual(urls[0].rule, '/')
-        self.assertEqual(urls[0].methods, {'POST'})
+        self.assertEqual(urls[0].methods, set(['POST']))
         self.assertEqual(urls[0].endpoint, 'create')
 
     def test_create_mixin_returns_errors_if_invalid_data(self):

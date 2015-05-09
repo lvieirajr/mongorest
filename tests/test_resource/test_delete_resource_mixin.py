@@ -22,7 +22,7 @@ class TestDeleteResourceMixin(TestCase):
 
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0].rule, '/<_id>/')
-        self.assertEqual(rules[0].methods, {'DELETE'})
+        self.assertEqual(rules[0].methods, set(['DELETE']))
         self.assertEqual(rules[0].endpoint, 'delete')
 
     def test_delete_mixin_url_map(self):
@@ -30,7 +30,7 @@ class TestDeleteResourceMixin(TestCase):
 
         self.assertEqual(len(urls), 1)
         self.assertEqual(urls[0].rule, '/<_id>/')
-        self.assertEqual(urls[0].methods, {'DELETE'})
+        self.assertEqual(urls[0].methods, set(['DELETE']))
         self.assertEqual(urls[0].endpoint, 'delete')
 
     def test_delete_returns_error_if_no_document_with_given_id(self):

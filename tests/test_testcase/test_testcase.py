@@ -32,5 +32,4 @@ class TestTestCase(TestCase):
 
         test = TestCleanDB(methodName='test_1')
 
-        self.assertTrue(test().wasSuccessful())
         self.assertEqual(test.db.test.count(), 0)

@@ -13,7 +13,7 @@ class TestDatabase(TestCase):
         self.assertIsInstance(db, Database)
 
     def test_db_connected_to_correct_nodes(self):
-        self.assertEqual(set(db.client.nodes), {('localhost', 27017)})
+        self.assertEqual(set(db.client.nodes), set([('localhost', 27017)]))
 
     def test_db_connected_to_correct_database(self):
         self.assertEqual(db.name, 'mongorest')

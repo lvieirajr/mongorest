@@ -22,7 +22,7 @@ class TestListResourceMixin(TestCase):
 
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0].rule, '/')
-        self.assertEqual(rules[0].methods, {'GET', 'HEAD'})
+        self.assertEqual(rules[0].methods, set(['GET', 'HEAD']))
         self.assertEqual(rules[0].endpoint, 'list')
 
     def test_list_mixin_url_map(self):
@@ -30,7 +30,7 @@ class TestListResourceMixin(TestCase):
 
         self.assertEqual(len(urls), 1)
         self.assertEqual(urls[0].rule, '/')
-        self.assertEqual(urls[0].methods, {'GET', 'HEAD'})
+        self.assertEqual(urls[0].methods, set(['GET', 'HEAD']))
         self.assertEqual(urls[0].endpoint, 'list')
 
     def test_list_mixin_returns_empty_list_if_no_documents_in_collection(self):

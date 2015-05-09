@@ -54,7 +54,7 @@ class TestDocument(TestCase):
     def test_validate_sets_error_if_required_field_is_not_present_on_document(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (six.string_types, six.integer_types)},
+                'required': {'test': six.string_types + six.integer_types},
                 'optional': {}
             }
 
@@ -65,7 +65,7 @@ class TestDocument(TestCase):
     def test_validate_sets_error_if_required_field_has_wrong_type(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (six.string_types, six.integer_types)},
+                'required': {'test': six.string_types + six.integer_types},
                 'optional': {}
             }
 
@@ -77,7 +77,7 @@ class TestDocument(TestCase):
         class TestCollection(Collection):
             meta = {
                 'required': {},
-                'optional': {'test': (six.string_types, six.integer_types)}
+                'optional': {'test': six.string_types + six.integer_types}
             }
 
         document = Document(TestCollection, {'test': 1.1})
@@ -144,7 +144,7 @@ class TestDocument(TestCase):
     def test_errors_returns_non_serialized_errors_if_not_serialized(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (six.string_types, six.integer_types)},
+                'required': {'test': six.string_types + six.integer_types},
                 'optional': {}
             }
 
@@ -155,7 +155,7 @@ class TestDocument(TestCase):
     def test_errors_returns_serialized_errors_if_serialized(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (six.string_types, six.integer_types)},
+                'required': {'test': six.string_types + six.integer_types},
                 'optional': {}
             }
 

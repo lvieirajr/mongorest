@@ -20,19 +20,21 @@ class CollectionMeta(type):
     And the meta dict, with empty required and optional (fields)
     """
 
-    @classmethod
-    def __prepare__(mcs, name, bases):
-        """
-        Returns the collection based on the name of the Class
-        Also the meta dict to serve as a base
-        """
-        return {
-            'collection': db[name.lower()],
-            'meta': {
+    def __new__(mcs, *args, **kwargs):
+        name = args[0]
+        bases = args[1]
+        members = args[2].copy()
+
+        if 'collection' not in members:
+            members['collection'] = db[name.lower()]
+
+        if 'meta' not in members:
+            members['meta'] = {
                 'required': {},
                 'optional': {},
-            },
-        }
+            }
+
+        return super(mcs, mcs).__new__(mcs, *(name, bases, members), **kwargs)
 
 
 class Collection(six.with_metaclass(CollectionMeta, object)):

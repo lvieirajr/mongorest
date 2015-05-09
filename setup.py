@@ -7,6 +7,14 @@ except:
     from distutils.core import setup
 
 
+install_requires = ['pymongo', 'werkzeug', 'six']
+try:
+    import importlib
+except ImportError:
+    install_requires.append('importlib')
+
+
+
 setup(
     name='mongorest',
     packages=['mongorest'],
@@ -16,7 +24,7 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='https://github.com/lvieirajr/mongorest/tarball/2.0.0',
-    install_requires=['pymongo', 'werkzeug', 'six'],
+    install_requires=install_requires,
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

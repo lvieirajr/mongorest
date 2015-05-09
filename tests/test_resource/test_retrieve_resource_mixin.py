@@ -22,7 +22,7 @@ class TestRetrieveResourceMixin(TestCase):
 
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0].rule, '/<_id>/')
-        self.assertEqual(rules[0].methods, {'GET', 'HEAD'})
+        self.assertEqual(rules[0].methods, set(['GET', 'HEAD']))
         self.assertEqual(rules[0].endpoint, 'retrieve')
 
     def test_retrieve_mixin_url_map(self):
@@ -30,7 +30,7 @@ class TestRetrieveResourceMixin(TestCase):
 
         self.assertEqual(len(urls), 1)
         self.assertEqual(urls[0].rule, '/<_id>/')
-        self.assertEqual(urls[0].methods, {'GET', 'HEAD'})
+        self.assertEqual(urls[0].methods, set(['GET', 'HEAD']))
         self.assertEqual(urls[0].endpoint, 'retrieve')
 
     def test_retrieve_mixin_returns_none_if_no_document_matches_id(self):

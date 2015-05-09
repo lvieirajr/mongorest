@@ -31,7 +31,7 @@ class TestUpdateResourceMixin(TestCase):
 
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0].rule, '/<_id>/')
-        self.assertEqual(rules[0].methods, {'PUT'})
+        self.assertEqual(rules[0].methods, set(['PUT']))
         self.assertEqual(rules[0].endpoint, 'update')
 
     def test_update_mixin_url_map(self):
@@ -39,7 +39,7 @@ class TestUpdateResourceMixin(TestCase):
 
         self.assertEqual(len(urls), 1)
         self.assertEqual(urls[0].rule, '/<_id>/')
-        self.assertEqual(urls[0].methods, {'PUT'})
+        self.assertEqual(urls[0].methods, set(['PUT']))
         self.assertEqual(urls[0].endpoint, 'update')
 
     def test_update_returns_error_if_no_document_with_given_id(self):
@@ -61,7 +61,11 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
-            {'test': 'Field \'test\' must be of type(s): int.'}
+            {
+                'test': 'Field \'test\' must be of type(s): {}.'.format(
+                    ' or '.join(t.__name__ for t in list(six.integer_types))
+                )
+            }
         )
 
     def test_update_returns_updated_documents_id_if_data_is_valid(self):

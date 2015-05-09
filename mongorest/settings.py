@@ -40,11 +40,11 @@ class Settings(object):
 
             self._settings = dict(
                 self._settings,
-                **{
-                    name: setting
+                **dict(
+                    (name, setting)
                     for (name, setting) in getmembers(settings)
                     if name.isupper()
-                }
+                )
             )
 
     def __getattr__(self, attr):

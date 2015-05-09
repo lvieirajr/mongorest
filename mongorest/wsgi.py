@@ -56,10 +56,11 @@ class WSGIDispatcher(DispatcherMiddleware):
     def __init__(self, resources):
         super(WSGIDispatcher, self).__init__(
             NotFound(),
-            {
-                '/{}'.format(
-                    resource.endpoint.lstrip('/')
-                ).rstrip('/'): resource()
+            dict(
+                (
+                    '/{}'.format(resource.endpoint.lstrip('/')).rstrip('/'),
+                    resource()
+                )
                 for resource in resources
-            }
+            )
         )
