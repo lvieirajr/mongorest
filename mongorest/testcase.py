@@ -3,7 +3,11 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
-from unittest import TestCase as BaseTestCase
+try:
+    from unittest2 import TestCase as BaseTestCase
+except:
+    from unittest import TestCase as BaseTestCase
+
 from werkzeug.test import Client
 
 from .database import db

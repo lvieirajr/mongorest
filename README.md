@@ -12,10 +12,11 @@
 
 # Requirements
 
-* Python (2.6; 2.7; 3.3; 3.4; PyPy)
-* MongoDB >= 3.0.0
+* Python >= 2.6.0 or Python3 >= 3.3.0 or PyPy or PyPy3
+* MongoDB >= 2.2
 * PyMongo >= 3.0.0
 * Werkzeug >= 0.10.0
+* Six >= 1.9.0
 
 
 # Installation

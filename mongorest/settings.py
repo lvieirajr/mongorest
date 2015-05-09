@@ -49,7 +49,7 @@ class Settings(object):
 
     def __getattr__(self, attr):
         if attr not in self._settings:
-            raise AttributeError('Invalid setting: \'{}\''.format(attr))
+            raise AttributeError('Invalid setting: \'{0}\''.format(attr))
 
         return self._settings.get(attr)
 

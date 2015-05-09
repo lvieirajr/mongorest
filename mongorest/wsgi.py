@@ -58,7 +58,7 @@ class WSGIDispatcher(DispatcherMiddleware):
             NotFound(),
             dict(
                 (
-                    '/{}'.format(resource.endpoint.lstrip('/')).rstrip('/'),
+                    '/{0}'.format(resource.endpoint.lstrip('/')).rstrip('/'),
                     resource()
                 )
                 for resource in resources

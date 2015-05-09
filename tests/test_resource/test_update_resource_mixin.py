@@ -62,7 +62,7 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
             {
-                'test': 'Field \'test\' must be of type(s): {}.'.format(
+                'test': 'Field \'test\' must be of type(s): {0}.'.format(
                     ' or '.join(t.__name__ for t in list(six.integer_types))
                 )
             }
