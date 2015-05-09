@@ -26,10 +26,15 @@ def _get_db():
         if all(mongo.get(key) for key in ('USERNAME', 'PASSWORD')):
             uri += '{}:{}@'.format(mongo['USERNAME'], mongo['PASSWORD'])
 
-        uri += ','.join(
-            '{}:{}'.format(host, port)
-            for (host, port) in zip(mongo['HOSTS'], mongo['PORTS']),
-        ) + '/' + mongo['DATABASE']
+        if 'HOSTS' in mongo and mongo['HOSTS']:
+            uri += ','.join(
+                '{}:{}'.format(host, port)
+                for (host, port) in zip(mongo['HOSTS'], mongo['PORTS']),
+            )
+        else:
+            uri += '{}:{}'.format(mongo['HOST'], mongo.get('PORT', 27017))
+
+        uri += '/' + mongo['DATABASE']
 
         if 'OPTIONS' in mongo and mongo['OPTIONS']:
             uri += '?{}'.format('&'.join(mongo['OPTIONS']))
