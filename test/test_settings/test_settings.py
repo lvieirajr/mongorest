@@ -28,13 +28,13 @@ class TestSettings(TestCase):
         self.assertTrue(settings.SERIALIZE)
 
     def test_a_default_setting_can_be_overwritten(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_settings.fixtures.settings'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'test.test_settings.fixtures.settings'
         settings = Settings()
 
         self.assertFalse(settings.SERIALIZE)
 
     def test_a_new_setting_value_can_be_added(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_settings.fixtures.settings'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'test.test_settings.fixtures.settings'
         settings = Settings()
 
         self.assertEqual(settings.TEST_VALUE, 'test')

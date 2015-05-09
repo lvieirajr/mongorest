@@ -1,30 +1,29 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import
 
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup
+from setuptools import setup
+from mongorest import __version__ as version
 
 
-install_requires = ['pymongo', 'werkzeug', 'six']
+install_requires = ['setuptools', 'pymongo', 'werkzeug', 'six']
 try:
     import importlib
 except ImportError:
     install_requires.append('importlib')
 
 
-
 setup(
     name='mongorest',
     packages=['mongorest'],
-    version='2.0.0',
+    version=version,
     description='Easy REST APIs using MongoDB.',
     author='Luis Vieira',
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
-    download_url='https://github.com/lvieirajr/mongorest/tarball/2.0.0',
+    download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
+    tests_require=['mock'],
     install_requires=install_requires,
+    extras_require={'testing': ['mock']},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

@@ -1,5 +1,2 @@
-mock
 tox
-wheel
-twine
-ipdb
+mock
