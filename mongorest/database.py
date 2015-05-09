@@ -1,4 +1,5 @@
 # -*- encoding: UTF-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 from pymongo import MongoClient
 from pymongo.uri_parser import parse_uri
@@ -14,7 +15,7 @@ def _get_db():
     """
     Returns the connection to the database using the settings.
     This function should not be called outside of this file.
-    Use 'db' instead.
+    Use db instead.
     """
     mongo = settings.MONGODB
 

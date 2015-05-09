@@ -1,4 +1,5 @@
 # -*- encoding: UTF-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 from types import MethodType, FunctionType
 
@@ -91,7 +92,7 @@ class Document(object):
             **self.meta.get('required', {})
         )
 
-        for (field, type_or_tuple) in fields.items():
+        for (field, type_or_tuple) in list(fields.items()):
             if field in self._fields:
                 if not isinstance(self._fields[field], type_or_tuple):
                     if isinstance(type_or_tuple, (tuple, list)):
