@@ -1,6 +1,8 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import six
+
 from werkzeug.wrappers import Response
 
 from mongorest.collection import Collection
@@ -14,7 +16,7 @@ class TestCreateResourceMixin(TestCase):
 
     def setUp(self):
         class Test(Collection):
-            meta = {'required': {'test': int}}
+            meta = {'required': {'test': six.integer_types}}
 
         class TestCollectionCreate(CreateResourceMixin):
             collection = Test

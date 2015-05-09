@@ -1,6 +1,8 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import six
+
 from bson.objectid import ObjectId
 
 from mongorest.collection import Collection, Document
@@ -192,7 +194,7 @@ class TestCollection(TestCase):
             {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(updated, str)
+        self.assertIsInstance(updated, six.string_types)
 
     # update_many
     def test_update_many_returns_non_serialized_raw_result_if_not_serialized(self):
@@ -207,7 +209,7 @@ class TestCollection(TestCase):
             {}, {'$set': {'test': 'test'}}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(updated, str)
+        self.assertIsInstance(updated, six.string_types)
 
     # replace_one
     def test_replace_one_returns_non_serialized_raw_result_if_not_serialized(self):
@@ -222,7 +224,7 @@ class TestCollection(TestCase):
             {}, {'_id': ObjectId()}, upsert=True, serialized=True
         )
 
-        self.assertIsInstance(replaced, str)
+        self.assertIsInstance(replaced, six.string_types)
 
     # DELETE_ONE, DELETE_MANY
     # These functions functionalities are not actually being tested here|
@@ -238,7 +240,7 @@ class TestCollection(TestCase):
     def test_delete_one_returns_serialized_raw_result_if_serialized(self):
         deleted = self.collection.delete_one({}, serialized=True)
 
-        self.assertIsInstance(deleted, str)
+        self.assertIsInstance(deleted, six.string_types)
 
     # delete_many
     def test_delete_many_returns_non_serialized_raw_result_if_not_serialized(self):
@@ -249,7 +251,7 @@ class TestCollection(TestCase):
     def test_delete_many_returns_serialized_raw_result_if_serialized(self):
         deleted = self.collection.delete_many({}, serialized=True)
 
-        self.assertIsInstance(deleted, str)
+        self.assertIsInstance(deleted, six.string_types)
 
     # count
     def test_count_returns_number_of_documents_that_pass_the_filter(self):

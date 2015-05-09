@@ -1,6 +1,8 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import six
+
 from bson.objectid import ObjectId
 from mock import patch
 
@@ -52,7 +54,7 @@ class TestDocument(TestCase):
     def test_validate_sets_error_if_required_field_is_not_present_on_document(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (str, int)},
+                'required': {'test': (six.string_types, six.integer_types)},
                 'optional': {}
             }
 
@@ -63,7 +65,7 @@ class TestDocument(TestCase):
     def test_validate_sets_error_if_required_field_has_wrong_type(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (str, int)},
+                'required': {'test': (six.string_types, six.integer_types)},
                 'optional': {}
             }
 
@@ -75,7 +77,7 @@ class TestDocument(TestCase):
         class TestCollection(Collection):
             meta = {
                 'required': {},
-                'optional': {'test': (str, int)}
+                'optional': {'test': (six.string_types, six.integer_types)}
             }
 
         document = Document(TestCollection, {'test': 1.1})
@@ -142,7 +144,7 @@ class TestDocument(TestCase):
     def test_errors_returns_non_serialized_errors_if_not_serialized(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (str, int)},
+                'required': {'test': (six.string_types, six.integer_types)},
                 'optional': {}
             }
 
@@ -153,7 +155,7 @@ class TestDocument(TestCase):
     def test_errors_returns_serialized_errors_if_serialized(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': (str, int)},
+                'required': {'test': (six.string_types, six.integer_types)},
                 'optional': {}
             }
 
@@ -190,7 +192,7 @@ class TestDocument(TestCase):
     def test_save_returns_non_serialized_errors_if_document_is_not_valid_and_not_serialized(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': str},
+                'required': {'test': six.string_types},
                 'optional': {}
             }
 
@@ -201,7 +203,7 @@ class TestDocument(TestCase):
     def test_save_returns_serialized_errors_if_document_is_not_valid_and_serialized(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': str},
+                'required': {'test': six.string_types},
                 'optional': {}
             }
 
