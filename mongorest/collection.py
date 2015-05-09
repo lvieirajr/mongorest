@@ -85,17 +85,19 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return serialize(_id) if serialized else _id
 
     @classmethod
-    def insert_many(cls, documents, ordered=True, serialized=settings.SERIALIZE):
+    def insert_many(cls, documents, ordered=True,
+                    serialized=settings.SERIALIZE):
         """
         Inserts a list of documents into the Collection
         Returns the all the inserted documents' _ids
         Will return the serialized _ids if serialized=True
         """
-        _ids = list(cls.collection.insert_many(documents, ordered).inserted_ids)
+        _ids = cls.collection.insert_many(documents, ordered).inserted_ids
         return serialize(_ids) if serialized else _ids
 
     @classmethod
-    def update_one(cls, filter, update, upsert=False, serialized=settings.SERIALIZE):
+    def update_one(cls, filter, update, upsert=False,
+                   serialized=settings.SERIALIZE):
         """
         Updates a document that passes the filter
         Returns the raw result of the update
@@ -105,7 +107,8 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return serialize(updated) if serialized else updated
 
     @classmethod
-    def update_many(cls, filter, update, upsert=False, serialized=settings.SERIALIZE):
+    def update_many(cls, filter, update, upsert=False,
+                    serialized=settings.SERIALIZE):
         """
         Updates all the documents that pass the filter
         Returns the raw result of the update
@@ -115,13 +118,16 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return serialize(updated) if serialized else updated
 
     @classmethod
-    def replace_one(cls, filter, replacement, upsert=False, serialized=settings.SERIALIZE):
+    def replace_one(cls, filter, replacement, upsert=False,
+                    serialized=settings.SERIALIZE):
         """
         Replaces a document that passes the filter
         Returns the raw result of the replace
         Will return the serialized raw result if serialized=True
         """
-        replaced = cls.collection.replace_one(filter, replacement, upsert).raw_result
+        replaced = cls.collection.replace_one(
+            filter, replacement, upsert
+        ).raw_result
         return serialize(replaced) if serialized else replaced
 
     @classmethod
@@ -149,7 +155,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         Returns the number of documents that pass the filter
         """
-        return len(cls.find(filter, serialized=False))
+        return cls.collection.find(filter).count()
 
     @classmethod
     def get(cls, filter=None):
@@ -159,7 +165,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         document = Document(
             cls=cls,
-            fields=cls.find_one(filter, serialized=False),
+            fields=cls.collection.find_one(filter),
             processed=True
         )
         return document if document.fields(serialized=False) else None

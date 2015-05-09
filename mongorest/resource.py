@@ -15,7 +15,7 @@ __all__ = [
     'CreateResourceMixin',
     'RetrieveResourceMixin',
     'UpdateResourceMixin',
-    # 'DeleteResourceMixin',
+    'DeleteResourceMixin',
 ]
 
 
