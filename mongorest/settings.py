@@ -1,9 +1,8 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from importlib import import_module
 from inspect import getmembers
-from os import environ
+from os import environ, path
 
 __all__ = [
     'settings',
@@ -36,7 +35,16 @@ class Settings(object):
 
     def __init__(self):
         if 'MONGOREST_SETTINGS_MODULE' in environ:
-            settings = import_module(environ['MONGOREST_SETTINGS_MODULE'])
+            try:
+                from importlib import import_module
+                settings = import_module(environ['MONGOREST_SETTINGS_MODULE'])
+            except:
+                source = environ['MONGOREST_SETTINGS_MODULE'].replace(
+                    '.', '/'
+                ) + '.py'
+
+                from imp import load_source
+                settings = load_source('settings', path.abspath(source))
 
             self._settings = dict(
                 self._settings,

@@ -19,13 +19,6 @@ class Test(TestCommand):
         return exit(0) if run_tests() else exit(1)
 
 
-install_requires = ['pymongo', 'werkzeug', 'six']
-try:
-    import importlib
-except ImportError:
-    install_requires.append('importlib')
-
-
 setup(
     name='mongorest',
     packages=['mongorest'],
@@ -35,7 +28,7 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
-    install_requires=install_requires,
+    install_requires=['pymongo', 'werkzeug', 'six'],
     cmdclass={'test': Test},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
