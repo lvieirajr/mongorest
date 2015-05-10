@@ -1,18 +1,19 @@
 language: python
 python:
-    - "2.6"
-    - "2.7"
-    - "3.3"
-    - "3.4"
-    - "pypy"
-    - "pypy3"
+    - TOXENV=py26
+    - TOXENV=py27
+    - TOXENV=py33
+    - TOXENV=py34
+    - TOXENV=pypy
+    - TOXENV=pypy3
 install:
-    - "pip install --upgrade pip"
-    - "pip install --upgrade setuptools"
-    - "pip install -r requirements.txt"
-    - "pip install coverage"
-    - "pip install coveralls"
+    - pip install --upgrade pip
+    - pip install --upgrade setuptools
+    - pip install --upgrade -r requirements.txt
+    - pip install --ugprade tox
+    - pip install --upgrade coverage
+    - pip install --ugprade coveralls"
 script:
-    - "coverage run --source=mongorest setup.py test"
+    - coverage run --source=mongorest setup.py test
 after_success:
     coveralls
