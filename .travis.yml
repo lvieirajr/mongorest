@@ -12,6 +12,6 @@ install:
     - "pip install coverage"
     - "pip install coveralls"
 script:
-    - "coverage run --source=\"tox -r\""
+    - "coverage run --source=tox"
 after_success:
     coveralls
