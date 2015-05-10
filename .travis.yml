@@ -1,16 +1,19 @@
 language: python
 python:
-    - py26
-    - py27
-    - py33
-    - py34
+    - 2.6
+    - 2.7
+    - 3.3
+    - 3.4
     - pypy
     - pypy3
 install:
     - pip install --upgrade pip
     - pip install --upgrade setuptools
     - pip install --upgrade -r requirements.txt
-    - pip install --ugprade tox mock coverage coveralls
+    - pip install tox
+    - pip install mock
+    - pip install coverage
+    - pip install coveralls
 script:
     - coverage run --source=mongorest tests.py
 after_success:
