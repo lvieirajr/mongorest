@@ -7,11 +7,12 @@ python:
     - "pypy"
     - "pypy3"
 install:
+    - "pip install --upgrade pip"
+    - "pip install --upgrade setuptools"
     - "pip install -r requirements.txt"
-    - "pip install -r requirements-dev.txt"
     - "pip install coverage"
     - "pip install coveralls"
 script:
-    - "coverage run --source=tox"
+    - "coverage run --source=mongorest setup.py test"
 after_success:
     coveralls

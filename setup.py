@@ -2,10 +2,24 @@
 from __future__ import absolute_import
 
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
+from sys import exit
 from mongorest import __version__ as version
 
 
-install_requires = ['setuptools', 'pymongo', 'werkzeug', 'six']
+class Tox(TestCommand):
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import tox
+        exit(tox.cmdline(['-r'] + self.test_args))
+
+
+install_requires = ['pymongo', 'werkzeug', 'six']
 try:
     import importlib
 except ImportError:
@@ -21,9 +35,10 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
-    tests_require=['mock'],
+    tests_require=['tox', 'mock'],
     install_requires=install_requires,
-    extras_require={'testing': ['mock']},
+    extras_require={'testing': ['tox', 'mock']},
+    cmdclass={'test': Tox},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
