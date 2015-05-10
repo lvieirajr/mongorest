@@ -15,16 +15,8 @@ class Test(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        try:
-            import unittest2 as unittest
-        except ImportError:
-            import unittest
-
-        result = unittest.TextTestRunner().run(
-            unittest.defaultTestLoader.loadTestsFromName('test')
-        )
-
-        return exit(0) if not (result.errors + result.failures) else exit(1)
+        from tests import run_tests
+        return exit(0) if run_tests() else exit(1)
 
 
 install_requires = ['pymongo', 'werkzeug', 'six']

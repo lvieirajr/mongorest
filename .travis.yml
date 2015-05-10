@@ -12,9 +12,10 @@ install:
     - pip install --upgrade -r requirements.txt
     - pip install tox
     - pip install mock
+    - pip install importlib
     - pip install coverage
     - pip install coveralls
 script:
-    - coverage run --source=mongorest setup.py test
+    - coverage run --source=mongorest test.py
 after_success:
     - coveralls
