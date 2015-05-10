@@ -15,6 +15,6 @@ install:
     - pip install coverage
     - pip install coveralls
 script:
-    - coverage run --source=mongorest tests.py
+    - coverage run --source=mongorest python setup.py test
 after_success:
-    coveralls
+    - coveralls

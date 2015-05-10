@@ -2,7 +2,29 @@
 from __future__ import absolute_import
 
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
+from sys import exit
 from mongorest import __version__ as version
+
+
+class Test(TestCommand):
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        try:
+            import unittest2 as unittest
+        except ImportError:
+            import unittest
+
+        result = unittest.TextTestRunner().run(
+            unittest.defaultTestLoader.loadTestsFromName('test')
+        )
+
+        return exit(0) if not (result.errors + result.failures) else exit(1)
 
 
 install_requires = ['pymongo', 'werkzeug', 'six']
@@ -22,6 +44,7 @@ setup(
     url='https://github.com/lvieirajr/mongorest',
     download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
     install_requires=install_requires,
+    cmdclass={'test': Test},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
