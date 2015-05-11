@@ -105,7 +105,9 @@ class Document(object):
                             field, types
                         )
             elif field in self.meta.get('required', {}):
-                self._errors[field] = 'Field \'{0}\' is required.'.format(field)
+                self._errors[field] = 'Field \'{0}\' is required.'.format(
+                    field
+                )
 
     def _process(self):
         """
