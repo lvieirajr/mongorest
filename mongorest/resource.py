@@ -23,7 +23,7 @@ __all__ = [
 class ResourceMeta(type):
     """
     MetaClass for the resource.
-    Handles all the url rules for the Resource class and its Childs
+    Handles all the url rules for the Resource class and its children
     """
 
     def __new__(mcs, *args, **kwargs):

@@ -3,11 +3,11 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from pymongo.errors import PyMongoError
 try:
     from unittest2 import TestCase as BaseTestCase
-except:
+except ImportError:
     from unittest import TestCase as BaseTestCase
-
 from werkzeug.test import Client
 
 from .database import db
@@ -40,5 +40,5 @@ class TestCase(BaseTestCase):
 
                 try:
                     self.db.drop_collection(collection)
-                except:
+                except (TypeError, PyMongoError):
                     pass
