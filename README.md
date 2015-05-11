@@ -192,7 +192,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [codacy-grade]: https://www.codacy.com/project/badge/de84ced5bfa241b3a1a64f73146a03e3
 [codacy]: https://www.codacy.com/app/lvieira/mongorest
 
-[landscape-health]: https://landscape.io/github/lvieirajr/mongorest/master/landscape.svg?style=plastic
+[landscape-health]: https://landscape.io/github/lvieirajr/mongorest/master/landscape.svg?style=flat
 [landscape]: https://landscape.io/github/lvieirajr/mongorest/master
 
 [rest]: https://en.wikipedia.org/wiki/Rest
