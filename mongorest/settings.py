@@ -1,8 +1,8 @@
 # -*- encoding: UTF-8 -*-
+from __future__ import absolute_import, unicode_literals
 
-from importlib import import_module
 from inspect import getmembers
-from os import environ
+from os import environ, path
 
 __all__ = [
     'settings',
@@ -14,8 +14,8 @@ DEFAULT = {
         'URI': '',
         'USERNAME': '',
         'PASSWORD': '',
-        'HOSTS': ['localhost'],
-        'PORTS': [27017],
+        'HOST': 'localhost',
+        'PORT': 27017,
         'DATABASE': 'mongorest',
         'OPTIONS': [],
     },
@@ -33,22 +33,30 @@ class Settings(object):
 
     _settings = DEFAULT
 
-    def __init__(self):
-        if 'MONGOREST_SETTINGS_MODULE' in environ:
-            settings = import_module(environ['MONGOREST_SETTINGS_MODULE'])
+    def __getattr__(self, attr):
+        settings_module = environ.get('MONGOREST_SETTINGS_MODULE')
+
+        if settings_module:
+            try:
+                from importlib import import_module
+                loaded_settings = import_module(settings_module)
+            except ImportError:
+                source = '{0}.py'.format(settings_module.replace('.', '/'))
+
+                from imp import load_source
+                loaded_settings = load_source('settings', path.abspath(source))
 
             self._settings = dict(
                 self._settings,
-                **{
-                    name: setting
-                    for (name, setting) in getmembers(settings)
+                **dict(
+                    (name, setting)
+                    for (name, setting) in getmembers(loaded_settings)
                     if name.isupper()
-                }
+                )
             )
 
-    def __getattr__(self, attr):
         if attr not in self._settings:
-            raise AttributeError('Invalid setting: \'{}\''.format(attr))
+            raise AttributeError('Invalid setting: \'{0}\''.format(attr))
 
         return self._settings.get(attr)
 

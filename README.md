@@ -12,10 +12,11 @@
 
 # Requirements
 
-* Python >= 3.4.0
-* MongoDB >= 3.0
-* PyMongo >= 3.0
+* Python >= 2.6.0 or Python3 >= 3.3.0 or PyPy or PyPy3
+* MongoDB >= 2.2
+* PyMongo >= 3.0.0
 * Werkzeug >= 0.10.0
+* Six >= 1.9.0
 
 
 # Installation
@@ -24,6 +25,29 @@
     
     
 # Usage
+
+To define the settings for your project you should set the environment variable `MONGOREST_SETTINGS_MODULE`:
+
+
+    from os import environ
+    
+    environ['MONGOREST_SETTINGS_MODULE'] = 'project.settings'
+    
+    
+To connect to your database you should specify the `MONGODB` setting on your mongorest settings module. <br />
+You can set the connection `URI`, or use other options like setting the `HOSTS` and `PORTS` of your replica-set. <br />
+If you are not using a replica-set you can just set the one `HOST` and `PORT`. <br />
+
+    MONGODB = {
+        'URI': '',
+        'USERNAME': '',
+        'PASSWORD': '',
+        'HOSTS': ['localhost'],
+        'PORTS': [27017],
+        'DATABASE': 'mongorest-test',
+        'OPTIONS': [],
+    }
+
 
 Here is a basic example of how easy it is to create an API with **MongoRest**:
 

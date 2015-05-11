@@ -1,4 +1,5 @@
 # -*- encoding: UTF-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 from werkzeug.exceptions import HTTPException, NotFound
 from werkzeug.routing import Map
@@ -55,10 +56,11 @@ class WSGIDispatcher(DispatcherMiddleware):
     def __init__(self, resources):
         super(WSGIDispatcher, self).__init__(
             NotFound(),
-            {
-                '/{}'.format(
-                    resource.endpoint.lstrip('/')
-                ).rstrip('/'): resource()
+            dict(
+                (
+                    '/{0}'.format(resource.endpoint.lstrip('/')).rstrip('/'),
+                    resource()
+                )
                 for resource in resources
-            }
+            )
         )
