@@ -26,7 +26,7 @@
     
 # Usage
 
-To define the settings for your project you should set the environment variable `MONGOREST_SETTINGS_MODULE`:
+To define the settings for your project you should set the environment variable `MONGOREST_SETTINGS_MODULE` to the module where the settings are stored:
 
 
     from os import environ
@@ -77,7 +77,7 @@ We added a `meta` to specify the required and optional fields, and their types. 
         collection = Book
         endpoint = 'books'
         
-Here, by inheriting from these Mixins our Resource already has the list, create and retrieve actions. <br />
+Here, by inheriting from these Mixins, our Resource already has the list, create and retrieve actions. <br />
 We also defined what will be the collection and endpoint this Resource refers to. <br />
 
         
@@ -88,11 +88,11 @@ We also defined what will be the collection and endpoint this Resource refers to
         app = WSGIDispatcher([BookResource])
         run_simple('localhost', 8000, app)
     
-Now we just had to instantiate the app as a `WSGIDispatcher` passing it our list of resources. <br />
-Then we started our server and the API is ready. <br />
+Now we just had to instantiate the application as a `WSGIDispatcher` passing it our list of resources. <br />
+Then we started our server and the API is ready to be consumed. <br />
 
 
-Now lets go for an example that is a little bit more complex:
+Now lets go for an example a little more complex:
 
     from mongorest.collection import Collection
     
@@ -129,7 +129,10 @@ Again, here we are simply defining our collections. <br />
         ]
         
         def grade_students(request, _id, grade):
-            school = self.collection.find_one({'_id': deserialize(_id)})
+            school = self.collection.find_one(
+                {'_id': deserialize(_id)},
+                serialized=False
+            )
             
             if school:
                 return Response(
@@ -148,8 +151,8 @@ Again, here we are simply defining our collections. <br />
                 )
                 
 Now we have created a custom Resource, inheriting from the `Resource` class. <br />
-Again we defined the collection and the endpoint for the resource, but we also defined the urls for the views we created. Only one in this case. <br />
-Then comes the view itself, that is a view with a nested route that returns all students who go to that school from a given grade.
+Again, we defined the collection and the endpoint for the resource, but we also defined the urls for the views we created. Only one in this case. <br />
+Then comes the view itself, that is a view with a nested route that returns all students from a given grade of a given school. <br />
 
     
 # License
