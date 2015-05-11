@@ -15,8 +15,10 @@ class Test(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        from tests import run_tests
-        return exit(0) if run_tests() else exit(1)
+        from unittest import TextTestRunner, defaultTestLoader as loader
+
+        result = TextTestRunner().run(loader.loadTestsFromName('test'))
+        return exit(0) if not (result.failures + result.errors) else exit(1)
 
 
 setup(

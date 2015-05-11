@@ -16,8 +16,8 @@ class TestSettings(TestCase):
         self.assertEqual(settings.MONGODB['URI'], '')
         self.assertEqual(settings.MONGODB['USERNAME'], '')
         self.assertEqual(settings.MONGODB['PASSWORD'], '')
-        self.assertEqual(settings.MONGODB['HOSTS'], ['localhost'])
-        self.assertEqual(settings.MONGODB['PORTS'], [27017])
+        self.assertEqual(settings.MONGODB['HOST'], 'localhost')
+        self.assertEqual(settings.MONGODB['PORT'], 27017)
         self.assertEqual(settings.MONGODB['DATABASE'], 'mongorest')
         self.assertEqual(settings.MONGODB['OPTIONS'], [])
 
@@ -38,3 +38,9 @@ class TestSettings(TestCase):
         settings = Settings()
 
         self.assertEqual(settings.TEST_VALUE, 'test')
+
+    def test_an_invalid_setting_will_raise_error(self):
+        settings = Settings()
+
+        with self.assertRaises(AttributeError):
+            error = settings.error

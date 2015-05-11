@@ -14,8 +14,8 @@ DEFAULT = {
         'URI': '',
         'USERNAME': '',
         'PASSWORD': '',
-        'HOSTS': ['localhost'],
-        'PORTS': [27017],
+        'HOST': 'localhost',
+        'PORT': 27017,
         'DATABASE': 'mongorest',
         'OPTIONS': [],
     },
@@ -33,29 +33,28 @@ class Settings(object):
 
     _settings = DEFAULT
 
-    def __init__(self):
-        if 'MONGOREST_SETTINGS_MODULE' in environ:
+    def __getattr__(self, attr):
+        settings_module = environ.get('MONGOREST_SETTINGS_MODULE')
+
+        if settings_module:
             try:
                 from importlib import import_module
-                settings = import_module(environ['MONGOREST_SETTINGS_MODULE'])
-            except:
-                source = environ['MONGOREST_SETTINGS_MODULE'].replace(
-                    '.', '/'
-                ) + '.py'
+                loaded_settings = import_module(settings_module)
+            except ImportError:
+                source = '{0}.py'.format(settings_module.replace('.', '/'))
 
                 from imp import load_source
-                settings = load_source('settings', path.abspath(source))
+                loaded_settings = load_source('settings', path.abspath(source))
 
             self._settings = dict(
                 self._settings,
                 **dict(
                     (name, setting)
-                    for (name, setting) in getmembers(settings)
+                    for (name, setting) in getmembers(loaded_settings)
                     if name.isupper()
                 )
             )
 
-    def __getattr__(self, attr):
         if attr not in self._settings:
             raise AttributeError('Invalid setting: \'{0}\''.format(attr))
 
