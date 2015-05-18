@@ -42,15 +42,6 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(urls[0].methods, set(['PUT']))
         self.assertEqual(urls[0].endpoint, 'update')
 
-    def test_update_returns_error_if_no_document_with_given_id(self):
-        response = self.update_client.put('/1/', data=serialize({}))
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
-            {'_id': 'The given _id is not related to a document.'}
-        )
-
     def test_update_returns_errors_if_data_is_not_valid(self):
         self.db.test.insert_one({'_id': 1, 'test': 1})
 

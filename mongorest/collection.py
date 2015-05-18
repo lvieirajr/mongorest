@@ -4,9 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import six
 
 from .database import db
-from .document import Document
-from .settings import settings
-from .utils import serialize
+from .decorators import ensure_indexes, serializable
 
 __all__ = [
     'Collection',
@@ -39,136 +37,129 @@ class CollectionMeta(type):
 
 class Collection(six.with_metaclass(CollectionMeta, object)):
     """
-    Base class for Collections.
-    Can Serialize and De-Serialize the data.
+    Base Class for Collections.
     """
 
+    @ensure_indexes
     def __new__(cls, *args, **kwargs):
         """
         Instantiating a Collection will return a Document from that Collection
         """
+        from .document import Document
         return Document(cls, *args, **kwargs)
 
     @classmethod
-    def find_one(cls, filter=None, serialized=settings.SERIALIZE):
+    def indexes(cls):
+        """
+        Creates indexes required by the collection
+        """
+        cls.collection.create_index('_id')
+
+    @classmethod
+    @serializable
+    @ensure_indexes
+    def find_one(cls, filter=None, *args, **kwargs):
         """
         Returns one document dict if at least one passes the filter
-        Otherwise returns None
-        Will return the serialized dict if serialized=True
+        Returns None otherwise.
         """
-        document = cls.collection.find_one(filter)
-        return serialize(document) if serialized else document
+        return cls.collection.find_one(filter, *args, **kwargs)
 
     @classmethod
-    def find(cls, filter=None, serialized=settings.SERIALIZE):
+    @serializable
+    @ensure_indexes
+    def find(cls, *args, **kwargs):
         """
         Returns all document dicts that pass the filter
-        Will return the serialized dict if serialized=True
         """
-        documents = list(cls.collection.find(filter))
-        return serialize(documents) if serialized else documents
+        return list(cls.collection.find(*args, **kwargs))
 
     @classmethod
-    def aggregate(cls, pipeline, serialized=settings.SERIALIZE):
+    @serializable
+    @ensure_indexes
+    def aggregate(cls, pipeline=None, **kwargs):
         """
-        Returns the list of document dicts returned from the Aggregate Pipeline
-        Will return the serialized document dicts if serialized=True
+        Returns the document dicts returned from the Aggregation Pipeline
         """
-        documents = list(cls.collection.aggregate(pipeline))
-        return serialize(documents) if serialized else documents
+        return list(cls.collection.aggregate(pipeline or [], **kwargs))
 
     @classmethod
-    def insert_one(cls, document, serialized=settings.SERIALIZE):
+    @ensure_indexes
+    def insert_one(cls, document):
         """
-        Inserts a document into the Collection
-        Returns the inserted document's _id
-        Will return the serialized _id if serialized=True
+        Inserts a document into the Collection and returns its _id
         """
-        _id = cls.collection.insert_one(document).inserted_id
-        return serialize(_id) if serialized else _id
+        return cls.collection.insert_one(document).inserted_id
 
     @classmethod
-    def insert_many(cls, documents, ordered=True,
-                    serialized=settings.SERIALIZE):
+    @ensure_indexes
+    def insert_many(cls, documents, ordered=True):
         """
-        Inserts a list of documents into the Collection
-        Returns the all the inserted documents' _ids
-        Will return the serialized _ids if serialized=True
+        Inserts a list of documents into the Collection and returns their _ids
         """
-        _ids = cls.collection.insert_many(documents, ordered).inserted_ids
-        return serialize(_ids) if serialized else _ids
+        return cls.collection.insert_many(documents, ordered).inserted_ids
 
     @classmethod
-    def update_one(cls, filter, update, upsert=False,
-                   serialized=settings.SERIALIZE):
+    @ensure_indexes
+    def update_one(cls, filter, update, upsert=False):
         """
-        Updates a document that passes the filter
-        Returns the raw result of the update
-        Will return the serialized raw result if serialized=True
+        Updates a document that passes the filter with the udpate value
+        Will upsert a new document if upsert=True and no document is filtered
         """
-        updated = cls.collection.update_one(filter, update, upsert).raw_result
-        return serialize(updated) if serialized else updated
+        return cls.collection.update_one(filter, update, upsert).raw_result
 
     @classmethod
-    def update_many(cls, filter, update, upsert=False,
-                    serialized=settings.SERIALIZE):
+    @ensure_indexes
+    def update_many(cls, filter, update, upsert=False):
         """
-        Updates all the documents that pass the filter
-        Returns the raw result of the update
-        Will return the serialized raw result if serialized=True
+        Updates all documents that pass the filter with the udpate value
+        Will upsert a new document if upsert=True and no document is filtered
         """
-        updated = cls.collection.update_many(filter, update, upsert).raw_result
-        return serialize(updated) if serialized else updated
+        return cls.collection.update_many(filter, update, upsert).raw_result
 
     @classmethod
-    def replace_one(cls, filter, replacement, upsert=False,
-                    serialized=settings.SERIALIZE):
+    @ensure_indexes
+    def replace_one(cls, filter, replacement, upsert=False):
         """
-        Replaces a document that passes the filter
-        Returns the raw result of the replace
-        Will return the serialized raw result if serialized=True
+        Replaces a document that passes the filter.
+        Will upsert a new document if upsert=True and no document is filtered
         """
-        replaced = cls.collection.replace_one(
+        return cls.collection.replace_one(
             filter, replacement, upsert
         ).raw_result
-        return serialize(replaced) if serialized else replaced
 
     @classmethod
-    def delete_one(cls, filter, serialized=settings.SERIALIZE):
+    @ensure_indexes
+    def delete_one(cls, filter):
         """
-        Deletes a document that passes the filter
-        Returns the raw result of the delete
-        Will return the serialized raw result if serialized=True
+        Deletes one document that passes the filter
         """
-        deleted = cls.collection.delete_one(filter).raw_result
-        return serialize(deleted) if serialized else deleted
+        return cls.collection.delete_one(filter).raw_result
 
     @classmethod
-    def delete_many(cls, filter, serialized=settings.SERIALIZE):
+    @ensure_indexes
+    def delete_many(cls, filter):
         """
-        Deletes all the documents that pass the filter
-        Returns the raw result of the delete
-        Will return the serialized raw result if serialized=True
+        Deletes all documents that pass the filter
         """
-        deleted = cls.collection.delete_many(filter).raw_result
-        return serialize(deleted) if serialized else deleted
+        return cls.collection.delete_many(filter).raw_result
 
     @classmethod
-    def count(cls, filter=None):
+    @ensure_indexes
+    def count(cls, filter=None, with_limit_and_skip=False):
         """
         Returns the number of documents that pass the filter
         """
-        return cls.collection.find(filter).count()
+        return cls.collection.find(filter).count(with_limit_and_skip)
 
     @classmethod
-    def get(cls, filter=None):
+    @ensure_indexes
+    def get(cls, filter=None, **kwargs):
         """
-        Returns a Document Object if any document passes the filter
-        Returns None otherwise
+        Returns a Document if any document is filtered, returns None otherwise
         """
+        from .document import Document
         document = Document(
-            cls=cls,
-            fields=cls.collection.find_one(filter),
-            processed=True
+            cls, cls.collection.find_one(filter, **kwargs), True
         )
-        return document if document.fields(serialized=False) else None
+        return document if document.fields else None

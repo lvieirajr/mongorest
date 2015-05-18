@@ -17,7 +17,7 @@ class Test(TestCommand):
     def run_tests(self):
         from unittest import TextTestRunner, defaultTestLoader as loader
 
-        result = TextTestRunner().run(loader.loadTestsFromName('test'))
+        result = TextTestRunner().run(loader.loadTestsFromName('tests'))
         return exit(0) if not (result.failures + result.errors) else exit(1)
 
 

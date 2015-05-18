@@ -3,9 +3,6 @@ from __future__ import absolute_import, unicode_literals
 
 from types import MethodType, FunctionType
 
-from .settings import settings
-from .utils import serialize
-
 __all__ = [
     'Document',
 ]
@@ -18,14 +15,21 @@ class Document(object):
     Will use the meta of the Collection to do so.
     """
 
-    def __init__(self, cls, fields=None, processed=False):
+    def __init__(self, collection, fields=None, processed=False):
         """
         Initializes the Document Object with the given attributes
         Then validates the fields based on the Collection
         """
         super(Document, self).__init__()
 
-        self._cls = cls
+        from .collection import Collection
+        if issubclass(collection, Collection):
+            self._collection = collection
+        else:
+            raise AttributeError(
+                'Attribute \'collection\' must be a class that inherits from '
+                '\'Collection\''
+            )
         self._fields = fields or {}
         self._errors = {}
 
@@ -38,19 +42,19 @@ class Document(object):
         """
         Tries to get the attribute on the following order:
         First checks if the attribute is one of:
-        (__new__, _cls, _fields, _errors, get)
+        (__new__, _collection, _fields, _errors, get)
         Second checks if the attribute is in _fields
-        Third checks if the attribute is in _cls
+        Third checks if the attribute is in _collection
         If none of them is found, tries to get the attribute from self
         """
-        if attr in ('__new__', '_cls', '_fields', '_errors', 'get'):
+        if attr in ('__new__', '_collection', '_fields', '_errors', 'get'):
             return object.__getattribute__(self, attr)
 
         elif attr in self._fields:
             return self._fields[attr]
 
-        elif hasattr(self._cls, attr):
-            attribute = getattr(self._cls, attr)
+        elif hasattr(self._collection, attr):
+            attribute = getattr(self._collection, attr)
 
             if type(attribute) == FunctionType:
                 return MethodType(attribute, self)
@@ -63,10 +67,10 @@ class Document(object):
     def __setattr__(self, attr, value):
         """
         Tries to set the value to attr in the following order:
-        Checks if the attribute is one of (_cls, _fields, _errors)
+        Checks if the attribute is one of (_collection, _fields, _errors)
         If it is not, it will set the value in _fields[attr]
         """
-        if attr in ('_cls', '_fields', '_errors'):
+        if attr in ('_collection', '_fields', '_errors'):
             object.__setattr__(self, attr, value)
         else:
             self._fields[attr] = value
@@ -76,9 +80,8 @@ class Document(object):
         Returns the representation of the Object formated like:
         <{Collection Name}Document object at {hex location of the object}>
         """
-        return '<{0}Document object at {1}>'.format(
-            self._cls.__name__,
-            hex(id(self)),
+        return '<Document<{0}> object at {1}>'.format(
+            self._collection.__name__, hex(id(self)),
         )
 
     def _validate(self):
@@ -88,8 +91,7 @@ class Document(object):
         If one of these two validations fail, add an error to self._errors
         """
         fields = dict(
-            self.meta.get('optional', {}),
-            **self.meta.get('required', {})
+            self.meta.get('optional', {}), **self.meta.get('required', {})
         )
 
         for (field, type_or_tuple) in list(fields.items()):
@@ -111,11 +113,11 @@ class Document(object):
 
     def _process(self):
         """
-        Calls every collection method that starts with process.
+        Calls every collection method that starts with 'process'.
         Does this in order to process the values on the fields
         So they will be ready to be saved on the Database
         """
-        for attr in dir(self._cls):
+        for attr in dir(self._collection):
             if attr.lower().startswith('process'):
                 self.__getattr__(attr)()
 
@@ -126,43 +128,33 @@ class Document(object):
         """
         return len(self._errors) == 0
 
-    def fields(self, serialized=settings.SERIALIZE):
+    @property
+    def fields(self):
         """
         Returns the document's fields
-        Will return the serialized fields if serialized=True
         """
-        return serialize(self._fields) if serialized else self._fields
+        return self._fields
 
-    def errors(self, serialized=settings.SERIALIZE):
+    @property
+    def errors(self):
         """
         Returns the document's errors
-        Will return the serialized errors if serialized=True
         """
-        return serialize(self._errors) if serialized else self._errors
+        return self._errors
 
-    def get(self, field, serialized=settings.SERIALIZE):
-        """
-        Returns the field if it exists in _fields, returns None otherwise
-        Will return the serialized field if serialized=True
-        """
-        field = self._fields.get(field)
-        return serialize(field) if serialized else field
-
-    def save(self, serialized=settings.SERIALIZE):
+    def save(self):
         """
         Saves the Document to the database if it is valid.
         Returns the error dict otherwise.
         If the Document does not contain an _id it will insert a new Document
-        If the Document contains an _id it will be updated instead of inserted
+        If the Document contains an _id it will be replaced instead of inserted
         """
         if self.is_valid:
-            if self.get('_id', serialized=False):
+            if '_id' in self._fields:
                 self.replace_one({'_id': self._id}, self._fields, upsert=True)
             else:
-                self._fields['_id'] = self.insert_one(
-                    self._fields, serialized=False
-                )
+                self._fields['_id'] = self.insert_one(self._fields)
 
-            return self.get('_id', serialized)
+            return self._id
         else:
-            return self.errors(serialized)
+            return self._errors

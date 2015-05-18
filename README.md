@@ -12,11 +12,10 @@
 
 # Requirements
 
-* Python >= 2.6.0 or Python3 >= 3.3.0 or PyPy or PyPy3
-* MongoDB >= 2.2
+* Python 2.6; 2.7; 3.3; 3.4; PyPy; PyPy3;
 * PyMongo >= 3.0.0
-* Werkzeug >= 0.10.0
-* Six >= 1.9.0
+* Werkzeug
+* Six
 
 
 # Installation
@@ -129,16 +128,13 @@ Again, here we are simply defining our collections. <br />
         ]
         
         def grade_students(request, _id, grade):
-            school = self.collection.find_one(
-                {'_id': deserialize(_id)},
-                serialized=False
-            )
+            school = self.collection.find_one(deserialize(_id)}
             
             if school:
                 return Response(
-                    Students.find(
+                    Student.find(
                         {'school': school['_id'], 'grade': deserialize(grade)}
-                        serialized=True
+                        serialize=True
                     ),
                     content_type='application/json',
                     status=200

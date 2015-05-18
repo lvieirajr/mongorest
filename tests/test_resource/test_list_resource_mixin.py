@@ -38,11 +38,10 @@ class TestListResourceMixin(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
-            []
+            deserialize(response.get_data(as_text=True)), []
         )
 
-    def test_list_mixin_returns_list_of_collection_documents(self):
+    def test_list_mixin_returns_list_of_collection__ids(self):
         self.db.collection.insert_one({'_id': 1})
         self.db.collection.insert_one({'_id': 2})
 

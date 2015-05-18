@@ -15,11 +15,12 @@ DEFAULT = {
         'USERNAME': '',
         'PASSWORD': '',
         'HOST': 'localhost',
+        'HOSTS': [],
         'PORT': 27017,
+        'PORTS': [],
         'DATABASE': 'mongorest',
         'OPTIONS': [],
-    },
-    'SERIALIZE': True,
+    }
 }
 
 
@@ -31,11 +32,10 @@ class Settings(object):
     Settings are store
     """
 
-    _settings = DEFAULT
-
     def __getattr__(self, attr):
-        settings_module = environ.get('MONGOREST_SETTINGS_MODULE')
+        self._settings = DEFAULT
 
+        settings_module = environ.get('MONGOREST_SETTINGS_MODULE')
         if settings_module:
             try:
                 from importlib import import_module
@@ -58,7 +58,7 @@ class Settings(object):
         if attr not in self._settings:
             raise AttributeError('Invalid setting: \'{0}\''.format(attr))
 
-        return self._settings.get(attr)
+        return self._settings[attr]
 
 
 settings = Settings()

@@ -13,6 +13,7 @@ from .wsgi import WSGIWrapper
 __all__ = [
     'Resource',
     'ListResourceMixin',
+    'DocumentsResourceMixin',
     'CreateResourceMixin',
     'RetrieveResourceMixin',
     'UpdateResourceMixin',
@@ -67,13 +68,30 @@ class ListResourceMixin(Resource):
 
     def list(self, request):
         """
-        Returns a serialized list of documents _ids from the collection
+        Returns the list of _ids found on the collection
         """
         return Response(
             self.collection.aggregate(
                 [{'$project': {'_id': 1}}],
-                serialized=True
+                serialize=True
             ),
+            content_type='application/json',
+            status=200
+        )
+
+
+class DocumentsResourceMixin(Resource):
+    """
+    Resource Mixin that provides the documents action for your endpoint.
+    """
+    rules = [Rule('/documents/', methods=['GET'], endpoint='documents')]
+
+    def documents(self, request):
+        """
+        Returns the list of documents found on the collection
+        """
+        return Response(
+            self.collection.aggregate(serialize=True),
             content_type='application/json',
             status=200
         )
@@ -89,21 +107,13 @@ class CreateResourceMixin(Resource):
         """
         Creates a new document based on the given data
         """
-        fields = deserialize(request.get_data(as_text=True))
+        document = self.collection(deserialize(request.get_data(as_text=True)))
 
-        document = self.collection(fields)
-        if document.is_valid:
-            return Response(
-                document.save(serialized=True),
-                content_type='application/json',
-                status=201
-            )
-        else:
-            return Response(
-                document.errors(serialized=True),
-                content_type='application/json',
-                status=400
-            )
+        return Response(
+            serialize(document.save()),
+            content_type='application/json',
+            status=201 if document.is_valid else 400
+        )
 
 
 class RetrieveResourceMixin(Resource):
@@ -114,13 +124,10 @@ class RetrieveResourceMixin(Resource):
 
     def retrieve(self, request, _id):
         """
-        Returns the serialized document with the given _id
+        Returns the document containing the given _id or None
         """
         return Response(
-            self.collection.find_one(
-                {'_id': deserialize(_id)},
-                serialized=True
-            ),
+            self.collection.find_one(deserialize(_id), serialize=True),
             content_type='application/json',
             status=200
         )
@@ -136,38 +143,16 @@ class UpdateResourceMixin(Resource):
         """
         Updates the document with the given _id using the given data
         """
-        document = self.collection.find_one(
-            {'_id': deserialize(_id)},
-            serialized=False
+        document = self.collection(dict(
+            self.collection.find_one(deserialize(_id), serialize=False) or {},
+            **deserialize(request.get_data(as_text=True))
+        ))
+
+        return Response(
+            serialize(document.save()),
+            content_type='application/json',
+            status=200 if document.is_valid else 400
         )
-
-        if document:
-            fields = dict(
-                document,
-                **deserialize(request.get_data(as_text=True))
-            )
-
-            document = self.collection(fields)
-            if document.is_valid:
-                return Response(
-                    document.save(serialized=True),
-                    content_type='application/json',
-                    status=200
-                )
-            else:
-                return Response(
-                    document.errors(serialized=True),
-                    content_type='application/json',
-                    status=400
-                )
-        else:
-            return Response(
-                serialize({
-                    '_id': 'The given _id is not related to a document.'
-                }),
-                content_type='application/json',
-                status=400
-            )
 
 
 class DeleteResourceMixin(Resource):
@@ -178,27 +163,10 @@ class DeleteResourceMixin(Resource):
 
     def delete(self, request, _id):
         """
-        Deletes the document with the given _id
+        Deletes the document with the given _id if it exists
         """
-        document = self.collection.find_one(
-            {'_id': deserialize(_id)},
-            serialized=False
+        return Response(
+            serialize(self.collection.delete_one({'_id': deserialize(_id)})),
+            content_type='application/json',
+            status=200
         )
-
-        if document:
-            return Response(
-                self.collection.delete_one(
-                    {'_id': document['_id']},
-                    serialized=True
-                ),
-                content_type='application/json',
-                status=200
-            )
-        else:
-            return Response(
-                serialize({
-                    '_id': 'The given _id is not related to a document.'
-                }),
-                content_type='application/json',
-                status=400
-            )

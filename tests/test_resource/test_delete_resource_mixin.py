@@ -33,16 +33,15 @@ class TestDeleteResourceMixin(TestCase):
         self.assertEqual(urls[0].methods, set(['DELETE']))
         self.assertEqual(urls[0].endpoint, 'delete')
 
-    def test_delete_returns_error_if_no_document_with_given_id(self):
+    def test_delete_does_not_delete_if_id_is_not_found(self):
         response = self.delete_client.delete('/1/')
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
-            {'_id': 'The given _id is not related to a document.'}
+            deserialize(response.get_data(as_text=True)), {'ok': 1, 'n': 0}
         )
 
-    def test_delete_returns_raw_result_of_deletion_if_id_exists(self):
+    def test_delete_deletes_and_returns_raw_result_of_deletion_if_id_exists(self):
         self.db.collection.insert_one({'_id': 1})
 
         response = self.delete_client.delete('/1/')
