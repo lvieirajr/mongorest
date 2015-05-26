@@ -18,6 +18,7 @@ class Document(object):
     def __init__(self, collection, fields=None, processed=False):
         """
         Initializes the Document Object with the given attributes
+        Processes the fields if not processed
         Then validates the fields based on the Collection
         """
         super(Document, self).__init__()
@@ -33,10 +34,10 @@ class Document(object):
         self._fields = fields or {}
         self._errors = {}
 
-        self._validate()
-
         if not processed:
             self._process()
+
+        self._validate()
 
     def __getattr__(self, attr):
         """
