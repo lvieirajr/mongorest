@@ -6,6 +6,7 @@ from werkzeug.routing import Map
 from werkzeug.wrappers import Request, Response
 from werkzeug.wsgi import DispatcherMiddleware
 
+from .settings import settings
 from .utils import serialize
 
 
@@ -35,7 +36,6 @@ class WSGIWrapper(object):
         except HTTPException as exc:
             if hasattr(exc, 'get_response'):
                 response = exc.get_response(environ)
-
             else:
                 response = Response(
                     serialize({'error': exc.description}),
@@ -54,13 +54,15 @@ class WSGIDispatcher(DispatcherMiddleware):
     """
 
     def __init__(self, resources):
-        super(WSGIDispatcher, self).__init__(
-            NotFound(),
-            dict(
-                (
-                    '/{0}'.format(resource.endpoint.lstrip('/')).rstrip('/'),
-                    resource()
-                )
-                for resource in resources
-            )
-        )
+        app = NotFound()
+        mounts = {}
+
+        for resource in resources:
+            rsc = resource()
+
+            for middleware in settings.MIDDLEWARES:
+                rsc = middleware(rsc)
+
+            mounts['/{0}'.format(rsc.endpoint.lstrip('/')).rstrip('/')] = rsc
+
+        super(WSGIDispatcher, self).__init__(app, mounts)

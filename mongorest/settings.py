@@ -20,6 +20,13 @@ DEFAULT = {
         'PORTS': [],
         'DATABASE': 'mongorest',
         'OPTIONS': [],
+    },
+    'MIDDLEWARES': [],
+    'CORS': {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE',
+        'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+        'Access-Control-Allow-Credentials': 'true',
     }
 }
 
