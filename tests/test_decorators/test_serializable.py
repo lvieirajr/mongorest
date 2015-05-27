@@ -9,6 +9,7 @@ class TestSerializable(TestCase):
 
     def setUp(self):
         class Test(object):
+            @classmethod
             @serializable
             def test(cls, **kwargs):
                 return kwargs

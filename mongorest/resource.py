@@ -72,8 +72,7 @@ class ListResourceMixin(Resource):
         """
         return Response(
             self.collection.aggregate(
-                [{'$project': {'_id': 1}}],
-                serialize=True
+                [{'$project': {'_id': 1}}], serialize=True
             ),
             content_type='application/json',
             status=200

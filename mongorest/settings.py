@@ -3,8 +3,6 @@ from __future__ import absolute_import, unicode_literals
 
 from inspect import getmembers
 from os import environ, path
-from werkzeug.contrib.sessions import SessionStore
-
 
 __all__ = [
     'settings',
@@ -33,7 +31,7 @@ DEFAULT = {
         'DATABASE': 'mongorest',
         'OPTIONS': [],
     },
-    'SESSION_STORE': SessionStore,
+    'SESSION_STORE': None,
 }
 
 

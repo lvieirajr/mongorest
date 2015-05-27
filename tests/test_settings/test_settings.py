@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from os import environ
-from werkzeug.contrib.sessions import SessionStore
 
 from mongorest.settings import settings
 from mongorest.testcase import TestCase
@@ -45,7 +44,7 @@ class TestSettings(TestCase):
         self.assertEqual(settings.MONGODB['DATABASE'], 'mongorest')
         self.assertEqual(settings.MONGODB['OPTIONS'], [])
 
-        self.assertEqual(settings.SESSION_STORE, SessionStore)
+        self.assertIsNone(settings.SESSION_STORE)
 
     def test_a_default_setting_can_be_overwritten(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
@@ -58,10 +57,6 @@ class TestSettings(TestCase):
 
     def test_a_new_setting_value_can_be_added(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
-
-        with self.assertRaises(AttributeError):
-            settings.TEST
-
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_settings.fixtures.settings'
 
         self.assertEqual(settings.TEST, 'test')
@@ -70,4 +65,4 @@ class TestSettings(TestCase):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
 
         with self.assertRaises(AttributeError):
-            settings.i_am_an_invalid_setting
+            return settings.i_am_an_invalid_setting

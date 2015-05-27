@@ -19,19 +19,21 @@ class AuthenticationMiddleware(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        if not issubclass(settings.SESSION_STORE, SessionStore):
+        session_store = settings.SESSION_STORE
+        auth_collection = settings.AUTH_COLLECTION
+
+        if not session_store or not issubclass(session_store, SessionStore):
             raise ValueError(
                 'SESSION_STORE must be a sub class of \'SessionStore\''
             )
 
-        session_store = settings.SESSION_STORE()
+        session_store = session_store()
 
-        if not issubclass(settings.AUTH_COLLECTION, Collection):
+        if not auth_collection or not issubclass(auth_collection, Collection):
             raise ValueError(
                 'AUTH_COLLECTION must be a sub class of \'Collection\''
             )
 
-        auth_collection = settings.AUTH_COLLECTION
         auth_collection_name = auth_collection.__name__.lower()
 
         sid = environ.get('HTTP_AUTHORIZATION', 'Token ')

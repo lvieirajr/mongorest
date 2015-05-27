@@ -11,14 +11,37 @@ from mongorest.wsgi import WSGIDispatcher
 
 class TestAuthenticationMiddleware(TestCase):
 
-    def setUp(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_middlewares.fixtures.authentication_settings'
+    def test_raises_value_error_if_session_store_is_not_sub_class_of_session_store(self):
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_middlewares.fixtures.session_store_error_settings'
 
         self.test_client = self.client(
             WSGIDispatcher([ListResourceMixin]), Response
         )
 
-    def test_adds_authorization_header(self):
+        with self.assertRaises(ValueError):
+            self.test_client.get('/')
+
+        environ.pop('MONGOREST_SETTINGS_MODULE')
+
+    def test_raises_value_error_if_auth_collection_is_not_sub_class_of_collection(self):
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_middlewares.fixtures.auth_collection_error_settings'
+
+        self.test_client = self.client(
+            WSGIDispatcher([ListResourceMixin]), Response
+        )
+
+        with self.assertRaises(ValueError):
+            self.test_client.get('/')
+
+        environ.pop('MONGOREST_SETTINGS_MODULE')
+
+    def test_adds_authorization_header_to_response(self):
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_middlewares.fixtures.authentication_settings'
+
+        self.test_client = self.client(
+            WSGIDispatcher([ListResourceMixin]), Response
+        )
+        
         response = self.test_client.get('/')
 
         self.assertIn('HTTP_AUTHORIZATION', response.headers)

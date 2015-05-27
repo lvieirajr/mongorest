@@ -58,12 +58,12 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
     @classmethod
     @serializable
     @ensure_indexes
-    def find_one(cls, filter=None, *args, **kwargs):
+    def find_one(cls, query=None, *args, **kwargs):
         """
         Returns one document dict if at least one passes the filter
         Returns None otherwise.
         """
-        return cls.collection.find_one(filter, *args, **kwargs)
+        return cls.collection.find_one(query, *args, **kwargs)
 
     @classmethod
     @serializable
@@ -101,65 +101,65 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
 
     @classmethod
     @ensure_indexes
-    def update_one(cls, filter, update, upsert=False):
+    def update_one(cls, query, update, upsert=False):
         """
         Updates a document that passes the filter with the udpate value
         Will upsert a new document if upsert=True and no document is filtered
         """
-        return cls.collection.update_one(filter, update, upsert).raw_result
+        return cls.collection.update_one(query, update, upsert).raw_result
 
     @classmethod
     @ensure_indexes
-    def update_many(cls, filter, update, upsert=False):
+    def update_many(cls, query, update, upsert=False):
         """
         Updates all documents that pass the filter with the udpate value
         Will upsert a new document if upsert=True and no document is filtered
         """
-        return cls.collection.update_many(filter, update, upsert).raw_result
+        return cls.collection.update_many(query, update, upsert).raw_result
 
     @classmethod
     @ensure_indexes
-    def replace_one(cls, filter, replacement, upsert=False):
+    def replace_one(cls, query, replacement, upsert=False):
         """
         Replaces a document that passes the filter.
         Will upsert a new document if upsert=True and no document is filtered
         """
         return cls.collection.replace_one(
-            filter, replacement, upsert
+            query, replacement, upsert
         ).raw_result
 
     @classmethod
     @ensure_indexes
-    def delete_one(cls, filter):
+    def delete_one(cls, query):
         """
         Deletes one document that passes the filter
         """
-        return cls.collection.delete_one(filter).raw_result
+        return cls.collection.delete_one(query).raw_result
 
     @classmethod
     @ensure_indexes
-    def delete_many(cls, filter):
+    def delete_many(cls, query):
         """
         Deletes all documents that pass the filter
         """
-        return cls.collection.delete_many(filter).raw_result
+        return cls.collection.delete_many(query).raw_result
 
     @classmethod
     @ensure_indexes
-    def count(cls, filter=None, with_limit_and_skip=False):
+    def count(cls, query=None, with_limit_and_skip=False):
         """
         Returns the number of documents that pass the filter
         """
-        return cls.collection.find(filter).count(with_limit_and_skip)
+        return cls.collection.find(query).count(with_limit_and_skip)
 
     @classmethod
     @ensure_indexes
-    def get(cls, filter=None, **kwargs):
+    def get(cls, query=None, **kwargs):
         """
         Returns a Document if any document is filtered, returns None otherwise
         """
         from .document import Document
         document = Document(
-            cls, cls.collection.find_one(filter, **kwargs), True
+            cls, cls.collection.find_one(query, **kwargs), True
         )
         return document if document.fields else None
