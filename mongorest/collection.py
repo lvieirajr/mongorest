@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 
 import six
 
-from .database import db
 from .decorators import ensure_indexes, serializable
 
 __all__ = [
@@ -24,6 +23,7 @@ class CollectionMeta(type):
         members = args[2].copy()
 
         if 'collection' not in members:
+            from .database import db
             members['collection'] = db[name.lower()]
 
         if 'meta' not in members:

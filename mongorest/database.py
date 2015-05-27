@@ -4,8 +4,6 @@ from __future__ import absolute_import, unicode_literals
 from pymongo import MongoClient
 from pymongo.uri_parser import parse_uri
 
-from .settings import settings
-
 __all__ = [
     'db',
 ]
@@ -17,6 +15,7 @@ def _get_db():
     This function should not be called outside of this file.
     Use db instead.
     """
+    from .settings import settings
     mongo = settings.MONGODB
 
     if 'URI' in mongo and mongo['URI']:

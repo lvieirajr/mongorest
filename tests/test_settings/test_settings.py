@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from os import environ
+from werkzeug.contrib.sessions import SessionStore
 
 from mongorest.settings import settings
 from mongorest.testcase import TestCase
@@ -11,6 +12,27 @@ class TestSettings(TestCase):
 
     def test_settings_has_default_values_for_database(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
+
+        self.assertIsNone(settings.AUTH_COLLECTION)
+
+        self.assertIsNotNone(settings.CORS)
+        self.assertEqual(
+            settings.CORS['Access-Control-Allow-Origin'],
+            '*'
+        )
+        self.assertEqual(
+            settings.CORS['Access-Control-Allow-Methods'],
+            'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE'
+        )
+        self.assertEqual(
+            settings.CORS['Access-Control-Allow-Headers'],
+            'Authorization, Content-Length, Content-Type'
+        )
+        self.assertEqual(
+            settings.CORS['Access-Control-Allow-Credentials'], 'true'
+        )
+
+        self.assertEqual(settings.MIDDLEWARES, [])
 
         self.assertIsNotNone(settings.MONGODB)
         self.assertEqual(settings.MONGODB['URI'], '')
@@ -22,6 +44,8 @@ class TestSettings(TestCase):
         self.assertEqual(settings.MONGODB['PORTS'], [])
         self.assertEqual(settings.MONGODB['DATABASE'], 'mongorest')
         self.assertEqual(settings.MONGODB['OPTIONS'], [])
+
+        self.assertEqual(settings.SESSION_STORE, SessionStore)
 
     def test_a_default_setting_can_be_overwritten(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)

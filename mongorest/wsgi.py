@@ -6,10 +6,6 @@ from werkzeug.routing import Map
 from werkzeug.wrappers import Request, Response
 from werkzeug.wsgi import DispatcherMiddleware
 
-from .settings import settings
-from .utils import serialize
-
-
 __all__ = [
     'WSGIWrapper',
     'WSGIDispatcher',
@@ -37,6 +33,7 @@ class WSGIWrapper(object):
             if hasattr(exc, 'get_response'):
                 response = exc.get_response(environ)
             else:
+                from .utils import serialize
                 response = Response(
                     serialize({'error': exc.description}),
                     content_type='application/json',
@@ -57,12 +54,14 @@ class WSGIDispatcher(DispatcherMiddleware):
         app = NotFound()
         mounts = {}
 
+        from .settings import settings
         for resource in resources:
-            rsc = resource()
+            key = '/{0}'.format(resource.endpoint.lstrip('/')).rstrip('/')
+            resource_to_mount = resource()
 
             for middleware in settings.MIDDLEWARES:
-                rsc = middleware(rsc)
+                resource_to_mount = middleware(resource_to_mount)
 
-            mounts['/{0}'.format(rsc.endpoint.lstrip('/')).rstrip('/')] = rsc
+            mounts[key] = resource_to_mount
 
         super(WSGIDispatcher, self).__init__(app, mounts)

@@ -3,6 +3,8 @@ from __future__ import absolute_import, unicode_literals
 
 from inspect import getmembers
 from os import environ, path
+from werkzeug.contrib.sessions import SessionStore
+
 
 __all__ = [
     'settings',
@@ -10,6 +12,16 @@ __all__ = [
 
 
 DEFAULT = {
+    'AUTH_COLLECTION': None,
+    'CORS': {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'OPTIONS, GET, HEAD, POST, PUT, '
+                                        'PATCH, DELETE',
+        'Access-Control-Allow-Headers': 'Authorization, Content-Length, '
+                                        'Content-Type',
+        'Access-Control-Allow-Credentials': 'true',
+    },
+    'MIDDLEWARES': [],
     'MONGODB': {
         'URI': '',
         'USERNAME': '',
@@ -21,13 +33,7 @@ DEFAULT = {
         'DATABASE': 'mongorest',
         'OPTIONS': [],
     },
-    'MIDDLEWARES': [],
-    'CORS': {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE',
-        'Access-Control-Allow-Headers': 'Authorization, Content-Type',
-        'Access-Control-Allow-Credentials': 'true',
-    }
+    'SESSION_STORE': SessionStore,
 }
 
 
