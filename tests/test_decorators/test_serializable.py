@@ -16,6 +16,9 @@ class TestSerializable(TestCase):
 
         self.test = Test()
 
+    def test_serializable_appends_to_the_list_of_decorators(self):
+        self.assertIn('serializable', self.test.test.decorators)
+
     def test_serializable_serializes_result_if_keyword_serialize_is_true(self):
         self.assertEqual(self.test.test(serialize=True), '{}')
 

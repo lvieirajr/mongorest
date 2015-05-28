@@ -30,15 +30,7 @@ class WSGIWrapper(object):
             endpoint, values = adapter.match()
             response = getattr(self, endpoint)(Request(environ), **values)
         except HTTPException as exc:
-            if hasattr(exc, 'get_response'):
-                response = exc.get_response(environ)
-            else:
-                from .utils import serialize
-                response = Response(
-                    serialize({'error': exc.description}),
-                    content_type='application/json',
-                    status=exc.code
-                )
+            response = exc.get_response(environ)
 
         return response(environ, start_response)
 

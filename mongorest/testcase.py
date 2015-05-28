@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
-from pymongo.errors import PyMongoError
 try:
     from unittest2 import TestCase as BaseTestCase
 except ImportError:
@@ -38,7 +37,4 @@ class TestCase(BaseTestCase):
                 if collection.startswith('system'):
                     continue
 
-                try:
-                    self.db.drop_collection(collection)
-                except (TypeError, PyMongoError):
-                    pass
+                self.db.drop_collection(collection)

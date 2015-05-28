@@ -5,4 +5,5 @@ MONGODB = {
     'HOSTS': ['localhost'],
     'PORTS': [27017],
     'DATABASE': 'mongorest-test',
+    'OPTIONS': ['ssl=false']
 }

@@ -5,7 +5,7 @@ from mock import Mock
 from os import environ
 from werkzeug.wrappers import Response
 
-from mongorest.decorators import login_required
+from mongorest.decorators import login_required, serializable
 from mongorest.testcase import TestCase
 
 
@@ -15,10 +15,14 @@ class TestLoginRequired(TestCase):
         environ['MONGOREST_SETTINGS_MODULE'] =  'tests.test_decorators.fixtures.settings'
 
         @login_required
-        def test(self, request):
+        @serializable
+        def test(self, request, **kwargs):
             return Response()
 
         self.func = test
+
+    def test_login_required_appends_to_the_list_of_decorators(self):
+        self.assertIn('login_required', self.func.decorators)
 
     def test_login_required_returns_401_if_auth_collection_not_present(self):
         request = Mock()
