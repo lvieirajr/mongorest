@@ -1,13 +1,10 @@
 language: python
+python:
+  - "3.4"
 services:
   - mongodb
 install:
-  - pip install tox
-before_script:
-  - sleep 15
-  - mongo mongorest --eval 'db.addUser("mongorest", "mongorest");'
-script:
-  - tox
+  - pip install tox coveralls
 env:
   - TOXENV=py26
   - TOXENV=py27
@@ -15,3 +12,10 @@ env:
   - TOXENV=py34
   - TOXENV=pypy
   - TOXENV=pypy3
+before_script:
+  - sleep 15
+  - mongo mongorest --eval 'db.addUser("mongorest", "mongorest");'
+script:
+  - tox
+after_success:
+  - coveralls
