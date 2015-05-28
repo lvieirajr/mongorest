@@ -6,3 +6,4 @@ from mongorest.middlewares import AuthenticationMiddleware
 
 MIDDLEWARES = [AuthenticationMiddleware]
 AUTH_COLLECTION = Collection
+SESSION_STORE = None

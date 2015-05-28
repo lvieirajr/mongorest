@@ -36,7 +36,7 @@ class AuthenticationMiddleware(object):
 
         auth_collection_name = auth_collection.__name__.lower()
 
-        sid = environ.get('HTTP_AUTHORIZATION', 'Token ')
+        sid = environ.get('HTTP_AUTHORIZATION', '')
         if len(sid.split('Token ')) == 2:
             session = session_store.get(sid.split('Token ')[1])
         else:

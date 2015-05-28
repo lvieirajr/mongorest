@@ -1,9 +1,10 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from werkzeug.contrib.sessions import SessionStore
+from werkzeug.contrib.sessions import FilesystemSessionStore
 
 from mongorest.middlewares import AuthenticationMiddleware
 
 MIDDLEWARES = [AuthenticationMiddleware]
-SESSION_STORE = SessionStore
+SESSION_STORE = FilesystemSessionStore
+AUTH_COLLECTION = None
