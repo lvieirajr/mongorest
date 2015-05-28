@@ -1,6 +1,11 @@
 language: python
+services:
+  - mongodb
 install:
   - pip install tox
+before_script:
+  - sleep 15
+  - mongo mongorest --eval 'db.addUser("mongorest", "mongorest");'
 script:
   - tox
 env:
