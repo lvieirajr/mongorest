@@ -22,33 +22,36 @@ class TestLoginRequired(TestCase):
         self.func = test
 
     def test_login_required_appends_to_the_list_of_decorators(self):
-        self.assertIn('login_required', self.func.decorators)
+        @login_required
+        def test(self, request, **kwargs):
+            return Response()
+
+        self.assertIn('login_required', test.decorators)
 
     def test_login_required_returns_401_if_auth_collection_not_present(self):
-        request = Mock()
-        del request.account
+        request = Mock(environ={})
 
         self.assertEqual(self.func(None, request).status_code, 401)
 
     def test_login_required_returns_401_if_auth_collection_is_none(self):
-        request = Mock(account=None)
+        request = Mock(environ={'account': None})
 
         self.assertEqual(self.func(None, request).status_code, 401)
 
     def test_login_required_returns_401_if_auth_collection_not_authorized_and_method_not_authorized(self):
         account = Mock(is_authorized=False, authorized_methods=[])
-        request = Mock(account=account, method='GET')
+        request = Mock(environ={'account': account}, method='GET')
 
         self.assertEqual(self.func(None, request).status_code, 401)
 
     def test_login_required_returns_function_if_auth_collection_is_authorized(self):
-        account = Mock(is_authorized=True)
-        request = Mock(account=account)
+        account = Mock(is_authorized=True, authorized_methods=[])
+        request = Mock(environ={'account': account}, method='GET')
 
         self.assertEqual(self.func(None, request).status_code, 200)
 
     def test_login_required_returns_function_if_auth_collection_not_authorized_but_method_authorized(self):
         account = Mock(is_authorized=False, authorized_methods=['GET'])
-        request = Mock(account=account, method='GET')
+        request = Mock(environ={'account': account}, method='GET')
 
         self.assertEqual(self.func(None, request).status_code, 200)

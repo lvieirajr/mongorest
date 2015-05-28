@@ -48,10 +48,7 @@ def login_required(wrapped):
         method = request.method
 
         auth_collection_name = settings.AUTH_COLLECTION.__name__.lower()
-        auth_collection = None
-        if hasattr(request, auth_collection_name):
-            auth_collection = getattr(request, auth_collection_name)
-
+        auth_collection = request.environ.get(auth_collection_name)
         if auth_collection:
             authorized_methods = []
 

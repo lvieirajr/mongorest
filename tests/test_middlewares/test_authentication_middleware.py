@@ -53,8 +53,14 @@ class TestAuthenticationMiddleware(TestCase):
     def test_adds_authorization_header_to_response_with_token(self):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_middlewares.fixtures.authentication_settings'
 
+        class TestResource(ListResourceMixin):
+
+            def list(self, request):
+                request.environ['session']['test'] = 'test'
+                return Response()
+
         self.test_client = self.client(
-            WSGIDispatcher([ListResourceMixin]), Response
+            WSGIDispatcher([TestResource]), Response
         )
 
         session_store = settings.SESSION_STORE()
