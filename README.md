@@ -1,6 +1,6 @@
 # MongoRest
 
-[![pypi-version]][pypi] [![pypi-downloads]][pypi] [![build-status]][travis] [![coveralls-status]][coveralls] [![codacy-grade]][codacy] [![landscape-health]][landscape]
+[![pypi-version]][pypi] [![pypi-downloads]][pypi] [![build-status]][travis] [![coveralls-status]][coveralls] [![landscape-health]][landscape] [![codacy-grade]][codacy] 
 
 **Easy [REST][rest] [APIs][api] using [MongoDB][mongodb].**
 
@@ -191,11 +191,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [coveralls-status]: https://coveralls.io/repos/lvieirajr/mongorest/badge.svg?branch=master
 [coveralls]: https://coveralls.io/r/lvieirajr/mongorest?branch=master
 
-[codacy-grade]: https://www.codacy.com/project/badge/de84ced5bfa241b3a1a64f73146a03e3
-[codacy]: https://www.codacy.com/app/lvieira/mongorest
-
 [landscape-health]: https://landscape.io/github/lvieirajr/mongorest/master/landscape.svg?style=flat
 [landscape]: https://landscape.io/github/lvieirajr/mongorest/master
+
+[codacy-grade]: https://www.codacy.com/project/badge/de84ced5bfa241b3a1a64f73146a03e3
+[codacy]: https://www.codacy.com/app/lvieira/mongorest
 
 [rest]: https://en.wikipedia.org/wiki/Rest
 [api]: https://en.wikipedia.org/wiki/Application_programming_interface
