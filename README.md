@@ -1,6 +1,6 @@
 # MongoRest
 
-[![pypi-version]][pypi] [![pypi-downloads]][pypi] [![codacy-grade]][codacy] [![landscape-health]][landscape]
+[![pypi-version]][pypi] [![pypi-downloads]][pypi] [![build-status]][travis] [![coveralls-status]][coveralls] [![codacy-grade]][codacy] [![landscape-health]][landscape]
 
 **Easy [REST][rest] [APIs][api] using [MongoDB][mongodb].**
 
@@ -184,6 +184,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pypi-version]: https://img.shields.io/pypi/v/MongoRest.svg
 [pypi-downloads]: https://img.shields.io/pypi/dm/MongoRest.svg
 [pypi]: https://pypi.python.org/pypi/mongorest
+
+[build-status]: https://travis-ci.org/lvieirajr/mongorest.svg?branch=master
+[travis]: https://travis-ci.org/lvieirajr/mongorest
+
+[coveralls-status]: https://coveralls.io/repos/lvieirajr/mongorest/badge.svg?branch=master
+[coveralls]: https://coveralls.io/r/lvieirajr/mongorest?branch=master
 
 [codacy-grade]: https://www.codacy.com/project/badge/de84ced5bfa241b3a1a64f73146a03e3
 [codacy]: https://www.codacy.com/app/lvieira/mongorest
