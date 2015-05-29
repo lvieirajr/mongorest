@@ -9,7 +9,7 @@ except ImportError:
     from unittest import TestCase as BaseTestCase
 from werkzeug.test import Client
 
-from mongorest.database import db
+from .database import db
 
 __all__ = [
     'TestCase'

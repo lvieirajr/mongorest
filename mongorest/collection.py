@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import six
 
-from mongorest.decorators import ensure_indexes, serializable
+from .decorators import ensure_indexes, serializable
 
 __all__ = [
     'Collection',
@@ -23,7 +23,7 @@ class CollectionMeta(type):
         members = args[2].copy()
 
         if 'collection' not in members:
-            from mongorest.database import db
+            from .database import db
             members['collection'] = db[name.lower()]
 
         if 'meta' not in members:
@@ -45,7 +45,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         Instantiating a Collection will return a Document from that Collection
         """
-        from mongorest.document import Document
+        from .document import Document
         return Document(cls, *args, **kwargs)
 
     @classmethod
@@ -158,7 +158,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         Returns a Document if any document is filtered, returns None otherwise
         """
-        from mongorest.document import Document
+        from .document import Document
         document = Document(
             cls, cls.collection.find_one(query, **kwargs), True
         )

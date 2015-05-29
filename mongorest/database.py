@@ -15,7 +15,7 @@ def _get_db():
     This function should not be called outside of this file.
     Use db instead.
     """
-    from mongorest.settings import settings
+    from .settings import settings
     mongo = settings.MONGODB
 
     if 'URI' in mongo and mongo['URI']:

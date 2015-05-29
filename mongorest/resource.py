@@ -6,9 +6,9 @@ import six
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
 
-from mongorest.collection import Collection
-from mongorest.utils import deserialize, serialize
-from mongorest.wsgi import WSGIWrapper
+from .collection import Collection
+from .utils import deserialize, serialize
+from .wsgi import WSGIWrapper
 
 __all__ = [
     'Resource',
