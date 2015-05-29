@@ -30,7 +30,21 @@ class WSGIWrapper(object):
             endpoint, values = adapter.match()
             response = getattr(self, endpoint)(Request(environ), **values)
         except HTTPException as exc:
-            response = exc.get_response(environ)
+            if not environ['PATH_INFO'].endswith('/'):
+                environ['PATH_INFO'] += '/'
+                adapter = self.url_map.bind_to_environ(environ)
+
+                try:
+                    endpoint, values = adapter.match()
+                    response = getattr(self, endpoint)(
+                        Request(environ), **values
+                    )
+                except HTTPException:
+                    response = exc.get_response(environ)
+
+                environ['PATH_INFO'] = environ['PATH_INFO'][:-1]
+            else:
+                response = exc.get_response(environ)
 
         return response(environ, start_response)
 
