@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from functools import wraps
 from werkzeug.wrappers import Response
 
-from .utils import serialize
+from mongorest.utils import serialize
 
 __all__ = [
     'ensure_indexes',
@@ -42,7 +42,7 @@ def login_required(wrapped):
     """
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
-        from .settings import settings
+        from mongorest.settings import settings
 
         request = args[1]
         method = request.method

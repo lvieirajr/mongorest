@@ -3,9 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 from werkzeug.contrib.sessions import SessionStore
 
-from .collection import Collection
-from .settings import settings
-from .utils import deserialize
+from mongorest.collection import Collection
+from mongorest.settings import settings
+from mongorest.utils import deserialize
 
 __all__ = [
     'AuthenticationMiddleware',

@@ -23,7 +23,7 @@ class Document(object):
         """
         super(Document, self).__init__()
 
-        from .collection import Collection
+        from mongorest.collection import Collection
         if issubclass(collection, Collection):
             self._collection = collection
         else:

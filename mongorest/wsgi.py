@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from werkzeug.exceptions import HTTPException, NotFound
 from werkzeug.routing import Map
-from werkzeug.wrappers import Request, Response
+from werkzeug.wrappers import Request
 from werkzeug.wsgi import DispatcherMiddleware
 
 __all__ = [
@@ -46,7 +46,7 @@ class WSGIDispatcher(DispatcherMiddleware):
         app = NotFound()
         mounts = {}
 
-        from .settings import settings
+        from mongorest.settings import settings
         for resource in resources:
             key = '/{0}'.format(resource.endpoint.lstrip('/')).rstrip('/')
             resource_to_mount = resource()
