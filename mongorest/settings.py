@@ -13,11 +13,12 @@ DEFAULT = {
     'AUTH_COLLECTION': None,
     'CORS': {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'OPTIONS, GET, HEAD, POST, PUT, '
-                                        'PATCH, DELETE',
-        'Access-Control-Allow-Headers': 'Authorization, Content-Length, '
-                                        'Content-Type',
-        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+        'Access-Control-Allow-Headers': 'Accept,Accept-Encoding,Authorization,'
+                                        'Content-Length,Content-Type,Origin,'
+                                        'User-Agent,X-CSRFToken,'
+                                        'X-Requested-With',
+        'Access-Control-Allow-Credentials': 'false',
     },
     'MIDDLEWARES': [],
     'MONGODB': {

@@ -92,6 +92,6 @@ class CORSMiddleware(object):
 
         if environ.get('REQUEST_METHOD') == 'OPTIONS':
             cors('200 OK', [('Content-Type', 'text/plain')])
-            return ['200 OK']
+            return [b'200 OK']
 
         return self.app(environ, cors)

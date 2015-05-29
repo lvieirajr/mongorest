@@ -9,7 +9,7 @@ from mongorest.testcase import TestCase
 
 class TestSettings(TestCase):
 
-    def test_settings_has_default_values_for_database(self):
+    def test_settings_default_values(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
 
         self.assertIsNone(settings.AUTH_COLLECTION)
@@ -21,14 +21,15 @@ class TestSettings(TestCase):
         )
         self.assertEqual(
             settings.CORS['Access-Control-Allow-Methods'],
-            'OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE'
+            'GET,POST,PUT,PATCH,DELETE,OPTIONS'
         )
         self.assertEqual(
             settings.CORS['Access-Control-Allow-Headers'],
-            'Authorization, Content-Length, Content-Type'
+            'Accept,Accept-Encoding,Authorization,Content-Length,Content-Type,'
+            'Origin,User-Agent,X-CSRFToken,X-Requested-With'
         )
         self.assertEqual(
-            settings.CORS['Access-Control-Allow-Credentials'], 'true'
+            settings.CORS['Access-Control-Allow-Credentials'], 'false'
         )
 
         self.assertEqual(settings.MIDDLEWARES, [])
