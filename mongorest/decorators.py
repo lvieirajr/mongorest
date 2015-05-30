@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from functools import wraps
+from pydoc import locate
 from werkzeug.wrappers import Response
 
 from .settings import settings
@@ -46,8 +47,12 @@ def login_required(wrapped):
         request = args[1]
         method = request.method
 
-        auth_collection_name = settings.AUTH_COLLECTION.__name__.lower()
-        auth_collection = request.environ.get(auth_collection_name)
+        auth_collection = request.environ.get(
+            settings.AUTH_COLLECTION[
+                settings.AUTH_COLLECTION.rfind('.') + 1:
+            ].lower()
+        )
+
         if auth_collection:
             authorized_methods = []
 

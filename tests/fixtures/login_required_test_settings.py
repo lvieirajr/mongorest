@@ -15,4 +15,4 @@ class Account(Collection):
         return ['GET']
 
 
-AUTH_COLLECTION = Account
+AUTH_COLLECTION = 'tests.fixtures.decorators_test_settings.Account'

@@ -12,7 +12,7 @@ from mongorest.testcase import TestCase
 class TestLoginRequired(TestCase):
 
     def setUp(self):
-        environ['MONGOREST_SETTINGS_MODULE'] =  'tests.test_decorators.fixtures.settings'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.login_required_test_settings'
 
         @login_required
         @serializable
