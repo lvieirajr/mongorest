@@ -12,7 +12,7 @@ class TestSettings(TestCase):
     def test_settings_default_values(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
 
-        self.assertIsNone(settings.AUTH_COLLECTION)
+        self.assertEqual(settings.AUTH_COLLECTION, '')
 
         self.assertIsNotNone(settings.CORS)
         self.assertEqual(
@@ -29,7 +29,7 @@ class TestSettings(TestCase):
             'Origin,User-Agent,X-CSRFToken,X-Requested-With'
         )
         self.assertEqual(
-            settings.CORS['Access-Control-Allow-Credentials'], 'false'
+            settings.CORS['Access-Control-Allow-Credentials'], 'true'
         )
 
         self.assertEqual(settings.MIDDLEWARES, [])
@@ -45,20 +45,20 @@ class TestSettings(TestCase):
         self.assertEqual(settings.MONGODB['DATABASE'], 'mongorest')
         self.assertEqual(settings.MONGODB['OPTIONS'], [])
 
-        self.assertIsNone(settings.SESSION_STORE)
+        self.assertEqual(settings.SESSION_STORE, '')
 
     def test_a_default_setting_can_be_overwritten(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
 
         self.assertEqual(settings.MONGODB['URI'], '')
 
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_settings.fixtures.settings'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.settings_test_settings'
 
         self.assertEqual(settings.MONGODB['URI'], 'test')
 
     def test_a_new_setting_value_can_be_added(self):
         environ.pop('MONGOREST_SETTINGS_MODULE', None)
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_settings.fixtures.settings'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.settings_test_settings'
 
         self.assertEqual(settings.TEST, 'test')
 

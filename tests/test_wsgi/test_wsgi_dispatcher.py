@@ -25,7 +25,7 @@ class TestWSGIDispatcher(TestCase):
         self.assertEqual(list(app.mounts.keys()), ['/test'])
 
     def test_wsgi_dispatcher_adds_middlewares_to_mounts(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_wsgi.fixtures.settings'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.wsgi_test_settings'
 
         class TestWSGIWrapper(WSGIWrapper):
             endpoint = 'test'

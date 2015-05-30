@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from pydoc import locate
 from werkzeug.contrib.sessions import SessionStore
 
 from .collection import Collection
@@ -19,9 +20,7 @@ class AuthenticationMiddleware(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        session_store = settings.SESSION_STORE
-        auth_collection = settings.AUTH_COLLECTION
-
+        session_store = locate(settings.SESSION_STORE)
         if not session_store or not issubclass(session_store, SessionStore):
             raise ValueError(
                 'SESSION_STORE must be a sub class of \'SessionStore\''
@@ -29,12 +28,11 @@ class AuthenticationMiddleware(object):
 
         session_store = session_store()
 
+        auth_collection = locate(settings.AUTH_COLLECTION)
         if not auth_collection or not issubclass(auth_collection, Collection):
             raise ValueError(
                 'AUTH_COLLECTION must be a sub class of \'Collection\''
             )
-
-        auth_collection_name = auth_collection.__name__.lower()
 
         sid = environ.get('HTTP_AUTHORIZATION', '')
         if len(sid.split('Token ')) == 2:
@@ -43,8 +41,10 @@ class AuthenticationMiddleware(object):
             session = session_store.new()
 
         environ['session'] = session
-        environ[auth_collection_name] = auth_collection.get({
-            '_id': deserialize(session.get(auth_collection_name, '""'))
+        environ[auth_collection.__name__.lower()] = auth_collection.get({
+            '_id': deserialize(
+                session.get(auth_collection.__name__.lower(), '""')
+            )
         })
 
         def authentication(status, headers, exc_info=None):

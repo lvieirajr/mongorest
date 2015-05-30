@@ -23,14 +23,7 @@ class Document(object):
         """
         super(Document, self).__init__()
 
-        from .collection import Collection
-        if issubclass(collection, Collection):
-            self._collection = collection
-        else:
-            raise AttributeError(
-                'Attribute \'collection\' must be a class that inherits from '
-                '\'Collection\''
-            )
+        self._collection = collection
         self._fields = fields or {}
         self._errors = {}
 

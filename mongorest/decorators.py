@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from functools import wraps
 from werkzeug.wrappers import Response
 
+from .settings import settings
 from .utils import serialize
 
 __all__ = [
@@ -42,8 +43,6 @@ def login_required(wrapped):
     """
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
-        from .settings import settings
-
         request = args[1]
         method = request.method
 

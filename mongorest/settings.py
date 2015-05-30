@@ -2,7 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from inspect import getmembers
-from os import environ, path
+from pydoc import locate
+from os import environ
 
 __all__ = [
     'settings',
@@ -10,7 +11,7 @@ __all__ = [
 
 
 DEFAULT = {
-    'AUTH_COLLECTION': None,
+    'AUTH_COLLECTION': '',
     'CORS': {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
@@ -18,7 +19,7 @@ DEFAULT = {
                                         'Content-Length,Content-Type,Origin,'
                                         'User-Agent,X-CSRFToken,'
                                         'X-Requested-With',
-        'Access-Control-Allow-Credentials': 'false',
+        'Access-Control-Allow-Credentials': 'true',
     },
     'MIDDLEWARES': [],
     'MONGODB': {
@@ -32,7 +33,7 @@ DEFAULT = {
         'DATABASE': 'mongorest',
         'OPTIONS': [],
     },
-    'SESSION_STORE': None,
+    'SESSION_STORE': '',
 }
 
 
@@ -49,14 +50,7 @@ class Settings(object):
 
         settings_module = environ.get('MONGOREST_SETTINGS_MODULE')
         if settings_module:
-            try:
-                from importlib import import_module
-                loaded_settings = import_module(settings_module)
-            except ImportError:
-                source = '{0}.py'.format(settings_module.replace('.', '/'))
-
-                from imp import load_source
-                loaded_settings = load_source('settings', path.abspath(source))
+            loaded_settings = locate(settings_module)
 
             self._settings = dict(
                 self._settings,

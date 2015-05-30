@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from pymongo import MongoClient
 from pymongo.uri_parser import parse_uri
 
+
 __all__ = [
     'db',
 ]

@@ -1,6 +1,4 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from mongorest.middlewares import CORSMiddleware
-
-MIDDLEWARES = [CORSMiddleware]
+MIDDLEWARES = ['mongorest.middlewares.CORSMiddleware']

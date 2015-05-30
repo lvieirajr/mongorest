@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import six
 
 from .decorators import ensure_indexes, serializable
+from .document import Document
 
 __all__ = [
     'Collection',
@@ -12,9 +13,7 @@ __all__ = [
 
 class CollectionMeta(type):
     """
-    MetaClass for the Collection Class.
-    Prepares the member dict adding the correct collection based on the name,
-    And the meta dict, with empty required and optional (fields)
+    MetaClass that knows how to get its own DB Collection
     """
 
     def __new__(mcs, *args, **kwargs):
@@ -45,7 +44,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         Instantiating a Collection will return a Document from that Collection
         """
-        from .document import Document
         return Document(cls, *args, **kwargs)
 
     @classmethod
@@ -158,7 +156,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         Returns a Document if any document is filtered, returns None otherwise
         """
-        from .document import Document
         document = Document(
             cls, cls.collection.find_one(query, **kwargs), True
         )

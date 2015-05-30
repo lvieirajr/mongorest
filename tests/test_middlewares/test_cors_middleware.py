@@ -12,7 +12,7 @@ from mongorest.wsgi import WSGIDispatcher
 class TestCORSMiddleware(TestCase):
 
     def setUp(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_middlewares.fixtures.cors_settings'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_cors_settings'
 
         self.test_client = self.client(
             WSGIDispatcher([ListResourceMixin]), Response

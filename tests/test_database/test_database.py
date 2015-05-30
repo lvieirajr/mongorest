@@ -17,7 +17,7 @@ class TestDatabase(TestCase):
         self.assertEqual(db.name, 'mongorest')
 
     def test_correct_db_when_uri_passed(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_database.fixtures.uri'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.database_test_uri_settings'
         database = _get_db()
 
         self.assertEqual(database.client.HOST, 'localhost')
@@ -25,7 +25,7 @@ class TestDatabase(TestCase):
         self.assertEqual(database.name, 'mongorest-test')
 
     def test_correct_db_when_host_and_port_passed(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_database.fixtures.host_port'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.database_test_host_port_settings'
         database = _get_db()
 
         self.assertEqual(database.client.HOST, 'localhost')
@@ -33,7 +33,7 @@ class TestDatabase(TestCase):
         self.assertEqual(database.name, 'mongorest-test')
 
     def test_correct_db_when_hosts_and_ports_passed(self):
-        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.test_database.fixtures.hosts_ports'
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.database_test_hosts_ports_settings'
         database = _get_db()
 
         self.assertEqual(database.client.HOST, 'localhost')

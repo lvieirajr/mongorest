@@ -1,10 +1,13 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from pydoc import locate
 from werkzeug.exceptions import HTTPException, NotFound
 from werkzeug.routing import Map
-from werkzeug.wrappers import Request, Response
+from werkzeug.wrappers import Request
 from werkzeug.wsgi import DispatcherMiddleware
+
+from .settings import settings
 
 __all__ = [
     'WSGIWrapper',
@@ -60,13 +63,12 @@ class WSGIDispatcher(DispatcherMiddleware):
         app = NotFound()
         mounts = {}
 
-        from .settings import settings
         for resource in resources:
             key = '/{0}'.format(resource.endpoint.lstrip('/')).rstrip('/')
             resource_to_mount = resource()
 
             for middleware in settings.MIDDLEWARES:
-                resource_to_mount = middleware(resource_to_mount)
+                resource_to_mount = locate(middleware)(resource_to_mount)
 
             mounts[key] = resource_to_mount
 
