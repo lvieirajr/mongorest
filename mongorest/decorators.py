@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from functools import wraps
-from pydoc import locate
 from werkzeug.wrappers import Response
 
 from .settings import settings
