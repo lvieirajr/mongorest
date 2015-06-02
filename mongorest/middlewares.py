@@ -41,6 +41,7 @@ class AuthenticationMiddleware(object):
             session = session_store.new()
 
         environ['session'] = session
+        environ['session_id'] = session.sid
         environ[auth_collection.__name__.lower()] = auth_collection.get({
             '_id': deserialize(
                 session.get(auth_collection.__name__.lower(), '""')
@@ -56,8 +57,9 @@ class AuthenticationMiddleware(object):
 
         response = self.app(environ, authentication)
 
-        if session.should_save:
-            session_store.save(session)
+        if environ['session'].should_save:
+            environ['session_id'] = environ['session'].sid
+            session_store.save(environ['session'])
 
         return response
 
