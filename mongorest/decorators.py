@@ -38,7 +38,7 @@ def ensure_indexes(wrapped):
 def login_required(wrapped):
     """
     Requires that the user is logged in and authorized to execute requests
-    Except if the request is in authorized_methods of the auth_collection
+    Except if the method is in authorized_methods of the auth_collection
     Then he can execute the requests even not being authorized
     """
     @wraps(wrapped)
@@ -56,9 +56,9 @@ def login_required(wrapped):
             authorized_methods = []
 
             if hasattr(auth_collection, 'authorized_methods'):
-                authorized_methods = auth_collection.authorized_methods
+                authorized_methods = auth_collection.authorized_methods()
 
-            if auth_collection.is_authorized or method in authorized_methods:
+            if auth_collection.is_authorized() or method in authorized_methods:
                 return wrapped(*args, **kwargs)
 
         return Response(

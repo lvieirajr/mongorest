@@ -6,11 +6,9 @@ from mongorest.collection import Collection
 
 class Account(Collection):
 
-    @property
     def is_authorized(self):
         return True
 
-    @property
     def authorized_methods(self):
         return ['GET']
 
