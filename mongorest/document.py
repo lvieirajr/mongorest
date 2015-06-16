@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from pymongo.errors import PyMongoError
 from types import MethodType, FunctionType
 
 __all__ = [
@@ -144,10 +145,14 @@ class Document(object):
         If the Document contains an _id it will be replaced instead of inserted
         """
         if self.is_valid:
-            if '_id' in self._fields:
-                self.replace_one({'_id': self._id}, self._fields, upsert=True)
-            else:
-                self._fields['_id'] = self.insert_one(self._fields)
+            try:
+                if '_id' in self._fields:
+                    self.replace_one({'_id': self._id}, self._fields, upsert=True)
+                else:
+                    self._fields['_id'] = self.insert_one(self._fields)
+            except PyMongoError as error:
+                self._errors['save'] = error.details['errmsg']
+                return self._errors
 
             return self._id
         else:

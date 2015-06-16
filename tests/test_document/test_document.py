@@ -188,6 +188,21 @@ class TestDocument(TestCase):
 
         self.assertEqual(errors, {'test': 'Field \'test\' is required.'})
 
+    def test_save_returns_errors_if_error_ocurred_during_save(self):
+        Collection.collection.create_index('test', unique=True)
+        Collection.insert_one({'test': 'test'})
+
+        document = Document(Collection)
+        document.test = 'test'
+        errors = document.save()
+
+        self.assertEqual(
+            errors,
+            {'save': 'E11000 duplicate key error index: mongorest.collection.$test_1 dup key: { : "test" }'}
+        )
+
+        Collection.collection.drop_index('test_1')
+
     def test_save_returns__id_if_document_does_not_have_id_and_is_valid(self):
         document = Document(Collection)
         _id = document.save()
