@@ -147,7 +147,9 @@ class Document(object):
         if self.is_valid:
             try:
                 if '_id' in self._fields:
-                    self.replace_one({'_id': self._id}, self._fields, upsert=True)
+                    self.replace_one(
+                        {'_id': self._id}, self._fields, upsert=True
+                    )
                 else:
                     self._fields['_id'] = self.insert_one(self._fields)
             except PyMongoError as error:
