@@ -151,7 +151,9 @@ class Document(object):
                 else:
                     self._fields['_id'] = self.insert_one(self._fields)
             except PyMongoError as error:
-                self._errors['save'] = error.details
+                self._errors['save'] = error.details.get(
+                    'errmsg', error.details.get('err', 'Error.')
+                )
                 return self._errors
 
             return self._id

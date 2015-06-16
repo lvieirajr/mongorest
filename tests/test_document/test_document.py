@@ -196,10 +196,7 @@ class TestDocument(TestCase):
         document.test = 'test'
         errors = document.save()
 
-        self.assertEqual(
-            errors,
-            {'save': 'E11000 duplicate key error index: mongorest.collection.$test_1 dup key: { : "test" }'}
-        )
+        self.assertIsInstance(errors['save'], six.string_types)
 
         Collection.collection.drop_index('test_1')
 
