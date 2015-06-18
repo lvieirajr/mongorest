@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from pydoc import locate
 from werkzeug.contrib.sessions import SessionStore
+from werkzeug.utils import dump_cookie, parse_cookie
 
 from .collection import Collection
 from .settings import settings
@@ -21,6 +22,7 @@ class AuthenticationMiddleware(object):
 
     def __call__(self, environ, start_response):
         session_store = locate(settings.SESSION_STORE)
+
         if not session_store or not issubclass(session_store, SessionStore):
             raise ValueError(
                 'SESSION_STORE must be a sub class of \'SessionStore\''
@@ -34,23 +36,40 @@ class AuthenticationMiddleware(object):
                 'AUTH_COLLECTION must be a sub class of \'Collection\''
             )
 
-        sid = environ.get('HTTP_AUTHORIZATION', '')
-        if len(sid.split('Token ')) == 2:
-            session = session_store.get(sid.split('Token ')[1])
-        else:
-            session = session_store.new()
+        environ['session'] = session_store.new()
 
-        environ['session'] = session
-        environ['session_id'] = session.sid
+        session_id = environ.get('HTTP_AUTHORIZATION', '')
+        if len(session_id.split('Token ')) == 2:
+            session_id = session_id.split('Token ')[1]
+            environ['session'] = session_store.get(session_id)
+        else:
+            cookies = environ.get('HTTP_COOKIE')
+
+            if cookies:
+                session_id = parse_cookie(cookies).get('session_id')
+
+                if session_id:
+                    environ['session'] = session_store.get(session_id)
+
         environ[auth_collection.__name__.lower()] = auth_collection.get({
             '_id': deserialize(
-                session.get(auth_collection.__name__.lower(), '""')
+                environ['session'].get(auth_collection.__name__.lower(), '""')
             )
         })
 
         def authentication(status, headers, exc_info=None):
             headers.extend([
-                ('HTTP_AUTHORIZATION', 'Token {0}'.format(session.sid)),
+                (
+                    'Set-Cookie', dump_cookie(
+                        'session_id', environ['session'].sid, 999999,
+                        domain=settings.DOMAIN
+                    )
+                ),
+                (
+                    'HTTP_AUTHORIZATION', 'Token {0}'.format(
+                        environ['session'].sid
+                    )
+                ),
             ])
 
             return start_response(status, headers, exc_info)
@@ -58,7 +77,6 @@ class AuthenticationMiddleware(object):
         response = self.app(environ, authentication)
 
         if environ['session'].should_save:
-            environ['session_id'] = environ['session'].sid
             session_store.save(environ['session'])
 
         return response
