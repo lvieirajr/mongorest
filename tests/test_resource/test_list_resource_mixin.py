@@ -13,7 +13,7 @@ class TestListResourceMixin(TestCase):
 
     def setUp(self):
         self.list_client = self.client(
-            WSGIDispatcher([ListResourceMixin]),
+            WSGIDispatcher(resources=[ListResourceMixin]),
             Response
         )
 

@@ -15,7 +15,7 @@ class TestCORSMiddleware(TestCase):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_cors_settings'
 
         self.test_client = self.client(
-            WSGIDispatcher([ListResourceMixin]), Response
+            WSGIDispatcher(resources=[ListResourceMixin]), Response
         )
 
     def test_cors_middleware_sets_correct_headers_on_options(self):

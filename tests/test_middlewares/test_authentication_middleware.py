@@ -17,7 +17,7 @@ class TestAuthenticationMiddleware(TestCase):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_session_store_error_settings'
 
         self.test_client = self.client(
-            WSGIDispatcher([ListResourceMixin]), Response
+            WSGIDispatcher(resources=[ListResourceMixin]), Response
         )
 
         with self.assertRaises(ValueError):
@@ -29,7 +29,7 @@ class TestAuthenticationMiddleware(TestCase):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_auth_colelction_error_settings'
 
         self.test_client = self.client(
-            WSGIDispatcher([ListResourceMixin]), Response
+            WSGIDispatcher(resources=[ListResourceMixin]), Response
         )
 
         with self.assertRaises(ValueError):
@@ -41,7 +41,7 @@ class TestAuthenticationMiddleware(TestCase):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_auth_settings'
 
         self.test_client = self.client(
-            WSGIDispatcher([ListResourceMixin]), Response
+            WSGIDispatcher(resources=[ListResourceMixin]), Response
         )
 
         response = self.test_client.get('/')
@@ -61,7 +61,7 @@ class TestAuthenticationMiddleware(TestCase):
                 return Response()
 
         self.test_client = self.client(
-            WSGIDispatcher([TestResource]), Response
+            WSGIDispatcher(resources=[TestResource]), Response
         )
 
         session_store = locate(settings.SESSION_STORE)()

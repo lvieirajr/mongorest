@@ -22,7 +22,7 @@ class TestCreateResourceMixin(TestCase):
             collection = Test
 
         self.create_client = self.client(
-            WSGIDispatcher([TestCollectionCreate]),
+            WSGIDispatcher(resources=[TestCollectionCreate]),
             Response
         )
 

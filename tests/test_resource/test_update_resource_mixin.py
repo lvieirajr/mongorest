@@ -22,7 +22,7 @@ class TestUpdateResourceMixin(TestCase):
             collection = Test
 
         self.update_client = self.client(
-            WSGIDispatcher([TestCollectionUpdate]),
+            WSGIDispatcher(resources=[TestCollectionUpdate]),
             Response
         )
 

@@ -27,7 +27,7 @@ class TestWSGIWrapper(TestCase):
             def test(self, request):
                 return Response(status=999)
 
-        app = WSGIDispatcher([WSGIWrapperTest])
+        app = WSGIDispatcher(resources=[WSGIWrapperTest])
         response = self.client(app, Response).get('/')
 
         self.assertEqual(response.status_code, 999)
@@ -39,7 +39,7 @@ class TestWSGIWrapper(TestCase):
             def test(self, request):
                 return Response(status=999)
 
-        app = WSGIDispatcher([WSGIWrapperTest])
+        app = WSGIDispatcher(resources=[WSGIWrapperTest])
         response = self.client(app, Response).get('/test/')
 
         self.assertEqual(response.status_code, 404)
@@ -51,7 +51,7 @@ class TestWSGIWrapper(TestCase):
             def test(self, request):
                 return Response(status=999)
 
-        app = WSGIDispatcher([WSGIWrapperTest])
+        app = WSGIDispatcher(resources=[WSGIWrapperTest])
         response = self.client(app, Response).get('/test', follow_redirects=True)
 
         self.assertEqual(response.status_code, 999)

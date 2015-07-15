@@ -13,7 +13,7 @@ class TestDocumentsResourceMixin(TestCase):
 
     def setUp(self):
         self.documents_client = self.client(
-            WSGIDispatcher([DocumentsResourceMixin]),
+            WSGIDispatcher(resources=[DocumentsResourceMixin]),
             Response
         )
 

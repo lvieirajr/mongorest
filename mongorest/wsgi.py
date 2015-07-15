@@ -59,10 +59,11 @@ class WSGIDispatcher(DispatcherMiddleware):
     It defines the endpoints for each of the WSGIWrapper classes.
     """
 
-    def __init__(self, resources):
-        app = NotFound()
-        mounts = {}
+    def __init__(self, app=None, resources=None):
+        app = app or NotFound()
+        resources = resources or []
 
+        mounts = {}
         for resource in resources:
             key = '/{0}'.format(resource.endpoint.lstrip('/')).rstrip('/')
             resource_to_mount = resource()

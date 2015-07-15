@@ -21,7 +21,7 @@ class TestWSGIDispatcher(TestCase):
             def test(self, request):
                 return Response(status=999)
 
-        app = WSGIDispatcher([TestWSGIWrapper])
+        app = WSGIDispatcher(resources=[TestWSGIWrapper])
         self.assertEqual(list(app.mounts.keys()), ['/test'])
 
     def test_wsgi_dispatcher_adds_middlewares_to_mounts(self):
@@ -34,7 +34,7 @@ class TestWSGIDispatcher(TestCase):
             def test(self, request):
                 return Response(status=999)
 
-        app = WSGIDispatcher([TestWSGIWrapper])
+        app = WSGIDispatcher(resources=[TestWSGIWrapper])
         self.assertIsInstance(app.mounts['/test'], CORSMiddleware)
 
         environ.pop('MONGOREST_SETTINGS_MODULE')

@@ -13,7 +13,7 @@ class TestDeleteResourceMixin(TestCase):
 
     def setUp(self):
         self.delete_client = self.client(
-            WSGIDispatcher([DeleteResourceMixin]),
+            WSGIDispatcher(resources=[DeleteResourceMixin]),
             Response
         )
 
