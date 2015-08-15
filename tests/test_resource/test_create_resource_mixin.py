@@ -48,7 +48,7 @@ class TestCreateResourceMixin(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
-            {'test': 'Field \'test\' is required.'}
+            {'test_required': 'Field \'test\' is required.'}
         )
 
     def test_create_mixin_returns_201_and_created_documents_id(self):
@@ -57,5 +57,7 @@ class TestCreateResourceMixin(TestCase):
         )
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(deserialize(response.get_data(as_text=True)), 1)
+        self.assertEqual(
+            deserialize(response.get_data(as_text=True)), {'test': 1, '_id': 1}
+        )
         self.assertEqual(self.db.test.find_one({'_id': 1})['test'], 1)

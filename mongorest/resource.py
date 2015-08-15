@@ -71,9 +71,12 @@ class ListResourceMixin(Resource):
         Returns the list of _ids found on the collection
         """
         return Response(
-            self.collection.aggregate(
-                [{'$project': {'_id': 1}}], serialize=True
-            ),
+            serialize([
+                document['_id']
+                for document in self.collection.aggregate(
+                    [{'$match': deserialize(dict(request.args.items()))}],
+                )
+            ]),
             content_type='application/json',
             status=200
         )
@@ -90,7 +93,10 @@ class DocumentsResourceMixin(Resource):
         Returns the list of documents found on the collection
         """
         return Response(
-            self.collection.aggregate(serialize=True),
+            self.collection.aggregate(
+                [{'$match': deserialize(dict(request.args.items()))}],
+                serialize=True
+            ),
             content_type='application/json',
             status=200
         )
@@ -107,11 +113,12 @@ class CreateResourceMixin(Resource):
         Creates a new document based on the given data
         """
         document = self.collection(deserialize(request.get_data(as_text=True)))
+        created = document.save()
 
         return Response(
-            serialize(document.save()),
+            serialize(created),
             content_type='application/json',
-            status=201 if document.is_valid else 400
+            status=201 if '_id' in created else 400
         )
 
 
@@ -123,13 +130,27 @@ class RetrieveResourceMixin(Resource):
 
     def retrieve(self, request, _id):
         """
-        Returns the document containing the given _id or None
+        Returns the document containing the given _id or 404
         """
-        return Response(
-            self.collection.find_one(deserialize(_id), serialize=True),
-            content_type='application/json',
-            status=200
-        )
+        document = self.collection.find_one(deserialize(_id))
+
+        if document:
+            return Response(
+                serialize(document),
+                content_type='application/json',
+                status=200
+            )
+        else:
+            return Response(
+                serialize({
+                    '{0}_not_found'.format(self.collection.__name__.lower()):
+                    'Could not find a {0} document with the given _id.'.format(
+                        self.collection.__name__
+                    )
+                }),
+                content_type='application/json',
+                status=404
+            )
 
 
 class UpdateResourceMixin(Resource):
@@ -142,16 +163,30 @@ class UpdateResourceMixin(Resource):
         """
         Updates the document with the given _id using the given data
         """
-        document = self.collection(dict(
-            self.collection.find_one(deserialize(_id), serialize=False) or {},
-            **deserialize(request.get_data(as_text=True))
-        ))
+        to_update = self.collection.find_one(deserialize(_id))
 
-        return Response(
-            serialize(document.save()),
-            content_type='application/json',
-            status=200 if document.is_valid else 400
-        )
+        if to_update:
+            document = self.collection(
+                dict(to_update, **deserialize(request.get_data(as_text=True)))
+            )
+            updated = document.save()
+
+            return Response(
+                serialize(updated),
+                content_type='application/json',
+                status=200 if '_id' in updated else 400
+            )
+        else:
+            return Response(
+                serialize({
+                    '{0}_not_found'.format(self.collection.__name__.lower()):
+                    'Could not find a {0} document with the given _id.'.format(
+                        self.collection.__name__
+                    )
+                }),
+                content_type='application/json',
+                status=404
+            )
 
 
 class DeleteResourceMixin(Resource):
@@ -164,8 +199,24 @@ class DeleteResourceMixin(Resource):
         """
         Deletes the document with the given _id if it exists
         """
-        return Response(
-            serialize(self.collection.delete_one({'_id': deserialize(_id)})),
-            content_type='application/json',
-            status=200
-        )
+        to_delete = self.collection.find_one(deserialize(_id))
+
+        if to_delete:
+            deleted = self.collection.delete_one({'_id': deserialize(_id)})
+
+            return Response(
+                serialize(to_delete),
+                content_type='application/json',
+                status=200 if deleted.get('ok', 0) == 1 else 400
+            )
+        else:
+            return Response(
+                serialize({
+                    '{0}_not_found'.format(self.collection.__name__.lower()):
+                    'Could not find a {0} document with the given _id.'.format(
+                        self.collection.__name__
+                    )
+                }),
+                content_type='application/json',
+                status=404
+            )

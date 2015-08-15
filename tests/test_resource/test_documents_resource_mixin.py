@@ -41,7 +41,7 @@ class TestDocumentsResourceMixin(TestCase):
             deserialize(response.get_data(as_text=True)), []
         )
 
-    def test_documents_mixin_returns_list_of_collection_documents(self):
+    def test_documents_mixin_returns_list_of_all_collection_documents(self):
         self.db.collection.insert_one({'_id': 1, 'test': 'test1'})
         self.db.collection.insert_one({'_id': 2, 'test': 'test2'})
 
@@ -51,4 +51,16 @@ class TestDocumentsResourceMixin(TestCase):
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
             [{'_id': 1, 'test': 'test1'}, {'_id': 2, 'test': 'test2'}]
+        )
+
+    def test_documents_mixin_returns_filtered_list_of_collection_documents_if_args(self):
+        self.db.collection.insert_one({'_id': 1, 'test': 'test1'})
+        self.db.collection.insert_one({'_id': 2, 'test': 'test2'})
+
+        response = self.documents_client.get('/documents/?test=test2')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            deserialize(response.get_data(as_text=True)),
+            [{'_id': 2, 'test': 'test2'}]
         )

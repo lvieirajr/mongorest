@@ -61,7 +61,7 @@ class AuthenticationMiddleware(object):
             headers.extend([
                 (
                     'Set-Cookie', dump_cookie(
-                        'session_id', environ['session'].sid, 999999,
+                        'session_id', environ['session'].sid, 7 * 24 * 60 * 60,
                         domain=settings.DOMAIN
                     )
                 ),

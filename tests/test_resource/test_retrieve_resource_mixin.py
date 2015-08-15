@@ -33,13 +33,14 @@ class TestRetrieveResourceMixin(TestCase):
         self.assertEqual(urls[0].methods, set(['GET', 'HEAD']))
         self.assertEqual(urls[0].endpoint, 'retrieve')
 
-    def test_retrieve_mixin_returns_none_if_no_document_matches_id(self):
+    def test_retrieve_mixin_returns_not_found_if_no_document_matches_id(self):
         response = self.retrieve_client.get('/1/')
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
-            None
+            {'collection_not_found': 'Could not find a Collection '
+                                     'document with the given _id.'}
         )
 
     def test_retrieve_mixin_returns_document_containing_given_id(self):

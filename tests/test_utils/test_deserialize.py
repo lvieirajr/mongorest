@@ -53,3 +53,6 @@ class TestDeserialize(TestCase):
         self.assertEqual(
             deserialize('{"$uuid": "149ead99640043a2874ad83e00c559c2"}'), uuid
         )
+
+    def test_deserialize_serializes_and_deserializes_back_if_to_deserialize_is_already_a_json(self):
+        self.assertEqual(deserialize({'123': 123}), {'123': 123})

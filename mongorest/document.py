@@ -73,7 +73,7 @@ class Document(object):
     def __repr__(self):
         """
         Returns the representation of the Object formated like:
-        <{Collection Name}Document object at {hex location of the object}>
+        <Document<{%Collection Name%}> object at {%object id%}>
         """
         return '<Document<{0}> object at {1}>'.format(
             self._collection.__name__, hex(id(self)),
@@ -97,14 +97,13 @@ class Document(object):
                     else:
                         types = type_or_tuple.__name__
 
-                    self._errors[field] = \
+                    self._errors['{0}_type'.format(field)] = \
                         'Field \'{0}\' must be of type(s): {1}.'.format(
                             field, types
                         )
             elif field in self.meta.get('required', {}):
-                self._errors[field] = 'Field \'{0}\' is required.'.format(
-                    field
-                )
+                self._errors['{0}_required'.format(field)] = \
+                    'Field \'{0}\' is required.'.format(field)
 
     def _process(self):
         """
@@ -158,6 +157,6 @@ class Document(object):
                 )
                 return self._errors
 
-            return self._id
+            return self._fields
         else:
             return self._errors

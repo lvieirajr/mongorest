@@ -99,7 +99,9 @@ class TestDocument(TestCase):
 
         document = Document(TestCollection)
 
-        self.assertEqual(len(document.errors), 1)
+        self.assertEqual(
+            document.errors, {'test_required': 'Field \'test\' is required.'}
+        )
 
     def test_validate_sets_error_if_required_field_has_wrong_type(self):
         class TestCollection(Collection):
@@ -110,7 +112,17 @@ class TestDocument(TestCase):
 
         document = Document(TestCollection, {'test': 1.1})
 
-        self.assertEqual(len(document.errors), 1)
+        self.assertEqual(
+            document.errors,
+            {
+                'test_type': 'Field \'test\' must be of type(s): {0}.'.format(
+                    ' or '.join(
+                        t.__name__
+                        for t in (six.string_types + six.integer_types)
+                    )
+                )
+            }
+        )
 
     def test_validate_sets_error_if_optional_field_has_wrong_type(self):
         class TestCollection(Collection):
@@ -186,7 +198,10 @@ class TestDocument(TestCase):
 
         errors = Document(TestCollection).save()
 
-        self.assertEqual(errors, {'test': 'Field \'test\' is required.'})
+        self.assertEqual(
+            errors,
+            {'test_required': 'Field \'test\' is required.'}
+        )
 
     def test_save_returns_errors_if_error_ocurred_during_save(self):
         Collection.collection.create_index('test', unique=True)
@@ -200,15 +215,15 @@ class TestDocument(TestCase):
 
         Collection.collection.drop_index('test_1')
 
-    def test_save_returns__id_if_document_does_not_have_id_and_is_valid(self):
+    def test_save_returns_fields_if_document_does_not_have_id_and_is_valid(self):
         document = Document(Collection)
-        _id = document.save()
+        fields = document.save()
 
-        self.assertEqual(_id, document._id)
+        self.assertEqual(fields, document._fields)
 
-    def test_save_returns__id_if_document_has_id_and_is_valid(self):
+    def test_save_returns_fields_if_document_has_id_and_is_valid(self):
         document = Document(Collection)
         document._id = ObjectId()
-        _id = document.save()
+        fields = document.save()
 
-        self.assertEqual(_id, document._id)
+        self.assertEqual(fields, document._fields)

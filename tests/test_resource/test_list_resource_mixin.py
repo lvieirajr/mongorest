@@ -41,14 +41,26 @@ class TestListResourceMixin(TestCase):
             deserialize(response.get_data(as_text=True)), []
         )
 
-    def test_list_mixin_returns_list_of_collection__ids(self):
-        self.db.collection.insert_one({'_id': 1})
-        self.db.collection.insert_one({'_id': 2})
+    def test_list_mixin_returns_list_of_all_collection__ids_if_no_args(self):
+        self.db.collection.insert_one({'_id': '1'})
+        self.db.collection.insert_one({'_id': '2'})
 
         response = self.list_client.get('/')
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
-            [{'_id': 1}, {'_id': 2}]
+            ['1', '2']
+        )
+
+    def test_list_mixin_returns_list_of_filtered_collection__ids_if_args(self):
+        self.db.collection.insert_one({'_id': '1'})
+        self.db.collection.insert_one({'_id': '2'})
+
+        response = self.list_client.get('/?_id=1')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            deserialize(response.get_data(as_text=True)),
+            ['1']
         )
