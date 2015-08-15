@@ -78,3 +78,31 @@ class TestAuthenticationMiddleware(TestCase):
         )
 
         environ.pop('MONGOREST_SETTINGS_MODULE')
+
+    def test_adds_authorization_header_to_response_with_cookie(self):
+        environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_auth_settings'
+
+        class TestResource(ListResourceMixin):
+
+            def list(self, request):
+                request.environ['session']['test'] = 'test'
+                return Response()
+
+        self.test_client = self.client(
+            WSGIDispatcher(resources=[TestResource]), Response
+        )
+
+        session_store = locate(settings.SESSION_STORE)()
+        session = session_store.new()
+        session_store.save(session)
+
+        response = self.test_client.get(
+            '/', headers=[('Cookie', 'session_id={0}'.format(session.sid))]
+        )
+
+        self.assertIn('HTTP_AUTHORIZATION', response.headers)
+        self.assertEqual(
+            response.headers.get('HTTP_AUTHORIZATION'), 'Token {0}'.format(session.sid)
+        )
+
+        environ.pop('MONGOREST_SETTINGS_MODULE')
