@@ -132,7 +132,9 @@ class RetrieveResourceMixin(Resource):
         """
         Returns the document containing the given _id or 404
         """
-        document = self.collection.find_one(deserialize(_id))
+        document = self.collection.find_one(
+            dict(request.args, **{'_id': deserialize(_id)})
+        )
 
         if document:
             return Response(
@@ -163,7 +165,9 @@ class UpdateResourceMixin(Resource):
         """
         Updates the document with the given _id using the given data
         """
-        to_update = self.collection.find_one(deserialize(_id))
+        to_update = self.collection.find_one(
+            dict(request.args, **{'_id': deserialize(_id)})
+        )
 
         if to_update:
             document = self.collection(
@@ -199,7 +203,9 @@ class DeleteResourceMixin(Resource):
         """
         Deletes the document with the given _id if it exists
         """
-        to_delete = self.collection.find_one(deserialize(_id))
+        to_delete = self.collection.find_one(
+            dict(request.args, **{'_id': deserialize(_id)})
+        )
 
         if to_delete:
             deleted = self.collection.delete_one({'_id': deserialize(_id)})
