@@ -46,19 +46,23 @@ def login_required(wrapped):
         request = args[1]
         method = request.method
 
-        auth_collection = request.environ.get(
-            settings.AUTH_COLLECTION[
-                settings.AUTH_COLLECTION.rfind('.') + 1:
-            ].lower()
-        )
+        auth_collection = settings.AUTH_COLLECTION
+        auth_collection = auth_collection[auth_collection.rfind('.') + 1:]
+        auth_document = request.environ.get(auth_collection.lower())
 
-        if auth_collection:
+        if auth_document:
             authorized_methods = []
 
-            if hasattr(auth_collection, 'authorized_methods'):
-                authorized_methods = auth_collection.authorized_methods()
+            if hasattr(auth_document, 'authorized_methods'):
+                authorized_methods = auth_document.authorized_methods()
 
-            if auth_collection.is_authorized() or method in authorized_methods:
+            if auth_document.is_authorized() or method in authorized_methods:
+                request.args = dict(
+                    dict(request.args.items()), **{
+                        auth_collection.lower(): auth_document._id
+                    }
+                )
+
                 return wrapped(*args, **kwargs)
 
         return Response(

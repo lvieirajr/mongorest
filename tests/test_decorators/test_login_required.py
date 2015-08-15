@@ -58,7 +58,7 @@ class TestLoginRequired(TestCase):
             return []
 
         account = Mock(is_authorized=is_authorized, authorized_methods=authorized_methods)
-        request = Mock(environ={'account': account}, method='GET')
+        request = Mock(environ={'account': account}, args={}, method='GET')
 
         self.assertEqual(self.func(None, request).status_code, 200)
 
@@ -70,6 +70,6 @@ class TestLoginRequired(TestCase):
             return ['GET']
 
         account = Mock(is_authorized=is_authorized, authorized_methods=authorized_methods)
-        request = Mock(environ={'account': account}, method='GET')
+        request = Mock(environ={'account': account}, args={}, method='GET')
 
         self.assertEqual(self.func(None, request).status_code, 200)
