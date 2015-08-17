@@ -56,8 +56,10 @@ class TestCreateResourceMixin(TestCase):
             '/', data=serialize({'test': 1, '_id': 1})
         )
 
+        data = deserialize(response.get_data(as_text=True))
+        data.pop('created_at')
+        data.pop('updated_at')
+
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(
-            deserialize(response.get_data(as_text=True)), {'test': 1, '_id': 1}
-        )
+        self.assertEqual(data, {'test': 1, '_id': 1})
         self.assertEqual(self.db.test.find_one({'_id': 1})['test'], 1)

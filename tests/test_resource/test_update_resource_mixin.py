@@ -75,10 +75,9 @@ class TestUpdateResourceMixin(TestCase):
         response = self.update_client.put(
             '/1/', data=serialize({'test': 2})
         )
+        data = deserialize(response.get_data(as_text=True))
+        data.pop('updated_at')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
-            {'_id': 1, 'test': 2}
-        )
+        self.assertEqual(data, {'_id': 1, 'test': 2})
         self.assertEqual(self.db.test.find_one({'_id': 1})['test'], 2)

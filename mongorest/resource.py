@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import six
-
+from datetime import datetime
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
 
@@ -113,6 +113,8 @@ class CreateResourceMixin(Resource):
         Creates a new document based on the given data
         """
         document = self.collection(deserialize(request.get_data(as_text=True)))
+        document.created_at = datetime.utcnow()
+        document.updated_at = document.created_at
         created = document.save()
 
         return Response(
@@ -173,6 +175,7 @@ class UpdateResourceMixin(Resource):
             document = self.collection(
                 dict(to_update, **deserialize(request.get_data(as_text=True)))
             )
+            document.updated_at = datetime.utcnow()
             updated = document.save()
 
             return Response(
