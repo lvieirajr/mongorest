@@ -36,18 +36,12 @@ class Document(object):
     def __getattr__(self, attr):
         """
         Tries to get the attribute on the following order:
-        First checks if the attribute is one of:
-        (__new__, _collection, _fields, _errors, get)
-        Second checks if the attribute is in _fields
-        Third checks if the attribute is in _collection
+        First checks if the attribute is in _fields
+        Second checks if the attribute is in _collection
         If none of them is found, tries to get the attribute from self
         """
-        if attr in ('__new__', '_collection', '_fields', '_errors', 'get'):
-            return object.__getattribute__(self, attr)
-
-        elif attr in self._fields:
+        if attr in self._fields:
             return self._fields[attr]
-
         elif hasattr(self._collection, attr):
             attribute = getattr(self._collection, attr)
 
@@ -55,7 +49,6 @@ class Document(object):
                 return MethodType(attribute, self)
 
             return attribute
-
         else:
             return object.__getattribute__(self, attr)
 
@@ -97,13 +90,38 @@ class Document(object):
                     else:
                         types = type_or_tuple.__name__
 
-                    self._errors['{0}_type'.format(field)] = \
-                        'Field \'{0}\' must be of type(s): {1}.'.format(
-                            field, types
-                        )
+                    if 'code' not in self._errors:
+                        self._errors = {
+                            'code': 1,
+                            'type': 'ValidationError',
+                            'message': 'Document validation failed.',
+                            'errors': [],
+                            'document': self._fields,
+                        }
+
+                    self._errors['errors'].append({
+                        'code': 2,
+                        'type': 'FieldTypeError',
+                        'message': 'Field \'{0}\' must be of type(s): {1}.'
+                                   ''.format(field, types),
+                        'field': field,
+                    })
             elif field in self.meta.get('required', {}):
-                self._errors['{0}_required'.format(field)] = \
-                    'Field \'{0}\' is required.'.format(field)
+                if 'code' not in self._errors:
+                    self._errors = {
+                        'code': 1,
+                        'type': 'ValidationError',
+                        'message': 'Document validation failed.',
+                        'errors': [],
+                        'document': self._fields,
+                    }
+
+                self._errors['errors'].append({
+                    'code': 3,
+                    'type': 'RequiredFieldError',
+                    'message': 'Field \'{0}\' is required.'.format(field),
+                    'field': field,
+                })
 
     def _process(self):
         """
@@ -120,7 +138,14 @@ class Document(object):
         """
         Returns True if no errors have been found, False otherwise.
         """
-        return len(self._errors) == 0
+        return not len(self._errors)
+
+    @property
+    def collection(self):
+        """
+        Returns the Collection of the Document
+        """
+        return self._collection
 
     @property
     def fields(self):
@@ -151,12 +176,16 @@ class Document(object):
                     )
                 else:
                     self._fields['_id'] = self.insert_one(self._fields)
-            except PyMongoError as error:
-                self._errors['save'] = error.details.get(
-                    'errmsg', error.details.get('err', 'Error.')
-                )
-                return self._errors
 
-            return self._fields
-        else:
-            return self._errors
+                return self._fields
+            except PyMongoError as error:
+                self._errors = {
+                    'code': 0,
+                    'type': 'PyMongoError',
+                    'message':  error.details.get(
+                        'errmsg', error.details.get('err', 'PyMongoError.')
+                    ),
+                    'data': {'document': self._fields},
+                }
+
+        return self._errors

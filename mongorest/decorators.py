@@ -8,31 +8,9 @@ from .settings import settings
 from .utils import serialize
 
 __all__ = [
-    'ensure_indexes',
     'login_required',
     'serializable',
 ]
-
-
-def ensure_indexes(wrapped):
-    """
-    Calls the 'indexes' function from the class of the wrapped function
-    """
-
-    @wraps(wrapped)
-    def wrapper(*args, **kwargs):
-        if hasattr(args[0], 'indexes'):
-            args[0].indexes()
-
-        return wrapped(*args, **kwargs)
-
-    if hasattr(wrapped, 'decorators'):
-        wrapper.decorators = wrapped.decorators
-        wrapper.decorators.append('ensure_indexes')
-    else:
-        wrapper.decorators = ['ensure_indexes']
-
-    return wrapper
 
 
 def login_required(wrapped):

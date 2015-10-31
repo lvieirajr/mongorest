@@ -19,22 +19,12 @@ class TestCollection(TestCase):
         self.collection = Collection
 
     # __new__
-    def test_new_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.__new__.decorators)
-
     def test_new_returns_a_document_object(self):
         self.assertIsInstance(Collection(), Document)
 
-    # indexes
-    @patch('pymongo.collection.Collection.create_index')
-    def test_indexes_creates_index_on__id(self, create_index):
-        self.collection.indexes()
-        create_index.assert_called_once_with('_id')
-
     # find_one
-    def test_find_one_is_decorated_with_serializable_and_ensure_indexes(self):
+    def test_find_one_is_decorated_with_serializable(self):
         self.assertIn('serializable', self.collection.find_one.decorators)
-        self.assertIn('ensure_indexes', self.collection.find_one.decorators)
 
     def test_find_one_returns_none_if_no_document_passes_the_filter(self):
         self.assertIsNone(self.collection.find_one('test'))
@@ -47,9 +37,8 @@ class TestCollection(TestCase):
         self.assertIsNotNone(document.get('_id'))
 
     # find
-    def test_find_is_decorated_with_serializable_and_ensure_indexes(self):
+    def test_find_is_decorated_with_serializable(self):
         self.assertIn('serializable', self.collection.find.decorators)
-        self.assertIn('ensure_indexes', self.collection.find.decorators)
 
     def test_find_returns_empty_list_if_no_documents_pass_the_filter(self):
         self.assertEqual(self.collection.find({}), [])
@@ -61,9 +50,8 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.find({}), documents)
 
     # aggregate
-    def test_aggregate_is_decorated_with_serializable_and_ensure_indexes(self):
+    def test_aggregate_is_decorated_with_serializable(self):
         self.assertIn('serializable', self.collection.aggregate.decorators)
-        self.assertIn('ensure_indexes', self.collection.aggregate.decorators)
 
     def test_aggregate_returns_empty_list_if_no_document_returns_from_the_pipeline(self):
         self.assertEqual(self.collection.aggregate([]), [])
@@ -75,9 +63,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.aggregate([]), documents)
 
     # insert_one
-    def test_insert_one_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.insert_one.decorators)
-
     def test_insert_one_inserts_document_into_the_collection(self):
         self.assertEqual(self.collection.count(), 0)
 
@@ -86,9 +71,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 1)
 
     # insert_many
-    def test_insert_many_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.insert_many.decorators)
-
     def test_insert_many_inserts_documents_into_the_collection(self):
         self.assertEqual(self.collection.count(), 0)
 
@@ -97,9 +79,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 3)
 
     # update_one
-    def test_update_one_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.update_one.decorators)
-
     def test_udpate_one_updates_a_document_that_passes_the_filter(self):
         _id = self.collection.insert_one({})
 
@@ -110,9 +89,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.find_one().get('test'), 'test')
 
     # update_many
-    def test_update_many_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.update_many.decorators)
-
     def test_udpate_many_updates_all_documents_that_pass_the_filter(self):
         self.collection.insert_many([{}, {}, {}])
 
@@ -125,9 +101,6 @@ class TestCollection(TestCase):
             self.assertEqual(document.get('test'), 'test')
 
     # replace_one
-    def test_replace_one_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.replace_one.decorators)
-
     def test_replace_one_replaces_a_document_that_passes_the_filter(self):
         _id = self.collection.insert_one({})
 
@@ -138,9 +111,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.find_one().get('test'), 'test')
 
     # delete_one
-    def test_delete_one_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.delete_one.decorators)
-
     def test_delete_one_deletes_a_single_document_that_passes_the_filter(self):
         self.collection.insert_many([{}, {}, {}])
 
@@ -151,9 +121,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 2)
 
     # delete_many
-    def test_delete_many_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.delete_many.decorators)
-
     def test_delete_many_deletes_all_documents_that_pass_the_filter(self):
         self.collection.insert_many([{}, {}, {}])
 
@@ -164,9 +131,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 0)
 
     # count
-    def test_count_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.count.decorators)
-
     def test_count_returns_number_of_documents_that_pass_the_filter(self):
         self.collection.insert_many([{'1': '1'}, {'1': '1'}, {'1': '2'}, {}])
 
@@ -175,9 +139,6 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 4)
 
     # get
-    def test_get_is_decorated_with_ensure_indexes(self):
-        self.assertIn('ensure_indexes', self.collection.get.decorators)
-
     def test_get_returns_a_document_object_if_at_least_one_passes_filter(self):
         self.collection.insert_one({'test': 'test'})
 
@@ -191,3 +152,21 @@ class TestCollection(TestCase):
         document = self.collection.get({'test': 'not_test'})
 
         self.assertIsNone(document)
+
+    # documents
+    def test_documents_returns_a_list_of_document_objects_if_at_least_one_passes_filter(self):
+        self.collection.insert_many([{'test': 'test'}, {'test': 'test'}])
+
+        documents = self.collection.documents({'test': 'test'})
+
+        self.assertIsInstance(documents, list)
+        self.assertEqual(len(documents), 2)
+
+        for document in documents:
+            self.assertIsInstance(document, Document)
+            self.assertEqual(document.test, 'test')
+
+    def test_get_returns_empty_list_if_no_documents_pass_the_filter(self):
+        self.collection.insert_one({'test': 'test'})
+
+        self.assertEqual(self.collection.documents({'test': 'not_test'}), [])

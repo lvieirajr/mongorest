@@ -50,12 +50,24 @@ class TestUpdateResourceMixin(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
+        errors = deserialize(response.get_data(as_text=True))
+        errors['document'].pop('updated_at')
+
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
+            errors,
             {
-                'test_type': 'Field \'test\' must be of type(s): {0}.'.format(
-                    ' or '.join(t.__name__ for t in list(six.integer_types))
-                )
+                'code': 1,
+                'type': 'ValidationError',
+                'message': 'Document validation failed.',
+                'errors': [
+                    {
+                        'code': 2,
+                        'type': 'FieldTypeError',
+                        'message': 'Field \'test\' must be of type(s): int.',
+                        'field': 'test',
+                    },
+                ],
+                'document': {'_id': 1, 'test': '1'},
             }
         )
 

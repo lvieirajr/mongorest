@@ -62,7 +62,6 @@ class AuthenticationMiddleware(object):
                 (
                     'Set-Cookie', dump_cookie(
                         'session_id', environ['session'].sid, 7 * 24 * 60 * 60,
-                        domain=settings.DOMAIN
                     )
                 ),
                 (

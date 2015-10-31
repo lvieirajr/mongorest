@@ -46,9 +46,27 @@ class TestCreateResourceMixin(TestCase):
         response = self.create_client.post('/', data=serialize({}))
 
         self.assertEqual(response.status_code, 400)
+
+        errors = deserialize(response.get_data(as_text=True))
+        errors['document'].pop('created_at')
+        errors['document'].pop('updated_at')
+
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
-            {'test_required': 'Field \'test\' is required.'}
+            errors,
+            {
+                'code': 1,
+                'type': 'ValidationError',
+                'message': 'Document validation failed.',
+                'errors': [
+                    {
+                        'code': 3,
+                        'type': 'RequiredFieldError',
+                        'message': 'Field \'test\' is required.',
+                        'field': 'test',
+                    },
+                ],
+                'document': {},
+            }
         )
 
     def test_create_mixin_returns_201_and_created_documents_id(self):

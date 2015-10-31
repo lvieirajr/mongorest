@@ -100,13 +100,27 @@ class TestDocument(TestCase):
         document = Document(TestCollection)
 
         self.assertEqual(
-            document.errors, {'test_required': 'Field \'test\' is required.'}
+            document.errors,
+            {
+                'code': 1,
+                'type': 'ValidationError',
+                'message': 'Document validation failed.',
+                'errors': [
+                    {
+                        'code': 3,
+                        'type': 'RequiredFieldError',
+                        'message': 'Field \'test\' is required.',
+                        'field': 'test',
+                    },
+                ],
+                'document': {},
+            }
         )
 
     def test_validate_sets_error_if_required_field_has_wrong_type(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': six.string_types + six.integer_types},
+                'required': {'test': ObjectId},
                 'optional': {}
             }
 
@@ -115,12 +129,18 @@ class TestDocument(TestCase):
         self.assertEqual(
             document.errors,
             {
-                'test_type': 'Field \'test\' must be of type(s): {0}.'.format(
-                    ' or '.join(
-                        t.__name__
-                        for t in (six.string_types + six.integer_types)
-                    )
-                )
+                'code': 1,
+                'type': 'ValidationError',
+                'message': 'Document validation failed.',
+                'errors': [
+                    {
+                        'code': 2,
+                        'type': 'FieldTypeError',
+                        'message': 'Field \'test\' must be of type(s): ObjectId.',
+                        'field': 'test',
+                    },
+                ],
+                'document': {'test': 1.1},
             }
         )
 
@@ -133,7 +153,23 @@ class TestDocument(TestCase):
 
         document = Document(TestCollection, {'test': 1.1})
 
-        self.assertEqual(len(document.errors), 1)
+        self.assertEqual(
+            document.errors,
+            {
+                'code': 1,
+                'type': 'ValidationError',
+                'message': 'Document validation failed.',
+                'errors': [
+                    {
+                        'code': 2,
+                        'type': 'FieldTypeError',
+                        'message': 'Field \'test\' must be of type(s): ObjectId.',
+                        'field': 'test',
+                    },
+                ],
+                'document': {'test': 1.1},
+            }
+        )
 
     # _process
     def test_process_calls_collections_process_functions(self):
@@ -192,7 +228,7 @@ class TestDocument(TestCase):
     def test_save_returns_errors_if_document_is_not_valid(self):
         class TestCollection(Collection):
             meta = {
-                'required': {'test': six.string_types},
+                'required': {'test': ObjectId},
                 'optional': {}
             }
 
@@ -200,7 +236,20 @@ class TestDocument(TestCase):
 
         self.assertEqual(
             errors,
-            {'test_required': 'Field \'test\' is required.'}
+            {
+                'code': 1,
+                'type': 'ValidationError',
+                'message': 'Document validation failed.',
+                'errors': [
+                    {
+                        'code': 3,
+                        'type': 'RequiredFieldError',
+                        'message': 'Field \'test\' is required.',
+                        'field': 'test',
+                    },
+                ],
+                'document': {},
+            }
         )
 
     def test_save_returns_errors_if_error_ocurred_during_save(self):
@@ -211,9 +260,10 @@ class TestDocument(TestCase):
         document.test = 'test'
         errors = document.save()
 
-        self.assertIsInstance(errors['save'], six.string_types)
+        self.assertEquals(errors['code'], 0)
+        self.assertEquals(errors['type'], 'PyMongoError')
 
-        Collection.collection.drop_index('test_1')
+        Collection.drop_index('test_1')
 
     def test_save_returns_fields_if_document_does_not_have_id_and_is_valid(self):
         document = Document(Collection)

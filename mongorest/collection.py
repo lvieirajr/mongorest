@@ -2,8 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 import six
+from types import MethodType, FunctionType
 
-from .decorators import ensure_indexes, serializable
+from .decorators import serializable
 from .document import Document
 
 __all__ = [
@@ -33,13 +34,27 @@ class CollectionMeta(type):
 
         return super(mcs, mcs).__new__(mcs, *(name, bases, members), **kwargs)
 
+    def __getattr__(self, attr):
+        """
+        Tries to find the attribute in the underlying PyMongo collection
+        If it can't find it defaults to returning the attribute from self
+        """
+        if hasattr(self.collection, attr):
+            attribute = getattr(self.collection, attr)
+
+            if type(attribute) == FunctionType:
+                return MethodType(attribute, self)
+
+            return attribute
+        else:
+            return object.__getattribute__(self, attr)
+
 
 class Collection(six.with_metaclass(CollectionMeta, object)):
     """
     Base Class for Collections.
     """
 
-    @ensure_indexes
     def __new__(cls, *args, **kwargs):
         """
         Instantiating a Collection will return a Document from that Collection
@@ -47,15 +62,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return Document(cls, *args, **kwargs)
 
     @classmethod
-    def indexes(cls):
-        """
-        Creates indexes required by the collection
-        """
-        cls.collection.create_index('_id')
-
-    @classmethod
     @serializable
-    @ensure_indexes
     def find_one(cls, query=None, *args, **kwargs):
         """
         Returns one document dict if at least one passes the filter
@@ -65,7 +72,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
 
     @classmethod
     @serializable
-    @ensure_indexes
     def find(cls, *args, **kwargs):
         """
         Returns all document dicts that pass the filter
@@ -74,7 +80,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
 
     @classmethod
     @serializable
-    @ensure_indexes
     def aggregate(cls, pipeline=None, **kwargs):
         """
         Returns the document dicts returned from the Aggregation Pipeline
@@ -82,7 +87,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return list(cls.collection.aggregate(pipeline or [], **kwargs))
 
     @classmethod
-    @ensure_indexes
     def insert_one(cls, document):
         """
         Inserts a document into the Collection and returns its _id
@@ -90,7 +94,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.insert_one(document).inserted_id
 
     @classmethod
-    @ensure_indexes
     def insert_many(cls, documents, ordered=True):
         """
         Inserts a list of documents into the Collection and returns their _ids
@@ -98,7 +101,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.insert_many(documents, ordered).inserted_ids
 
     @classmethod
-    @ensure_indexes
     def update_one(cls, query, update, upsert=False):
         """
         Updates a document that passes the filter with the udpate value
@@ -107,7 +109,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.update_one(query, update, upsert).raw_result
 
     @classmethod
-    @ensure_indexes
     def update_many(cls, query, update, upsert=False):
         """
         Updates all documents that pass the filter with the udpate value
@@ -116,7 +117,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.update_many(query, update, upsert).raw_result
 
     @classmethod
-    @ensure_indexes
     def replace_one(cls, query, replacement, upsert=False):
         """
         Replaces a document that passes the filter.
@@ -127,7 +127,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         ).raw_result
 
     @classmethod
-    @ensure_indexes
     def delete_one(cls, query):
         """
         Deletes one document that passes the filter
@@ -135,7 +134,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.delete_one(query).raw_result
 
     @classmethod
-    @ensure_indexes
     def delete_many(cls, query):
         """
         Deletes all documents that pass the filter
@@ -143,7 +141,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.delete_many(query).raw_result
 
     @classmethod
-    @ensure_indexes
     def count(cls, query=None, with_limit_and_skip=False):
         """
         Returns the number of documents that pass the filter
@@ -151,7 +148,6 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.find(query).count(with_limit_and_skip)
 
     @classmethod
-    @ensure_indexes
     def get(cls, query=None, **kwargs):
         """
         Returns a Document if any document is filtered, returns None otherwise
@@ -160,3 +156,13 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
             cls, cls.collection.find_one(query, **kwargs), True
         )
         return document if document.fields else None
+
+    @classmethod
+    def documents(cls, query=None, **kwargs):
+        """
+        Returns a list of Documents if any document is filtered
+        """
+        return [
+            Document(cls, document, True)
+            for document in cls.collection.find(query, **kwargs)
+        ]

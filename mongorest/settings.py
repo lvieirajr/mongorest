@@ -21,7 +21,6 @@ DEFAULT = {
                                         'X-Requested-With',
         'Access-Control-Allow-Credentials': 'true',
     },
-    'DOMAIN': '127.0.0.1',
     'MIDDLEWARES': [],
     'MONGODB': {
         'URI': '',

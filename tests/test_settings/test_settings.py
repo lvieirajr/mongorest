@@ -32,8 +32,6 @@ class TestSettings(TestCase):
             settings.CORS['Access-Control-Allow-Credentials'], 'true'
         )
 
-        self.assertEqual(settings.DOMAIN, '127.0.0.1')
-
         self.assertEqual(settings.MIDDLEWARES, [])
 
         self.assertIsNotNone(settings.MONGODB)
