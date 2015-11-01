@@ -63,6 +63,9 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.aggregate([]), documents)
 
     # insert_one
+    def test_insert_one_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.insert_one.decorators)
+
     def test_insert_one_inserts_document_into_the_collection(self):
         self.assertEqual(self.collection.count(), 0)
 
@@ -71,6 +74,9 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 1)
 
     # insert_many
+    def test_insert_many_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.insert_many.decorators)
+
     def test_insert_many_inserts_documents_into_the_collection(self):
         self.assertEqual(self.collection.count(), 0)
 
@@ -79,6 +85,9 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 3)
 
     # update_one
+    def test_update_one_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.update_one.decorators)
+
     def test_udpate_one_updates_a_document_that_passes_the_filter(self):
         _id = self.collection.insert_one({})
 
@@ -89,6 +98,9 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.find_one().get('test'), 'test')
 
     # update_many
+    def test_update_many_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.update_many.decorators)
+
     def test_udpate_many_updates_all_documents_that_pass_the_filter(self):
         self.collection.insert_many([{}, {}, {}])
 
@@ -101,6 +113,9 @@ class TestCollection(TestCase):
             self.assertEqual(document.get('test'), 'test')
 
     # replace_one
+    def test_replace_one_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.replace_one.decorators)
+
     def test_replace_one_replaces_a_document_that_passes_the_filter(self):
         _id = self.collection.insert_one({})
 
@@ -111,6 +126,9 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.find_one().get('test'), 'test')
 
     # delete_one
+    def test_delete_one_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.delete_one.decorators)
+
     def test_delete_one_deletes_a_single_document_that_passes_the_filter(self):
         self.collection.insert_many([{}, {}, {}])
 
@@ -121,6 +139,9 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 2)
 
     # delete_many
+    def test_replace_many_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.delete_many.decorators)
+
     def test_delete_many_deletes_all_documents_that_pass_the_filter(self):
         self.collection.insert_many([{}, {}, {}])
 
@@ -131,6 +152,9 @@ class TestCollection(TestCase):
         self.assertEqual(self.collection.count(), 0)
 
     # count
+    def test_count_is_decorated_with_serializable(self):
+        self.assertIn('serializable', self.collection.count.decorators)
+
     def test_count_returns_number_of_documents_that_pass_the_filter(self):
         self.collection.insert_many([{'1': '1'}, {'1': '1'}, {'1': '2'}, {}])
 
@@ -166,7 +190,7 @@ class TestCollection(TestCase):
             self.assertIsInstance(document, Document)
             self.assertEqual(document.test, 'test')
 
-    def test_get_returns_empty_list_if_no_documents_pass_the_filter(self):
+    def test_documents_returns_empty_list_if_no_documents_pass_the_filter(self):
         self.collection.insert_one({'test': 'test'})
 
         self.assertEqual(self.collection.documents({'test': 'not_test'}), [])

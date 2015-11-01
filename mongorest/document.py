@@ -4,6 +4,8 @@ from __future__ import absolute_import, unicode_literals
 from pymongo.errors import PyMongoError
 from types import MethodType, FunctionType
 
+from mongorest.decorators import serializable
+
 __all__ = [
     'Document',
 ]
@@ -161,6 +163,7 @@ class Document(object):
         """
         return self._errors
 
+    @serializable
     def save(self):
         """
         Saves the Document to the database if it is valid.

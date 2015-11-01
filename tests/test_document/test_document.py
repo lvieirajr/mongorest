@@ -225,6 +225,9 @@ class TestDocument(TestCase):
         self.assertEqual(document._errors, document.errors)
 
     # save
+    def test_save_is_decorated_with_serializable(self):
+        self.assertIn('serializable', Document.save.decorators)
+
     def test_save_returns_errors_if_document_is_not_valid(self):
         class TestCollection(Collection):
             meta = {

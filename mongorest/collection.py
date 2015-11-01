@@ -87,6 +87,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return list(cls.collection.aggregate(pipeline or [], **kwargs))
 
     @classmethod
+    @serializable
     def insert_one(cls, document):
         """
         Inserts a document into the Collection and returns its _id
@@ -94,6 +95,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.insert_one(document).inserted_id
 
     @classmethod
+    @serializable
     def insert_many(cls, documents, ordered=True):
         """
         Inserts a list of documents into the Collection and returns their _ids
@@ -101,6 +103,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.insert_many(documents, ordered).inserted_ids
 
     @classmethod
+    @serializable
     def update_one(cls, filter, update, upsert=False):
         """
         Updates a document that passes the filter with the udpate value
@@ -109,6 +112,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.update_one(filter, update, upsert).raw_result
 
     @classmethod
+    @serializable
     def update_many(cls, filter, update, upsert=False):
         """
         Updates all documents that pass the filter with the udpate value
@@ -117,6 +121,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.update_many(filter, update, upsert).raw_result
 
     @classmethod
+    @serializable
     def replace_one(cls, filter, replacement, upsert=False):
         """
         Replaces a document that passes the filter.
@@ -127,6 +132,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         ).raw_result
 
     @classmethod
+    @serializable
     def delete_one(cls, filter):
         """
         Deletes one document that passes the filter
@@ -134,6 +140,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.delete_one(filter).raw_result
 
     @classmethod
+    @serializable
     def delete_many(cls, filter):
         """
         Deletes all documents that pass the filter
@@ -141,6 +148,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return cls.collection.delete_many(filter).raw_result
 
     @classmethod
+    @serializable
     def count(cls, filter=None, **kwargs):
         """
         Returns the number of documents that pass the filter
