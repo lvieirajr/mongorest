@@ -63,7 +63,9 @@ class TestUpdateResourceMixin(TestCase):
                     {
                         'code': 2,
                         'type': 'FieldTypeError',
-                        'message': 'Field \'test\' must be of type(s): int.',
+                        'message': 'Field \'test\' must be of type(s): {0}.'.format(
+                            ' or '.join(t.__name__ for t in list(six.integer_types))
+                        ),
                         'field': 'test',
                     },
                 ],
