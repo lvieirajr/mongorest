@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from .test_create_resource_mixin import *
-from .test_documents_resource_mixin import *
 from .test_delete_resource_mixin import *
 from .test_list_resource_mixin import *
 from .test_resource import *

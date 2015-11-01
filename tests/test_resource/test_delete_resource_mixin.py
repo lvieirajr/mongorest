@@ -33,14 +33,21 @@ class TestDeleteResourceMixin(TestCase):
         self.assertEqual(urls[0].methods, set(['DELETE']))
         self.assertEqual(urls[0].endpoint, 'delete')
 
-    def test_udpate_mixin_returns_not_found_if_no_document_matches_id(self):
+    def test_delete_mixin_returns_not_found_if_no_document_matches_id(self):
         response = self.delete_client.delete('/1/')
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
-            {'collection_not_found': 'Could not find a Collection '
-                                     'document with the given _id.'}
+            {
+                'code': 4,
+                'type': 'DocumentNotFound',
+                'message': '{0} is not a valid {1} document _id.'.format(
+                    repr(1), 'Collection'
+                ),
+                '_id': 1,
+                'collection': 'Collection',
+            }
         )
 
     def test_delete_deletes_and_returns_deleted_document(self):

@@ -79,8 +79,15 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
-            {'test_not_found': 'Could not find a Test '
-                                     'document with the given _id.'}
+            {
+                'code': 4,
+                'type': 'DocumentNotFound',
+                'message': '{0} is not a valid {1} document _id.'.format(
+                    repr(1), 'Test'
+                ),
+                '_id': 1,
+                'collection': 'Test',
+            }
         )
 
     def test_update_mixin_returns_updated_document_if_data_is_valid(self):

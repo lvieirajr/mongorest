@@ -13,7 +13,6 @@ from .wsgi import WSGIWrapper
 __all__ = [
     'Resource',
     'ListResourceMixin',
-    'DocumentsResourceMixin',
     'CreateResourceMixin',
     'RetrieveResourceMixin',
     'UpdateResourceMixin',
@@ -68,34 +67,13 @@ class ListResourceMixin(Resource):
 
     def list(self, request):
         """
-        Returns the list of _ids found on the collection
-        """
-        return Response(
-            serialize([
-                document['_id']
-                for document in self.collection.aggregate(
-                    [{'$match': deserialize(dict(request.args.items()))}],
-                )
-            ]),
-            content_type='application/json',
-            status=200
-        )
-
-
-class DocumentsResourceMixin(Resource):
-    """
-    Resource Mixin that provides the documents action for your endpoint.
-    """
-    rules = [Rule('/documents/', methods=['GET'], endpoint='documents')]
-
-    def documents(self, request):
-        """
         Returns the list of documents found on the collection
         """
         return Response(
-            self.collection.aggregate(
-                [{'$match': deserialize(dict(request.args.items()))}],
-                serialize=True
+            response=serialize(
+                self.collection.aggregate([
+                    {'$match': deserialize(dict(request.args.items()))}
+                ])
             ),
             content_type='application/json',
             status=200
@@ -113,14 +91,15 @@ class CreateResourceMixin(Resource):
         Creates a new document based on the given data
         """
         document = self.collection(deserialize(request.get_data(as_text=True)))
-        document.created_at = datetime.utcnow()
+        document.created_at = datetime.now()
         document.updated_at = document.created_at
+
         created = document.save()
 
         return Response(
-            serialize(created),
+            response=serialize(created),
             content_type='application/json',
-            status=201 if '_id' in created else 400
+            status=201 if document.is_valid else 400
         )
 
 
@@ -134,23 +113,25 @@ class RetrieveResourceMixin(Resource):
         """
         Returns the document containing the given _id or 404
         """
-        document = self.collection.find_one(
-            dict(request.args, **{'_id': deserialize(_id)})
-        )
+        _id = deserialize(_id)
 
-        if document:
+        retrieved = self.collection.find_one({'_id': _id})
+        if retrieved:
             return Response(
-                serialize(document),
+                serialize(retrieved),
                 content_type='application/json',
                 status=200
             )
         else:
             return Response(
                 serialize({
-                    '{0}_not_found'.format(self.collection.__name__.lower()):
-                    'Could not find a {0} document with the given _id.'.format(
-                        self.collection.__name__
-                    )
+                    'code': 4,
+                    'type': 'DocumentNotFound',
+                    'message': '{0} is not a valid {1} document _id.'.format(
+                        repr(_id), self.collection.__name__
+                    ),
+                    '_id': _id,
+                    'collection': self.collection.__name__,
                 }),
                 content_type='application/json',
                 status=404
@@ -167,29 +148,32 @@ class UpdateResourceMixin(Resource):
         """
         Updates the document with the given _id using the given data
         """
-        to_update = self.collection.find_one(
-            dict(request.args, **{'_id': deserialize(_id)})
-        )
+        _id = deserialize(_id)
 
+        to_update = self.collection.find_one({'_id': _id})
         if to_update:
             document = self.collection(
                 dict(to_update, **deserialize(request.get_data(as_text=True)))
             )
-            document.updated_at = datetime.utcnow()
+            document.updated_at = datetime.now()
+
             updated = document.save()
 
             return Response(
                 serialize(updated),
                 content_type='application/json',
-                status=200 if '_id' in updated else 400
+                status=200 if document.is_valid else 400
             )
         else:
             return Response(
                 serialize({
-                    '{0}_not_found'.format(self.collection.__name__.lower()):
-                    'Could not find a {0} document with the given _id.'.format(
-                        self.collection.__name__
-                    )
+                    'code': 4,
+                    'type': 'DocumentNotFound',
+                    'message': '{0} is not a valid {1} document _id.'.format(
+                        repr(_id), self.collection.__name__
+                    ),
+                    '_id': _id,
+                    'collection': self.collection.__name__,
                 }),
                 content_type='application/json',
                 status=404
@@ -206,12 +190,11 @@ class DeleteResourceMixin(Resource):
         """
         Deletes the document with the given _id if it exists
         """
-        to_delete = self.collection.find_one(
-            dict(request.args, **{'_id': deserialize(_id)})
-        )
+        _id = deserialize(_id)
 
+        to_delete = self.collection.find_one({'_id': _id})
         if to_delete:
-            deleted = self.collection.delete_one({'_id': deserialize(_id)})
+            deleted = self.collection.delete_one({'_id': _id})
 
             return Response(
                 serialize(to_delete),
@@ -221,10 +204,13 @@ class DeleteResourceMixin(Resource):
         else:
             return Response(
                 serialize({
-                    '{0}_not_found'.format(self.collection.__name__.lower()):
-                    'Could not find a {0} document with the given _id.'.format(
-                        self.collection.__name__
-                    )
+                    'code': 4,
+                    'type': 'DocumentNotFound',
+                    'message': '{0} is not a valid {1} document _id.'.format(
+                        repr(_id), self.collection.__name__
+                    ),
+                    '_id': _id,
+                    'collection': self.collection.__name__,
                 }),
                 content_type='application/json',
                 status=404
