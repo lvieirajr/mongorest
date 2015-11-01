@@ -10,9 +10,8 @@ from mongorest import __version__ as version
 class Test(TestCommand):
 
     def finalize_options(self):
+        self.test_suite = 'test_suite'
         TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
 
     def run_tests(self):
         from unittest import TextTestRunner, defaultTestLoader as loader

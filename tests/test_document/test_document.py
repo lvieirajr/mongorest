@@ -260,8 +260,8 @@ class TestDocument(TestCase):
         document.test = 'test'
         errors = document.save()
 
-        self.assertEquals(errors['code'], 0)
-        self.assertEquals(errors['type'], 'PyMongoError')
+        self.assertEqual(errors['code'], 0)
+        self.assertEqual(errors['type'], 'PyMongoError')
 
         Collection.drop_index('test_1')
 
