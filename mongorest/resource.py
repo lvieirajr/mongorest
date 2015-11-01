@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import six
+from collections import OrderedDict
 from datetime import datetime
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
@@ -71,11 +72,35 @@ class ListResourceMixin(Resource):
         """
         Returns the list of documents found on the collection
         """
+        match_args = deserialize(dict(request.args.items()))
+
+        sort = [
+            field.strip()
+            for field in match_args.pop('sort', '').split(',')
+            if field.strip()
+        ]
+        fields = [
+            field.strip()
+            for field in match_args.pop('fields', '').split(',')
+            if field.strip()
+        ]
+
+        pipeline = [{'$match': match_args}]
+
+        if sort:
+            pipeline.append({
+                '$sort': OrderedDict(
+                    (field.lstrip('-'), (-1 if field.startswith('-') else 1))
+                    for field in sort
+                )
+            })
+
+        if fields:
+            pipeline.append({'$project': {'_id': 0}})
+            pipeline[-1]['$project'].update({field: 1 for field in fields})
+
         return Response(
-            response=self.collection.aggregate(
-                [{'$match': deserialize(dict(request.args.items()))}],
-                serialize=True
-            ),
+            response=self.collection.aggregate(pipeline, serialize=True),
             content_type='application/json',
             status=200
         )
