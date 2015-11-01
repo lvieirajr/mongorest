@@ -72,10 +72,9 @@ class ListResourceMixin(Resource):
         Returns the list of documents found on the collection
         """
         return Response(
-            response=serialize(
-                self.collection.aggregate([
-                    {'$match': deserialize(dict(request.args.items()))}
-                ])
+            response=self.collection.aggregate(
+                [{'$match': deserialize(dict(request.args.items()))}],
+                serialize=True
             ),
             content_type='application/json',
             status=200
@@ -96,10 +95,10 @@ class CreateResourceMixin(Resource):
         document.created_at = datetime.now()
         document.updated_at = document.created_at
 
-        created = document.save()
+        created = document.save(serialize=True)
 
         return Response(
-            response=serialize(created),
+            response=created,
             content_type='application/json',
             status=201 if document.is_valid else 400
         )
@@ -120,13 +119,13 @@ class RetrieveResourceMixin(Resource):
         retrieved = self.collection.find_one({'_id': _id})
         if retrieved:
             return Response(
-                serialize(retrieved),
+                response=serialize(retrieved),
                 content_type='application/json',
                 status=200
             )
         else:
             return Response(
-                serialize({
+                response=serialize({
                     'code': 4,
                     'type': 'DocumentNotFound',
                     'message': '{0} is not a valid {1} document _id.'.format(
@@ -159,16 +158,16 @@ class UpdateResourceMixin(Resource):
             )
             document.updated_at = datetime.now()
 
-            updated = document.save()
+            updated = document.save(serialize=True)
 
             return Response(
-                serialize(updated),
+                response=updated,
                 content_type='application/json',
                 status=200 if document.is_valid else 400
             )
         else:
             return Response(
-                serialize({
+                response=serialize({
                     'code': 4,
                     'type': 'DocumentNotFound',
                     'message': '{0} is not a valid {1} document _id.'.format(
@@ -195,17 +194,17 @@ class DeleteResourceMixin(Resource):
         _id = deserialize(_id)
 
         to_delete = self.collection.find_one({'_id': _id})
-        if to_delete:
+        if deserialize(to_delete):
             deleted = self.collection.delete_one({'_id': _id})
 
             return Response(
-                serialize(to_delete),
+                response=serialize(to_delete),
                 content_type='application/json',
                 status=200 if deleted.get('ok', 0) == 1 else 400
             )
         else:
             return Response(
-                serialize({
+                response=serialize({
                     'code': 4,
                     'type': 'DocumentNotFound',
                     'message': '{0} is not a valid {1} document _id.'.format(

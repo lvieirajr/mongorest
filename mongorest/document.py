@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from pymongo.errors import PyMongoError
 from types import MethodType, FunctionType
 
-from mongorest.decorators import serializable
+from .decorators import serializable
 
 __all__ = [
     'Document',

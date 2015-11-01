@@ -38,38 +38,20 @@ class TestLoginRequired(TestCase):
 
         self.assertEqual(self.func(None, request).status_code, 401)
 
-    def test_login_required_returns_401_if_auth_collection_not_authorized_and_method_not_authorized(self):
-        def is_authorized():
+    def test_login_required_returns_401_if_auth_collection_not_authorized(self):
+        def is_authorized(request):
             return False
 
-        def authorized_methods():
-            return []
-
-        account = Mock(is_authorized=is_authorized, authorized_methods=authorized_methods)
+        account = Mock(is_authorized=is_authorized)
         request = Mock(environ={'account': account}, method='GET')
 
         self.assertEqual(self.func(None, request).status_code, 401)
 
     def test_login_required_returns_function_if_auth_collection_is_authorized(self):
-        def is_authorized():
+        def is_authorized(request):
             return True
 
-        def authorized_methods():
-            return []
-
-        account = Mock(is_authorized=is_authorized, authorized_methods=authorized_methods)
-        request = Mock(environ={'account': account}, args={}, method='GET')
-
-        self.assertEqual(self.func(None, request).status_code, 200)
-
-    def test_login_required_returns_function_if_auth_collection_not_authorized_but_method_authorized(self):
-        def is_authorized():
-            return False
-
-        def authorized_methods():
-            return ['GET']
-
-        account = Mock(is_authorized=is_authorized, authorized_methods=authorized_methods)
+        account = Mock(is_authorized=is_authorized)
         request = Mock(environ={'account': account}, args={}, method='GET')
 
         self.assertEqual(self.func(None, request).status_code, 200)

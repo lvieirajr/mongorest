@@ -22,29 +22,18 @@ def login_required(wrapped):
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
         request = args[1]
-        method = request.method
 
-        auth_collection = settings.AUTH_COLLECTION
-        auth_collection = auth_collection[auth_collection.rfind('.') + 1:]
-        auth_document = request.environ.get(auth_collection.lower())
+        auth_collection = settings.AUTH_COLLECTION[
+            settings.AUTH_COLLECTION.rfind('.') + 1:
+        ].lower()
+        auth_document = request.environ.get(auth_collection)
 
-        if auth_document:
-            authorized_methods = []
-
-            if hasattr(auth_document, 'authorized_methods'):
-                authorized_methods = auth_document.authorized_methods()
-
-            if auth_document.is_authorized() or method in authorized_methods:
-                request.args = dict(
-                    dict(request.args.items()), **{
-                        auth_collection.lower(): auth_document._id
-                    }
-                )
-
-                return wrapped(*args, **kwargs)
+        if auth_document and auth_document.is_authorized(request):
+            setattr(request, auth_collection, auth_document)
+            return wrapped(*args, **kwargs)
 
         return Response(
-            serialize({'unauthorized': 'Unauthorized.'}),
+            response=serialize({'unauthorized': 'Unauthorized.'}),
             content_type='application/json',
             status=401,
         )
