@@ -18,7 +18,7 @@ def deserialize(to_deserialize):
     if isinstance(to_deserialize, string_types):
         try:
             return ObjectId(to_deserialize)
-        except:
+        except Exception:
             return bson_loads(to_deserialize)
     else:
         return bson_loads(bson_dumps(to_deserialize))
