@@ -174,3 +174,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
             Document(cls, document, True)
             for document in cls.collection.find(filter, **kwargs)
         ]
+
+    @classmethod
+    def is_unique(cls, document):
+        return True

@@ -194,3 +194,6 @@ class TestCollection(TestCase):
         self.collection.insert_one({'test': 'test'})
 
         self.assertEqual(self.collection.documents({'test': 'not_test'}), [])
+
+    def test_is_unique_returns_true(self):
+        self.assertTrue(self.collection.is_unique(None))

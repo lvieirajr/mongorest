@@ -136,13 +136,6 @@ class Document(object):
                 self.__getattr__(attr)()
 
     @property
-    def is_valid(self):
-        """
-        Returns True if no errors have been found, False otherwise.
-        """
-        return not len(self._errors)
-
-    @property
     def collection(self):
         """
         Returns the Collection of the Document
@@ -163,6 +156,13 @@ class Document(object):
         """
         return self._errors
 
+    @property
+    def is_valid(self):
+        """
+        Returns True if no errors have been found, False otherwise.
+        """
+        return not len(self._errors)
+
     @serializable
     def save(self):
         """
@@ -171,7 +171,7 @@ class Document(object):
         If the Document does not contain an _id it will insert a new Document
         If the Document contains an _id it will be replaced instead of inserted
         """
-        if self.is_valid:
+        if self.is_valid and self.is_unique(self):
             try:
                 if '_id' in self._fields:
                     self.replace_one(
