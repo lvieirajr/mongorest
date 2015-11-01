@@ -4,6 +4,8 @@ python:
 services:
   - mongodb
 install:
+  - pip install --upgrade pip
+  - pip install --upgrade setuptools
   - pip install tox coverage coveralls
 env:
   - TOXENV=py26
