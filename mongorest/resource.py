@@ -37,7 +37,9 @@ class ResourceMeta(type):
 
         rules = members.get('rules', [])
         for base in (base for base in bases if hasattr(base, 'rules')):
-            rules.extend(base.rules)
+            for base_rule in base.rules:
+                if not any(base_rule.rule == rule.rule for rule in rules):
+                    rules.append(base_rule)
 
         url_map = members.get('url_map', Map())
         for rule in rules:
