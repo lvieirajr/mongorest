@@ -4,7 +4,7 @@ python:
 services:
   - mongodb
 install:
-  - pip install tox coveralls
+  - pip install tox coverage coveralls
 env:
   - TOXENV=py26
   - TOXENV=py27
@@ -13,9 +13,9 @@ env:
   - TOXENV=pypy
   - TOXENV=pypy3
 before_script:
-  - sleep 15
+  - sleep 10
   - mongo mongorest --eval 'db.addUser("mongorest", "mongorest");'
 script:
-  - tox
+  - tox -r
 after_success:
   - coveralls
