@@ -15,10 +15,10 @@ __all__ = [
 
 class MongoRestError(dict):
 
-    def __init__(self, code=None, type=None):
+    def __init__(self, error_code=None, error_type=None):
         super(MongoRestError, self).__init__({
-            'error_code': code,
-            'error_type': type,
+            'error_code': error_code,
+            'error_type': error_type,
         })
 
 
