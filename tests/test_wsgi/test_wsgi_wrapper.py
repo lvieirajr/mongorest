@@ -32,7 +32,7 @@ class TestWSGIWrapper(TestCase):
 
         self.assertEqual(response.status_code, 999)
 
-    def test_wsgi_wrapper_returns_not_found_if_no_url_is_found(self):
+    def test_wsgi_wrapper_returns_not_found_if_no_url_is_found_with_trailing_slash(self):
         class WSGIWrapperTest(WSGIWrapper):
             url_map = Map([Rule('/', methods=['GET'], endpoint='test')])
 
@@ -41,6 +41,18 @@ class TestWSGIWrapper(TestCase):
 
         app = WSGIDispatcher(resources=[WSGIWrapperTest])
         response = self.client(app, Response).get('/test/')
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_wsgi_wrapper_returns_not_found_if_no_url_is_found_without_trailing_slash(self):
+        class WSGIWrapperTest(WSGIWrapper):
+            url_map = Map([Rule('/', methods=['GET'], endpoint='test')])
+
+            def test(self, request):
+                return Response(status=999)
+
+        app = WSGIDispatcher(resources=[WSGIWrapperTest])
+        response = self.client(app, Response).get('/test')
 
         self.assertEqual(response.status_code, 404)
 
