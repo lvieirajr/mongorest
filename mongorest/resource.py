@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import six
 from collections import OrderedDict
 from datetime import datetime
+from functools import partial
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
 
@@ -120,12 +121,17 @@ class CreateResourceMixin(Resource):
         document.created_at = datetime.now()
         document.updated_at = document.created_at
 
-        created = document.save(serialize=True)
-
+        created = document.save()
         return Response(
-            response=created,
+            response=serialize(created),
             content_type='application/json',
-            status=201 if document.is_valid else 400
+            status=(
+                201 if not all(
+                    key in created for key in [
+                        'error_code', 'error_type', 'error_message'
+                    ]
+                ) else 400
+            )
         )
 
 
@@ -151,16 +157,17 @@ class RetrieveResourceMixin(Resource):
         else:
             return Response(
                 response=serialize({
-                    'code': 4,
-                    'type': 'DocumentNotFound',
-                    'message': '{0} is not a valid {1} document _id.'.format(
-                        repr(_id), self.collection.__name__
-                    ),
+                    'error_code': 5,
+                    'error_type': 'DocumentNotFound',
+                    'error_message': '{0} is not a valid {1} document _id.'
+                                     ''.format(
+                                            repr(_id), self.collection.__name__
+                                        ),
                     '_id': _id,
                     'collection': self.collection.__name__,
                 }),
                 content_type='application/json',
-                status=404
+                status=400
             )
 
 
@@ -183,26 +190,32 @@ class UpdateResourceMixin(Resource):
             )
             document.updated_at = datetime.now()
 
-            updated = document.save(serialize=True)
-
+            updated = document.update()
             return Response(
-                response=updated,
+                response=serialize(updated),
                 content_type='application/json',
-                status=200 if document.is_valid else 400
+                status=(
+                    200 if not all(
+                        key in updated for key in [
+                            'error_code', 'error_type', 'error_message'
+                        ]
+                    ) else 400
+                )
             )
         else:
             return Response(
                 response=serialize({
-                    'code': 4,
-                    'type': 'DocumentNotFound',
-                    'message': '{0} is not a valid {1} document _id.'.format(
-                        repr(_id), self.collection.__name__
-                    ),
+                    'error_code': 5,
+                    'error_type': 'DocumentNotFound',
+                    'error_message': '{0} is not a valid {1} document _id.'
+                                     ''.format(
+                                            repr(_id), self.collection.__name__
+                                        ),
                     '_id': _id,
                     'collection': self.collection.__name__,
                 }),
                 content_type='application/json',
-                status=404
+                status=400
             )
 
 
@@ -218,23 +231,30 @@ class DeleteResourceMixin(Resource):
         """
         _id = deserialize(_id)
 
-        to_delete = self.collection.find_one({'_id': _id})
-        if deserialize(to_delete):
-            deleted = self.collection.delete_one({'_id': _id})
+        to_delete = self.collection.get({'_id': _id})
+        if to_delete:
+            deleted = to_delete.delete()
 
             return Response(
-                response=serialize(to_delete),
+                response=serialize(deleted),
                 content_type='application/json',
-                status=200 if deleted.get('ok', 0) == 1 else 400
+                status=(
+                    200 if not all(
+                        key in deleted for key in [
+                            'error_code', 'error_type', 'error_message'
+                        ]
+                    ) else 400
+                )
             )
         else:
             return Response(
                 response=serialize({
-                    'code': 4,
-                    'type': 'DocumentNotFound',
-                    'message': '{0} is not a valid {1} document _id.'.format(
-                        repr(_id), self.collection.__name__
-                    ),
+                    'error_code': 5,
+                    'error_type': 'DocumentNotFound',
+                    'error_message': '{0} is not a valid {1} document _id.'
+                                     ''.format(
+                                            repr(_id), self.collection.__name__
+                                        ),
                     '_id': _id,
                     'collection': self.collection.__name__,
                 }),

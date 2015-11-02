@@ -176,9 +176,52 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         ]
 
     @classmethod
-    def is_unique(cls, document):
+    def restrict_unique(cls, document):
         """
-        Returns if the document is unique in the collection
+        Should return False if uniqueness restriction is not enforced or if
+        document passes the restrictions enforced.
+        Should return an error dict if uniqueness restriction is enforced and
+        document does not pass the restrictions enforced.
         Should be overwritten by subclasses.
         """
-        return True
+        return False
+
+    @classmethod
+    def restrict_update(cls, document):
+        """
+        Should return False if update restriction is not enforced or if
+        document passes the restrictions enforced.
+        Should return an error dict if update restriction is enforced and
+        document does not pass the restrictions enforced.
+        Should be overwritten by subclasses.
+        """
+        return False
+
+    @classmethod
+    def cascade_update(cls, document):
+        """
+        Should cascade the update to the required documents after the given
+        document was updated.
+        Should be overwritten by subclasses.
+        """
+        pass
+
+    @classmethod
+    def restrict_delete(cls, document):
+        """
+        Should return False if delete restriction is not enforced or if
+        document passes the restrictions enforced.
+        Should return an error dict if delete restriction is enforced and
+        document does not pass the restrictions enforced.
+        Should be overwritten by subclasses.
+        """
+        return False
+
+    @classmethod
+    def cascade_delete(cls, document):
+        """
+        Should cascade the delete to the required documents after the given
+        document was deleted.
+        Should be overwritten by subclasses.
+        """
+        pass

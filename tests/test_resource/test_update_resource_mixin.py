@@ -56,33 +56,34 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(
             errors,
             {
-                'code': 1,
-                'type': 'ValidationError',
-                'message': 'Document validation failed.',
+                'error_code': 1,
+                'error_type': 'ValidationError',
+                'error_message': 'Document validation failed.',
                 'errors': [
                     {
-                        'code': 2,
-                        'type': 'FieldTypeError',
-                        'message': 'Field \'test\' must be of type(s): {0}.'.format(
+                        'error_code': 3,
+                        'error_type': 'FieldTypeError',
+                        'error_message': 'Field \'test\' must be of type(s): {0}.'.format(
                             ' or '.join(t.__name__ for t in list(six.integer_types))
                         ),
                         'field': 'test',
                     },
                 ],
                 'document': {'_id': 1, 'test': '1'},
+                'collection': 'Test',
             }
         )
 
     def test_udpate_mixin_returns_not_found_if_no_document_matches_id(self):
         response = self.update_client.put('/1/', data=serialize({}))
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
             {
-                'code': 4,
-                'type': 'DocumentNotFound',
-                'message': '{0} is not a valid {1} document _id.'.format(
+                'error_code': 5,
+                'error_type': 'DocumentNotFound',
+                'error_message': '{0} is not a valid {1} document _id.'.format(
                     repr(1), 'Test'
                 ),
                 '_id': 1,

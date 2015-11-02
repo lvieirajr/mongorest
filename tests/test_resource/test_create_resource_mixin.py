@@ -54,18 +54,19 @@ class TestCreateResourceMixin(TestCase):
         self.assertEqual(
             errors,
             {
-                'code': 1,
-                'type': 'ValidationError',
-                'message': 'Document validation failed.',
+                'error_code': 1,
+                'error_type': 'ValidationError',
+                'error_message': 'Document validation failed.',
                 'errors': [
                     {
-                        'code': 3,
-                        'type': 'RequiredFieldError',
-                        'message': 'Field \'test\' is required.',
+                        'error_code': 2,
+                        'error_type': 'RequiredFieldError',
+                        'error_message': 'Field \'test\' is required.',
                         'field': 'test',
                     },
                 ],
                 'document': {},
+                'collection': 'Test',
             }
         )
 

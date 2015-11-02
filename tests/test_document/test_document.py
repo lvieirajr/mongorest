@@ -102,18 +102,19 @@ class TestDocument(TestCase):
         self.assertEqual(
             document.errors,
             {
-                'code': 1,
-                'type': 'ValidationError',
-                'message': 'Document validation failed.',
+                'error_code': 1,
+                'error_type': 'ValidationError',
+                'error_message': 'Document validation failed.',
                 'errors': [
                     {
-                        'code': 3,
-                        'type': 'RequiredFieldError',
-                        'message': 'Field \'test\' is required.',
+                        'error_code': 2,
+                        'error_type': 'RequiredFieldError',
+                        'error_message': 'Field \'test\' is required.',
                         'field': 'test',
                     },
                 ],
                 'document': {},
+                'collection': 'TestCollection',
             }
         )
 
@@ -129,18 +130,19 @@ class TestDocument(TestCase):
         self.assertEqual(
             document.errors,
             {
-                'code': 1,
-                'type': 'ValidationError',
-                'message': 'Document validation failed.',
+                'error_code': 1,
+                'error_type': 'ValidationError',
+                'error_message': 'Document validation failed.',
                 'errors': [
                     {
-                        'code': 2,
-                        'type': 'FieldTypeError',
-                        'message': 'Field \'test\' must be of type(s): ObjectId.',
+                        'error_code': 3,
+                        'error_type': 'FieldTypeError',
+                        'error_message': 'Field \'test\' must be of type(s): ObjectId.',
                         'field': 'test',
                     },
                 ],
                 'document': {'test': 1.1},
+                'collection': 'TestCollection',
             }
         )
 
@@ -156,18 +158,19 @@ class TestDocument(TestCase):
         self.assertEqual(
             document.errors,
             {
-                'code': 1,
-                'type': 'ValidationError',
-                'message': 'Document validation failed.',
+                'error_code': 1,
+                'error_type': 'ValidationError',
+                'error_message': 'Document validation failed.',
                 'errors': [
                     {
-                        'code': 2,
-                        'type': 'FieldTypeError',
-                        'message': 'Field \'test\' must be of type(s): ObjectId.',
+                        'error_code': 3,
+                        'error_type': 'FieldTypeError',
+                        'error_message': 'Field \'test\' must be of type(s): ObjectId.',
                         'field': 'test',
                     },
                 ],
                 'document': {'test': 1.1},
+                'collection': 'TestCollection',
             }
         )
 
@@ -240,18 +243,19 @@ class TestDocument(TestCase):
         self.assertEqual(
             errors,
             {
-                'code': 1,
-                'type': 'ValidationError',
-                'message': 'Document validation failed.',
+                'error_code': 1,
+                'error_type': 'ValidationError',
+                'error_message': 'Document validation failed.',
                 'errors': [
                     {
-                        'code': 3,
-                        'type': 'RequiredFieldError',
-                        'message': 'Field \'test\' is required.',
+                        'error_code': 2,
+                        'error_type': 'RequiredFieldError',
+                        'error_message': 'Field \'test\' is required.',
                         'field': 'test',
                     },
                 ],
                 'document': {},
+                'collection': 'TestCollection',
             }
         )
 
@@ -263,8 +267,8 @@ class TestDocument(TestCase):
         document.test = 'test'
         errors = document.save()
 
-        self.assertEqual(errors['code'], 0)
-        self.assertEqual(errors['type'], 'PyMongoError')
+        self.assertEqual(errors['error_code'], 0)
+        self.assertEqual(errors['error_type'], 'PyMongoError')
 
         Collection.drop_index('test_1')
 

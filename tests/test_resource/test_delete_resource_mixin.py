@@ -40,9 +40,9 @@ class TestDeleteResourceMixin(TestCase):
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
             {
-                'code': 4,
-                'type': 'DocumentNotFound',
-                'message': '{0} is not a valid {1} document _id.'.format(
+                'error_code': 5,
+                'error_type': 'DocumentNotFound',
+                'error_message': '{0} is not a valid {1} document _id.'.format(
                     repr(1), 'Collection'
                 ),
                 '_id': 1,
