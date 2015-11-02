@@ -215,11 +215,14 @@ class Document(object):
                         {'_id': self._id}, self._fields
                     )
 
-                    print(replaced)
-                    if replaced['nModified'] == 1:
+                    matched = replaced.get('nMatched', replaced.get('n', 0))
+                    modified = replaced.get('nModified') or (
+                        1 if replaced.get('updatedExisting') else 0
+                    )
+                    if modified == 1:
                         self.cascade_update(self)
                         return self._fields
-                    elif replaced['nMatched'] == 0:
+                    elif matched == 0:
                         return {
                             'error_code': 5,
                             'error_type': 'DocumentNotFoundError',
