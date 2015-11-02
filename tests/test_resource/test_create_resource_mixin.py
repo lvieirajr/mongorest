@@ -56,7 +56,7 @@ class TestCreateResourceMixin(TestCase):
             {
                 'error_code': 1,
                 'error_type': 'ValidationError',
-                'error_message': 'Document validation failed.',
+                'error_message': 'Test document validation failed.',
                 'errors': [
                     {
                         'error_code': 2,

@@ -58,7 +58,7 @@ class TestUpdateResourceMixin(TestCase):
             {
                 'error_code': 1,
                 'error_type': 'ValidationError',
-                'error_message': 'Document validation failed.',
+                'error_message': 'Test document validation failed.',
                 'errors': [
                     {
                         'error_code': 3,
@@ -67,10 +67,12 @@ class TestUpdateResourceMixin(TestCase):
                             ' or '.join(t.__name__ for t in list(six.integer_types))
                         ),
                         'field': 'test',
+                        'types': ' or '.join(t.__name__ for t in list(six.integer_types)),
                     },
                 ],
-                'document': {'_id': 1, 'test': '1'},
                 'collection': 'Test',
+                'document': {'_id': 1, 'test': '1'},
+
             }
         )
 

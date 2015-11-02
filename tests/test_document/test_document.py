@@ -104,7 +104,7 @@ class TestDocument(TestCase):
             {
                 'error_code': 1,
                 'error_type': 'ValidationError',
-                'error_message': 'Document validation failed.',
+                'error_message': 'TestCollection document validation failed.',
                 'errors': [
                     {
                         'error_code': 2,
@@ -132,13 +132,14 @@ class TestDocument(TestCase):
             {
                 'error_code': 1,
                 'error_type': 'ValidationError',
-                'error_message': 'Document validation failed.',
+                'error_message': 'TestCollection document validation failed.',
                 'errors': [
                     {
                         'error_code': 3,
                         'error_type': 'FieldTypeError',
                         'error_message': 'Field \'test\' must be of type(s): ObjectId.',
                         'field': 'test',
+                        'types': 'ObjectId',
                     },
                 ],
                 'document': {'test': 1.1},
@@ -160,13 +161,14 @@ class TestDocument(TestCase):
             {
                 'error_code': 1,
                 'error_type': 'ValidationError',
-                'error_message': 'Document validation failed.',
+                'error_message': 'TestCollection document validation failed.',
                 'errors': [
                     {
                         'error_code': 3,
                         'error_type': 'FieldTypeError',
                         'error_message': 'Field \'test\' must be of type(s): ObjectId.',
                         'field': 'test',
+                        'types': 'ObjectId',
                     },
                 ],
                 'document': {'test': 1.1},
@@ -245,7 +247,7 @@ class TestDocument(TestCase):
             {
                 'error_code': 1,
                 'error_type': 'ValidationError',
-                'error_message': 'Document validation failed.',
+                'error_message': 'TestCollection document validation failed.',
                 'errors': [
                     {
                         'error_code': 2,

@@ -1,10 +1,19 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from pymongo.errors import PyMongoError
+from pymongo.errors import PyMongoError as MongoError
 from types import MethodType, FunctionType
 
 from .decorators import serializable
+from .errors import (
+    PyMongoError,
+    ValidationError,
+    RequiredFieldError,
+    FieldTypeError,
+    UnidentifiedDocumentError,
+    DocumentNotFoundError,
+    DocumentNotUpdatedError,
+)
 
 __all__ = [
     'Document',
@@ -84,15 +93,6 @@ class Document(object):
             self.meta.get('optional', {}), **self.meta.get('required', {})
         )
 
-        validation_error = {
-            'error_code': 1,
-            'error_type': 'ValidationError',
-            'error_message': 'Document validation failed.',
-            'errors': [],
-            'document': self._fields,
-            'collection': self.collection.__name__,
-        }
-
         for (field, type_or_tuple) in list(fields.items()):
             if field in self._fields:
                 if not isinstance(self._fields[field], type_or_tuple):
@@ -102,27 +102,18 @@ class Document(object):
                         types = type_or_tuple.__name__
 
                     if 'error_code' not in self._errors:
-                        self._errors = validation_error
+                        self._errors = ValidationError(
+                            [], self.collection.__name__, self._fields
+                        )
 
-                    self._errors['errors'].append({
-                        'error_code': 3,
-                        'error_type': 'FieldTypeError',
-                        'error_message': 'Field \'{0}\' must be of type(s): '
-                                         '{1}.'.format(field, types),
-                        'field': field,
-                    })
+                    self._errors['errors'].append(FieldTypeError(field, types))
             elif field in self.meta.get('required', {}):
                 if 'error_code' not in self._errors:
-                    self._errors = validation_error
+                    self._errors = ValidationError(
+                        [], self.collection.__name__, self._fields
+                    )
 
-                self._errors['errors'].append({
-                    'error_code': 2,
-                    'error_type': 'RequiredFieldError',
-                    'error_message': 'Field \'{0}\' is required.'.format(
-                        field
-                    ),
-                    'field': field,
-                })
+                self._errors['errors'].append(RequiredFieldError(field))
 
     def _process(self):
         """
@@ -178,19 +169,15 @@ class Document(object):
             try:
                 self._fields['_id'] = self.insert_one(self._fields)
                 return self._fields
-            except PyMongoError as exc:
-                return {
-                    'error_code': 0,
-                    'error_type': 'PyMongoError',
-                    'error_message':  exc.details.get(
-                        'errmsg', exc.details.get(
-                            'err', 'PyMongoError.'
-                        )
+            except MongoError as exc:
+                return PyMongoError(
+                    message=exc.details.get(
+                        'errmsg', exc.details.get('err', 'PyMongoError.')
                     ),
-                    'document': self._fields,
-                    'collection': self.collection.__name__,
-                    'operation': 'save',
-                }
+                    operation='save',
+                    collection=self.collection.__name__,
+                    document=self._fields,
+                )
 
         return self._errors
 
@@ -223,53 +210,26 @@ class Document(object):
                         self.cascade_update(self)
                         return self._fields
                     elif matched == 0:
-                        return {
-                            'error_code': 5,
-                            'error_type': 'DocumentNotFoundError',
-                            'error_message': '{0} is not a valid {1} document '
-                                             '_id.'.format(
-                                                    repr(self._id),
-                                                    self.collection.__name__
-                                                ),
-                            '_id': self._id,
-                            'collection': self.collection.__name__,
-                        }
+                        return DocumentNotFoundError(
+                            self.collection.__name__, self._id
+                        )
                     else:
-                        return {
-                            'error_code': 6,
-                            'error_type': 'DocumentNotUpdatedError',
-                            'error_message': 'No fields were updated for {0} '
-                                             'document with _id {1}.'
-                                             'updated.'.format(
-                                                    self.collection.__name__,
-                                                    repr(self._id),
-                                                ),
-                            'document': self._fields,
-                            '_id': self._id,
-                            'collection': self.collection.__name__,
-                        }
-                except PyMongoError as exc:
-                    return {
-                        'error_code': 0,
-                        'error_type': 'PyMongoError',
-                        'error_message':  exc.details.get(
-                            'errmsg', exc.details.get(
-                                'err', 'PyMongoError.'
-                            )
+                        return DocumentNotUpdatedError(
+                            self.collection.__name__, self._id, self._fields
+                        )
+                except MongoError as exc:
+                    return PyMongoError(
+                        message=exc.details.get(
+                            'errmsg', exc.details.get('err', 'PyMongoError.')
                         ),
-                        'document': self._fields,
-                        'collection': self.collection.__name__,
-                        'operation': 'update',
-                    }
+                        operation='update',
+                        collection=self.collection.__name__,
+                        document=self._fields,
+                    )
             else:
-                return {
-                    'error_code': 4,
-                    'error_type': 'UnidentifiedDocumentError',
-                    'error_message': 'The given {0} document has no _id.'
-                                     ''.format(self.collection.__name__),
-                    'document': self._fields,
-                    'collection': self.collection.__name__,
-                }
+                return UnidentifiedDocumentError(
+                    self.collection.__name__, self._fields
+                )
 
         return self._errors
 
@@ -290,37 +250,19 @@ class Document(object):
                     self.cascade_delete(self)
                     return self._fields
                 else:
-                    return {
-                        'error_code': 5,
-                        'error_type': 'DocumentNotFoundError',
-                        'error_message': '{0} is not a valid {1} document _id.'
-                                         ''.format(
-                                                repr(self._id),
-                                                self.collection.__name__
-                                            ),
-                        '_id': self._id,
-                        'collection': self.collection.__name__,
-                    }
-            except PyMongoError as exc:
-                return {
-                    'error_code': 0,
-                    'error_type': 'PyMongoError',
-                    'error_message':  exc.details.get(
-                        'errmsg', exc.details.get(
-                            'err', 'PyMongoError.'
-                        )
+                    return DocumentNotFoundError(
+                        self.collection.__name__, self._id
+                    )
+            except MongoError as exc:
+                return PyMongoError(
+                    message=exc.details.get(
+                        'errmsg', exc.details.get('err', 'PyMongoError.')
                     ),
-                    'document': self._fields,
-                    'collection': self.collection.__name__,
-                    'operation': 'delete',
-                }
+                    operation='delete',
+                    collection=self.collection.__name__,
+                    document=self._fields,
+                )
         else:
-            return {
-                'error_code': 4,
-                'error_type': 'UnidentifiedDocumentError',
-                'error_message': 'The given {0} document has no _id.'.format(
-                    self.collection.__name__,
-                ),
-                'document': self._fields,
-                'collection': self.collection.__name__,
-            }
+            return UnidentifiedDocumentError(
+                self.collection.__name__, self._fields
+            )
