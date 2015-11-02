@@ -106,14 +106,18 @@ class Document(object):
                             [], self.collection.__name__, self._fields
                         )
 
-                    self._errors['errors'].append(FieldTypeError(field, types))
+                    self._errors['errors'].append(
+                        FieldTypeError(self.collection.__name__, field, types)
+                    )
             elif field in self.meta.get('required', {}):
                 if 'error_code' not in self._errors:
                     self._errors = ValidationError(
                         [], self.collection.__name__, self._fields
                     )
 
-                self._errors['errors'].append(RequiredFieldError(field))
+                self._errors['errors'].append(
+                    RequiredFieldError(self.collection.__name__, field)
+                )
 
     def _process(self):
         """
@@ -171,7 +175,7 @@ class Document(object):
                 return self._fields
             except MongoError as exc:
                 return PyMongoError(
-                    message=exc.details.get(
+                    error_message=exc.details.get(
                         'errmsg', exc.details.get('err', 'PyMongoError.')
                     ),
                     operation='save',
@@ -219,7 +223,7 @@ class Document(object):
                         )
                 except MongoError as exc:
                     return PyMongoError(
-                        message=exc.details.get(
+                        error_message=exc.details.get(
                             'errmsg', exc.details.get('err', 'PyMongoError.')
                         ),
                         operation='update',
@@ -255,7 +259,7 @@ class Document(object):
                     )
             except MongoError as exc:
                 return PyMongoError(
-                    message=exc.details.get(
+                    error_message=exc.details.get(
                         'errmsg', exc.details.get('err', 'PyMongoError.')
                     ),
                     operation='delete',

@@ -66,13 +66,13 @@ class TestUpdateResourceMixin(TestCase):
                         'error_message': 'Field \'test\' must be of type(s): {0}.'.format(
                             ' or '.join(t.__name__ for t in list(six.integer_types))
                         ),
+                        'collection': 'Test',
                         'field': 'test',
                         'types': ' or '.join(t.__name__ for t in list(six.integer_types)),
                     },
                 ],
                 'collection': 'Test',
                 'document': {'_id': 1, 'test': '1'},
-
             }
         )
 

@@ -24,11 +24,11 @@ class MongoRestError(dict):
 
 class PyMongoError(MongoRestError):
 
-    def __init__(self, message=None, operation=None, collection=None,
+    def __init__(self, error_message=None, operation=None, collection=None,
                  document=None):
         super(PyMongoError, self).__init__(0, 'PyMongoError')
 
-        self['error_message'] = message
+        self['error_message'] = error_message
         self['collection'] = collection
         self['document'] = document
         self['operation'] = operation
@@ -49,20 +49,22 @@ class ValidationError(MongoRestError):
 
 class RequiredFieldError(MongoRestError):
 
-    def __init__(self, field=None):
+    def __init__(self, collection=None, field=None):
         super(RequiredFieldError, self).__init__(2, 'RequiredFieldError')
 
         self['error_message'] = 'Field \'{0}\' is required.'.format(field)
+        self['collection'] = collection
         self['field'] = field
 
 
 class FieldTypeError(MongoRestError):
 
-    def __init__(self, field=None, types=None):
+    def __init__(self, collection=None, field=None, types=None):
         super(FieldTypeError, self).__init__(3, 'FieldTypeError')
 
         self['error_message'] = 'Field \'{0}\' must be of type(s): {1}.' \
                                 ''.format(field, types)
+        self['collection'] = collection
         self['field'] = field
         self['types'] = types
 

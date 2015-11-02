@@ -110,11 +110,12 @@ class TestDocument(TestCase):
                         'error_code': 2,
                         'error_type': 'RequiredFieldError',
                         'error_message': 'Field \'test\' is required.',
+                        'collection': 'TestCollection',
                         'field': 'test',
                     },
                 ],
-                'document': {},
                 'collection': 'TestCollection',
+                'document': {},
             }
         )
 
@@ -138,12 +139,13 @@ class TestDocument(TestCase):
                         'error_code': 3,
                         'error_type': 'FieldTypeError',
                         'error_message': 'Field \'test\' must be of type(s): ObjectId.',
+                        'collection': 'TestCollection',
                         'field': 'test',
                         'types': 'ObjectId',
                     },
                 ],
-                'document': {'test': 1.1},
                 'collection': 'TestCollection',
+                'document': {'test': 1.1},
             }
         )
 
@@ -167,12 +169,13 @@ class TestDocument(TestCase):
                         'error_code': 3,
                         'error_type': 'FieldTypeError',
                         'error_message': 'Field \'test\' must be of type(s): ObjectId.',
+                        'collection': 'TestCollection',
                         'field': 'test',
                         'types': 'ObjectId',
                     },
                 ],
-                'document': {'test': 1.1},
                 'collection': 'TestCollection',
+                'document': {'test': 1.1},
             }
         )
 
@@ -253,11 +256,12 @@ class TestDocument(TestCase):
                         'error_code': 2,
                         'error_type': 'RequiredFieldError',
                         'error_message': 'Field \'test\' is required.',
+                        'collection': 'TestCollection',
                         'field': 'test',
                     },
                 ],
-                'document': {},
                 'collection': 'TestCollection',
+                'document': {},
             }
         )
 

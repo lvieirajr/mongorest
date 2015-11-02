@@ -62,11 +62,12 @@ class TestCreateResourceMixin(TestCase):
                         'error_code': 2,
                         'error_type': 'RequiredFieldError',
                         'error_message': 'Field \'test\' is required.',
+                        'collection': 'Test',
                         'field': 'test',
                     },
                 ],
-                'document': {},
                 'collection': 'Test',
+                'document': {},
             }
         )
 
