@@ -177,4 +177,8 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
 
     @classmethod
     def is_unique(cls, document):
+        """
+        Returns if the document is unique in the collection
+        Should be overwritten by subclasses.
+        """
         return True
