@@ -194,3 +194,38 @@ class TestCollection(TestCase):
         self.collection.insert_one({'test': 'test'})
 
         self.assertEqual(self.collection.documents({'test': 'not_test'}), [])
+
+    def test_restrict_unique_returns_false(self):
+        self.assertFalse(self.collection.restrict_unique(None))
+        self.assertFalse(self.collection.restrict_unique(1))
+        self.assertFalse(self.collection.restrict_unique({}))
+        self.assertFalse(self.collection.restrict_unique([]))
+        self.assertFalse(self.collection.restrict_unique('test'))
+
+    def test_restrict_update_returns_false(self):
+        self.assertFalse(self.collection.restrict_update(None))
+        self.assertFalse(self.collection.restrict_update(1))
+        self.assertFalse(self.collection.restrict_update({}))
+        self.assertFalse(self.collection.restrict_update([]))
+        self.assertFalse(self.collection.restrict_update('test'))
+
+    def test_cascade_update_returns_none_and_does_nothing(self):
+        self.assertIsNone(self.collection.cascade_update(None))
+        self.assertIsNone(self.collection.cascade_update(1))
+        self.assertIsNone(self.collection.cascade_update({}))
+        self.assertIsNone(self.collection.cascade_update([]))
+        self.assertIsNone(self.collection.cascade_update('test'))
+
+    def test_restrict_delete_returns_false(self):
+        self.assertFalse(self.collection.restrict_delete(None))
+        self.assertFalse(self.collection.restrict_delete(1))
+        self.assertFalse(self.collection.restrict_delete({}))
+        self.assertFalse(self.collection.restrict_delete([]))
+        self.assertFalse(self.collection.restrict_delete('test'))
+
+    def test_cascade_delete_returns_none_and_does_nothing(self):
+        self.assertIsNone(self.collection.cascade_delete(None))
+        self.assertIsNone(self.collection.cascade_delete(1))
+        self.assertIsNone(self.collection.cascade_delete({}))
+        self.assertIsNone(self.collection.cascade_delete([]))
+        self.assertIsNone(self.collection.cascade_delete('test'))

@@ -4,7 +4,6 @@ from __future__ import absolute_import, unicode_literals
 import six
 from collections import OrderedDict
 from datetime import datetime
-from functools import partial
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
 
