@@ -215,6 +215,7 @@ class Document(object):
                         {'_id': self._id}, self._fields
                     )
 
+                    print(replaced)
                     if replaced['nModified'] == 1:
                         self.cascade_update(self)
                         return self._fields
