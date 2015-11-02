@@ -8,6 +8,7 @@ from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
 
 from .collection import Collection
+from .errors import DocumentNotFoundError
 from .utils import deserialize, serialize
 from .wsgi import WSGIWrapper
 
@@ -155,16 +156,9 @@ class RetrieveResourceMixin(Resource):
             )
         else:
             return Response(
-                response=serialize({
-                    'error_code': 5,
-                    'error_type': 'DocumentNotFound',
-                    'error_message': '{0} is not a valid {1} document _id.'
-                                     ''.format(
-                                            repr(_id), self.collection.__name__
-                                        ),
-                    '_id': _id,
-                    'collection': self.collection.__name__,
-                }),
+                response=serialize(
+                    DocumentNotFoundError(self.collection.__name__, _id)
+                ),
                 content_type='application/json',
                 status=400
             )
@@ -203,16 +197,9 @@ class UpdateResourceMixin(Resource):
             )
         else:
             return Response(
-                response=serialize({
-                    'error_code': 5,
-                    'error_type': 'DocumentNotFound',
-                    'error_message': '{0} is not a valid {1} document _id.'
-                                     ''.format(
-                                            repr(_id), self.collection.__name__
-                                        ),
-                    '_id': _id,
-                    'collection': self.collection.__name__,
-                }),
+                response=serialize(
+                    DocumentNotFoundError(self.collection.__name__, _id)
+                ),
                 content_type='application/json',
                 status=400
             )
@@ -247,16 +234,9 @@ class DeleteResourceMixin(Resource):
             )
         else:
             return Response(
-                response=serialize({
-                    'error_code': 5,
-                    'error_type': 'DocumentNotFound',
-                    'error_message': '{0} is not a valid {1} document _id.'
-                                     ''.format(
-                                            repr(_id), self.collection.__name__
-                                        ),
-                    '_id': _id,
-                    'collection': self.collection.__name__,
-                }),
+                response=serialize(
+                    DocumentNotFoundError(self.collection.__name__, _id)
+                ),
                 content_type='application/json',
                 status=404
             )
