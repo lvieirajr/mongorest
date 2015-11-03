@@ -284,7 +284,7 @@ class TestDocument(TestCase):
 
         self.assertEqual(fields, document._fields)
 
-    def test_save_returns_fields_if_document_has_id_and_is_valid_and_unique(self):
+    def test_save_returns_fields_if_document_has_id_and_is_valid(self):
         document = Document(Collection)
         document._id = ObjectId()
         fields = document.save()
