@@ -474,3 +474,17 @@ class TestDocument(TestCase):
                 'error_message': 'Document can not be deleted.'
             }
         )
+
+    def test_delete_returns_errors_if_document_not_found(self):
+        errors = Document(Collection, {'_id': 1}).delete()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 5,
+                'error_type': 'DocumentNotFoundError',
+                'error_message': '1 is not a valid Collection document _id.',
+                'collection': 'Collection',
+                '_id': 1,
+            }
+        )
