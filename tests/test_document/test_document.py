@@ -278,6 +278,25 @@ class TestDocument(TestCase):
 
         Collection.drop_index('test_1')
 
+    def test_save_returns_error_if_restricted_unique(self):
+        class TestCollection(Collection):
+
+            @classmethod
+            def restrict_unique(cls, document):
+                return {
+                    'error_code': 7, 'error_type': 'NotUnique',
+                    'error_message': 'Document is not unique.',
+                }
+
+        errors = Document(TestCollection).save()
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 7, 'error_type': 'NotUnique',
+                'error_message': 'Document is not unique.'
+            }
+        )
+
     def test_save_returns_fields_if_document_does_not_have_id_and_is_valid(self):
         document = Document(Collection)
         fields = document.save()
@@ -290,3 +309,97 @@ class TestDocument(TestCase):
         fields = document.save()
 
         self.assertEqual(fields, document._fields)
+
+    #update
+    def test_update_is_decorated_with_serializable(self):
+        self.assertIn('serializable', Document.update.decorators)
+
+    def test_update_returns_errors_if_document_is_not_valid(self):
+        class TestCollection(Collection):
+            meta = {
+                'required': {'test': ObjectId},
+                'optional': {}
+            }
+
+        errors = Document(TestCollection).update()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 1,
+                'error_type': 'ValidationError',
+                'error_message': 'TestCollection document validation failed.',
+                'errors': [
+                    {
+                        'error_code': 2,
+                        'error_type': 'RequiredFieldError',
+                        'error_message': 'Field \'test\' is required.',
+                        'collection': 'TestCollection',
+                        'field': 'test',
+                    },
+                ],
+                'collection': 'TestCollection',
+                'document': {},
+            }
+        )
+
+    def test_update_returns_errors_if_document_has_no_id(self):
+        errors = Document(Collection).update()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 4,
+                'error_type': 'UnidentifiedDocumentError',
+                'error_message': 'The given Collection document has no _id.',
+                'collection': 'Collection',
+                'document': {},
+            }
+        )
+
+    def test_update_returns_errors_if_error_ocurred_during_save(self):
+        Collection.collection.create_index('test', unique=True)
+        Collection.insert_one({'test': 'test1'})
+        _id = Collection.insert_one({'test': 'test2'})
+
+        errors = Document(Collection, {'_id': _id, 'test': 'test1'}).update()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 0,
+                'error_type': 'PyMongoError',
+                'error_message': 'E11000 duplicate key error index: mongorest.collection.$test_1 dup key: { : "test1" }',
+                'operation': 'update',
+                'collection': 'Collection',
+                'document': {'_id': _id, 'test': 'test1'}
+            }
+        )
+
+        Collection.drop_index('test_1')
+
+    def test_update_returns_errors_if_document_not_found(self):
+        errors = Document(Collection, {'_id': 1}).update()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 5,
+                'error_type': 'DocumentNotFoundError',
+                'error_message': '1 is not a valid Collection document _id.',
+                'collection': 'Collection',
+                '_id': 1,
+            }
+        )
+
+    @patch('mongorest.collection.Collection.cascade_update')
+    def test_update_updates_calls_cascade_and_returns_updated_document_if_document_is_valid(self, cascade):
+        _id = Collection.insert_one({'test': 'test1'})
+        updated = Document(Collection, {'_id': _id, 'test': 'test2'}).update()
+
+        self.assertEqual(updated, {'_id': _id, 'test': 'test2'})
+        self.assertEqual(cascade.call_count, 1)
+
+    #delete
+    def test_delete_is_decorated_with_serializable(self):
+        self.assertIn('serializable', Document.delete.decorators)

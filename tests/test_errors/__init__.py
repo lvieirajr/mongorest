@@ -8,4 +8,3 @@ from .test_required_field_error import *
 from .test_field_type_error import *
 from .test_unidentified_document_error import *
 from .test_document_not_found_error import *
-from .test_document_not_updated_error import *

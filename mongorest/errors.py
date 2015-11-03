@@ -9,7 +9,6 @@ __all__ = [
     'FieldTypeError',
     'UnidentifiedDocumentError',
     'DocumentNotFoundError',
-    'DocumentNotUpdatedError',
 ]
 
 
@@ -29,9 +28,9 @@ class PyMongoError(MongoRestError):
         super(PyMongoError, self).__init__(0, 'PyMongoError')
 
         self['error_message'] = error_message
+        self['operation'] = operation
         self['collection'] = collection
         self['document'] = document
-        self['operation'] = operation
 
 
 class ValidationError(MongoRestError):
@@ -93,17 +92,3 @@ class DocumentNotFoundError(MongoRestError):
         )
         self['collection'] = collection
         self['_id'] = _id
-
-
-class DocumentNotUpdatedError(MongoRestError):
-
-    def __init__(self, collection=None, _id=None, document=None):
-        super(DocumentNotUpdatedError, self).__init__(
-            6, 'DocumentNotUpdatedError'
-        )
-
-        self['error_message'] = 'No fields were updated for {0} document ' \
-                                'with _id {1}.'.format(collection, _id)
-        self['collection'] = collection
-        self['_id'] = _id
-        self['document'] = document

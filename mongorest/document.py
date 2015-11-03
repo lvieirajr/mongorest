@@ -12,7 +12,6 @@ from .errors import (
     FieldTypeError,
     UnidentifiedDocumentError,
     DocumentNotFoundError,
-    DocumentNotUpdatedError,
 )
 
 __all__ = [
@@ -206,20 +205,12 @@ class Document(object):
                         {'_id': self._id}, self._fields
                     )
 
-                    matched = replaced.get('nMatched', replaced.get('n', 0))
-                    modified = replaced.get('nModified') or (
-                        1 if replaced.get('updatedExisting') else 0
-                    )
-                    if modified == 1:
+                    if replaced.get('nMatched', replaced.get('n', 0)):
                         self.cascade_update(self)
                         return self._fields
-                    elif matched == 0:
+                    else:
                         return DocumentNotFoundError(
                             self.collection.__name__, self._id
-                        )
-                    else:
-                        return DocumentNotUpdatedError(
-                            self.collection.__name__, self._id, self._fields
                         )
                 except MongoError as exc:
                     return PyMongoError(
