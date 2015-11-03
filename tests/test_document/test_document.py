@@ -339,16 +339,16 @@ class TestDocument(TestCase):
             @classmethod
             def restrict_update(cls, document):
                 return {
-                    'error_code': 7, 'error_type': 'NotUnique',
-                    'error_message': 'Document is not unique.',
+                    'error_code': 8, 'error_type': 'RestrictedUpdate',
+                    'error_message': 'Document can not be updated.'
                 }
 
         errors = Document(TestCollection, {'_id': 1}).update()
         self.assertEqual(
             errors,
             {
-                'error_code': 7, 'error_type': 'NotUnique',
-                'error_message': 'Document is not unique.'
+                'error_code': 8, 'error_type': 'RestrictedUpdate',
+                'error_message': 'Document can not be updated.'
             }
         )
 
@@ -441,3 +441,36 @@ class TestDocument(TestCase):
     #delete
     def test_delete_is_decorated_with_serializable(self):
         self.assertIn('serializable', Document.delete.decorators)
+
+    def test_delete_returns_errors_if_document_has_no_id(self):
+        errors = Document(Collection).delete()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 4,
+                'error_type': 'UnidentifiedDocumentError',
+                'error_message': 'The given Collection document has no _id.',
+                'collection': 'Collection',
+                'document': {},
+            }
+        )
+
+    def test_delete_returns_error_if_restricted_delete(self):
+        class TestCollection(Collection):
+
+            @classmethod
+            def restrict_delete(cls, document):
+                return {
+                    'error_code': 9, 'error_type': 'RestrictedDelete',
+                    'error_message': 'Document can not be deleted.'
+                }
+
+        errors = Document(TestCollection, {'_id': 1}).delete()
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 9, 'error_type': 'RestrictedDelete',
+                'error_message': 'Document can not be deleted.'
+            }
+        )
