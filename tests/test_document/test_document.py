@@ -402,12 +402,12 @@ class TestDocument(TestCase):
 
         errors = Document(Collection, {'_id': _id, 'test': 'test1'}).update()
 
+        errors.pop('error_message')
         self.assertEqual(
             errors,
             {
                 'error_code': 0,
                 'error_type': 'PyMongoError',
-                'error_message': 'E11000 duplicate key error index: mongorest.collection.$test_1 dup key: { : "test1" }',
                 'operation': 'update',
                 'collection': 'Collection',
                 'document': {'_id': _id, 'test': 'test1'}
