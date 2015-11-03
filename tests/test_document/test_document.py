@@ -314,6 +314,44 @@ class TestDocument(TestCase):
     def test_update_is_decorated_with_serializable(self):
         self.assertIn('serializable', Document.update.decorators)
 
+    def test_update_returns_error_if_restricted_unique(self):
+        class TestCollection(Collection):
+
+            @classmethod
+            def restrict_unique(cls, document):
+                return {
+                    'error_code': 7, 'error_type': 'NotUnique',
+                    'error_message': 'Document is not unique.',
+                }
+
+        errors = Document(TestCollection, {'_id': 1}).update()
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 7, 'error_type': 'NotUnique',
+                'error_message': 'Document is not unique.'
+            }
+        )
+
+    def test_update_returns_error_if_restricted_update(self):
+        class TestCollection(Collection):
+
+            @classmethod
+            def restrict_update(cls, document):
+                return {
+                    'error_code': 7, 'error_type': 'NotUnique',
+                    'error_message': 'Document is not unique.',
+                }
+
+        errors = Document(TestCollection, {'_id': 1}).update()
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 7, 'error_type': 'NotUnique',
+                'error_message': 'Document is not unique.'
+            }
+        )
+
     def test_update_returns_errors_if_document_is_not_valid(self):
         class TestCollection(Collection):
             meta = {
