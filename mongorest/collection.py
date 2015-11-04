@@ -1,9 +1,11 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import six
+from re import sub
+from six import with_metaclass
 from types import MethodType, FunctionType
 
+from .database import db
 from .decorators import serializable
 from .document import Document
 
@@ -23,8 +25,10 @@ class CollectionMeta(type):
         members = args[2].copy()
 
         if 'collection' not in members:
-            from .database import db
-            members['collection'] = db[name.lower()]
+            collection = sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+            collection = sub('([a-z0-9])([A-Z])', r'\1_\2', collection.lower())
+
+            members['collection'] = db[collection]
 
         if 'meta' not in members:
             members['meta'] = {
@@ -50,7 +54,7 @@ class CollectionMeta(type):
             return object.__getattribute__(self, attr)
 
 
-class Collection(six.with_metaclass(CollectionMeta, object)):
+class Collection(with_metaclass(CollectionMeta, object)):
     """
     Base Class for Collections.
     """
