@@ -25,9 +25,10 @@
 
 # Requirements
 
+* Cerberus
 * PyMongo
-* Werkzeug
 * Six
+* Werkzeug
 
 
 # Installation

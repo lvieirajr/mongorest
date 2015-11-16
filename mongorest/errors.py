@@ -18,12 +18,6 @@ __all__ = [
     'UnknownFieldError',
     'RequiredFieldError',
     'FieldTypeError',
-    'FieldMinLengthError',
-    'FieldMaxLengthError',
-    'FieldLengthError',
-    'UnallowedValueError',
-    'UnallowedValuesError',
-    'ReadOnlyFieldError',
 ]
 
 
