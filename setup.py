@@ -10,13 +10,17 @@ from mongorest import __version__ as version
 class Test(TestCommand):
 
     def finalize_options(self):
-        self.test_suite = 'test_suite'
+        self.test_suite = self.test_suite or ' '
         TestCommand.finalize_options(self)
 
     def run_tests(self):
         from unittest import TextTestRunner, defaultTestLoader as loader
 
-        result = TextTestRunner().run(loader.loadTestsFromName('tests'))
+        result = TextTestRunner().run(
+            loader.loadTestsFromName(
+                'tests.{0}'.format(self.test_suite).strip('. ')
+            )
+        )
         return exit(0) if not (result.failures + result.errors) else exit(1)
 
 
@@ -29,7 +33,7 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
-    install_requires=['pymongo', 'werkzeug', 'six'],
+    install_requires=['pymongo', 'werkzeug', 'cerberus', 'six'],
     cmdclass={'test': Test},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[

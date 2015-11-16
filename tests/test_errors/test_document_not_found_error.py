@@ -11,9 +11,10 @@ class TestDocumentNotFoundError(TestCase):
         self.assertEqual(
             DocumentNotFoundError('collection', '_id'),
             {
-                'error_code': 5,
+                'error_code': 23,
                 'error_type': 'DocumentNotFoundError',
-                'error_message': '_id is not a valid collection document _id.',
+                'error_message': '_id is not a valid _id for a document of '
+                                 'collection \'collection\'.',
                 'collection': 'collection',
                 '_id': '_id',
             }

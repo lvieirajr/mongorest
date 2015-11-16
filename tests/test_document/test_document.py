@@ -32,12 +32,6 @@ class TestDocument(TestCase):
 
         self.assertEqual(document._fields, {'test': 'test'})
 
-    @patch('mongorest.document.Document._validate')
-    def test_init_calls_validate(self, validate):
-        Document(Collection)
-
-        self.assertEqual(validate.call_count, 1)
-
     @patch('mongorest.document.Document._process')
     def test_init_calls_process_if_not_processed(self, process):
         Document(Collection, processed=False)

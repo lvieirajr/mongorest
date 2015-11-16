@@ -11,9 +11,10 @@ class TestRequiredFieldError(TestCase):
         self.assertEqual(
             RequiredFieldError('collection', 'field'),
             {
-                'error_code': 2,
+                'error_code': 32,
                 'error_type': 'RequiredFieldError',
-                'error_message': 'Field \'field\' is required.',
+                'error_message': 'Field \'field\' of collection '
+                                 '\'collection\' is required.',
                 'collection': 'collection',
                 'field': 'field',
             }

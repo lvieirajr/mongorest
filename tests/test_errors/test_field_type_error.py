@@ -9,13 +9,14 @@ class TestFieldTypeError(TestCase):
 
     def test_field_type_error_sets_correct_fields(self):
         self.assertEqual(
-            FieldTypeError('collection', 'field', 'types'),
+            FieldTypeError('collection', 'field', 'type'),
             {
-                'error_code': 3,
+                'error_code': 33,
                 'error_type': 'FieldTypeError',
-                'error_message': 'Field \'field\' must be of type(s): types.',
+                'error_message': 'Field \'field\' of collection '
+                                 '\'collection\' must be of type \'type\'.',
                 'collection': 'collection',
                 'field': 'field',
-                'types': 'types',
+                'type': 'type',
             }
         )

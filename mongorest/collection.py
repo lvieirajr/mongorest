@@ -30,11 +30,8 @@ class CollectionMeta(type):
 
             members['collection'] = db[collection]
 
-        if 'meta' not in members:
-            members['meta'] = {
-                'required': {},
-                'optional': {},
-            }
+        if 'schema' not in members:
+            members['schema'] = {}
 
         return super(mcs, mcs).__new__(mcs, *(name, bases, members), **kwargs)
 

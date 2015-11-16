@@ -5,11 +5,9 @@ from pymongo.errors import PyMongoError as MongoError
 from types import MethodType, FunctionType
 
 from .decorators import serializable
+from .validation import MongoRestValidator
 from .errors import (
     PyMongoError,
-    ValidationError,
-    RequiredFieldError,
-    FieldTypeError,
     UnidentifiedDocumentError,
     DocumentNotFoundError,
 )
@@ -26,11 +24,12 @@ class Document(object):
     Will use the meta of the Collection to do so.
     """
 
-    def __init__(self, collection, fields=None, processed=False):
+    def __init__(self, collection, fields=None, processed=False,
+                 allow_unknown=True):
         """
         Initializes the Document Object with the given attributes
         Processes the fields if not processed
-        Then validates the fields based on the Collection
+        Then validates the fields based on the Collection schema
         """
         super(Document, self).__init__()
 
@@ -41,7 +40,9 @@ class Document(object):
         if not processed:
             self._process()
 
-        self._validate()
+        MongoRestValidator(
+            schema=self.schema, allow_unknown=allow_unknown
+        ).validate_document(self)
 
     def __getattr__(self, attr):
         """
@@ -81,42 +82,6 @@ class Document(object):
         return '<Document<{0}> object at {1}>'.format(
             self._collection.__name__, hex(id(self)),
         )
-
-    def _validate(self):
-        """
-        Validates if the required fields are present on the Document
-        Validates if the required fields are of the correct types
-        If one of these two validations fail, add an error to self._errors
-        """
-        fields = dict(
-            self.meta.get('optional', {}), **self.meta.get('required', {})
-        )
-
-        for (field, type_or_tuple) in list(fields.items()):
-            if field in self._fields:
-                if not isinstance(self._fields[field], type_or_tuple):
-                    if isinstance(type_or_tuple, (tuple, list)):
-                        types = ' or '.join(t.__name__ for t in type_or_tuple)
-                    else:
-                        types = type_or_tuple.__name__
-
-                    if 'error_code' not in self._errors:
-                        self._errors = ValidationError(
-                            [], self.collection.__name__, self._fields
-                        )
-
-                    self._errors['errors'].append(
-                        FieldTypeError(self.collection.__name__, field, types)
-                    )
-            elif field in self.meta.get('required', {}):
-                if 'error_code' not in self._errors:
-                    self._errors = ValidationError(
-                        [], self.collection.__name__, self._fields
-                    )
-
-                self._errors['errors'].append(
-                    RequiredFieldError(self.collection.__name__, field)
-                )
 
     def _process(self):
         """
