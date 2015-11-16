@@ -1,5 +1,5 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from .test_collection import *
-from .test_collection_meta import *
+from .collection import *
+from .collection_meta import *
