@@ -17,8 +17,8 @@ __all__ = [
     'SchemaValidationError',
     'UnknownFieldError',
     'RequiredFieldError',
-    'FieldTypeError',
     'ReadOnlyFieldError',
+    'FieldTypeError',
     'RegexMatchError',
     'MinLengthError',
     'MaxLengthError',
@@ -214,10 +214,21 @@ class RequiredFieldError(MongoRestError):
         self['field'] = field
 
 
+class ReadOnlyFieldError(MongoRestError):
+
+    def __init__(self, collection=None, field=None, length=None):
+        super(ReadOnlyFieldError, self).__init__(33, 'ReadOnlyFieldError')
+
+        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
+                                'read only.'.format(field, collection)
+        self['collection'] = collection
+        self['field'] = field
+
+
 class FieldTypeError(MongoRestError):
 
     def __init__(self, collection=None, field=None, field_type=None):
-        super(FieldTypeError, self).__init__(33, 'FieldTypeError')
+        super(FieldTypeError, self).__init__(34, 'FieldTypeError')
 
         self['error_message'] = 'Field \'{0}\' of collection \'{1}\' must ' \
                                 'be of type \'{2}\'.'.format(
@@ -226,17 +237,6 @@ class FieldTypeError(MongoRestError):
         self['collection'] = collection
         self['field'] = field
         self['type'] = field_type
-
-
-class ReadOnlyFieldError(MongoRestError):
-
-    def __init__(self, collection=None, field=None, length=None):
-        super(ReadOnlyFieldError, self).__init__(34, 'ReadOnlyFieldError')
-
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
-                                'read only.'.format(field, collection)
-        self['collection'] = collection
-        self['field'] = field
 
 
 class RegexMatchError(MongoRestError):
@@ -325,10 +325,10 @@ class ValuesNotAllowedError(MongoRestError):
         self['values'] = values
 
 
-class FieldMinValueError(MongoRestError):
+class MinValueError(MongoRestError):
 
     def __init__(self, collection=None, field=None, min_value=None):
-        super(FieldMinValueError, self).__init__(41, 'FieldMinValueError')
+        super(MinValueError, self).__init__(41, 'MinValueError')
 
         self['error_message'] = 'Minimum value for field \'{0}\' of ' \
                                 'collection \'{1}\' is {2}.'.format(
@@ -339,10 +339,10 @@ class FieldMinValueError(MongoRestError):
         self['min_value'] = min_value
 
 
-class FieldMaxValueError(MongoRestError):
+class MaxValueError(MongoRestError):
 
     def __init__(self, collection=None, field=None, max_value=None):
-        super(FieldMaxValueError, self).__init__(42, 'FieldMaxValueError')
+        super(MaxValueError, self).__init__(42, 'MaxValueError')
 
         self['error_message'] = 'Maximum value for field \'{0}\' of ' \
                                 'collection \'{1}\' is {2}.'.format(
@@ -379,39 +379,38 @@ class NullNotAllowedError(MongoRestError):
         self['field'] = field
 
 
-class FieldDependencyError(MongoRestError):
+class DependencyError(MongoRestError):
 
-    def __init__(self, collection=None, field=None, required_field=None):
-        super(FieldDependencyError, self).__init__(45, 'FieldDependencyError')
+    def __init__(self, collection=None, field=None, dependency=None):
+        super(DependencyError, self).__init__(45, 'DependencyError')
 
         self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
                                 'required if field \'{2}\' of collection ' \
                                 '\'{1}\' is present.'.format(
-                                    required_field, collection, field
+                                    dependency, collection, field
                                 )
         self['collection'] = collection
         self['field'] = field
-        self['required_field'] = required_field
+        self['dependency'] = dependency
 
 
-class FieldValueDependencyError(MongoRestError):
+class ValueDependencyError(MongoRestError):
 
-    def __init__(self, collection=None, field=None, required_field=None,
-                 values=None):
-        super(FieldValueDependencyError, self).__init__(
-            46, 'FieldValueDependencyError'
-        )
+    def __init__(self, collection=None, field=None, dependency=None,
+                 dependency_values=None):
+        super(ValueDependencyError, self).__init__(46, 'ValueDependencyError')
 
         self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
-                                'required to have values {2} if field ' \
+                                'required to have values \'{2}\' if field ' \
                                 '\'{3}\' of collection \'{1}\' is present.' \
                                 ''.format(
-                                    required_field, collection, values, field
+                                    dependency, collection, dependency_values,
+                                    field
                                 )
         self['collection'] = collection
         self['field'] = field
-        self['required_field'] = required_field
-        self['values'] = values
+        self['dependency'] = dependency
+        self['dependency_values'] = dependency_values
 
 
 class CoercionError(MongoRestError):

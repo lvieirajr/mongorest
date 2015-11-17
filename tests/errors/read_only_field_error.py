@@ -11,7 +11,7 @@ class TestReadOnlyFieldError(TestCase):
         self.assertEqual(
             ReadOnlyFieldError('collection', 'field'),
             {
-                'error_code': 34,
+                'error_code': 33,
                 'error_type': 'ReadOnlyFieldError',
                 'error_message': 'Field \'field\' of collection '
                                  '\'collection\' is read only.',

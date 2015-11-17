@@ -11,7 +11,7 @@ class TestFieldTypeError(TestCase):
         self.assertEqual(
             FieldTypeError('collection', 'field', 'type'),
             {
-                'error_code': 33,
+                'error_code': 34,
                 'error_type': 'FieldTypeError',
                 'error_message': 'Field \'field\' of collection '
                                  '\'collection\' must be of type \'type\'.',
