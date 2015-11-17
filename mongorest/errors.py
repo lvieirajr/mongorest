@@ -18,6 +18,9 @@ __all__ = [
     'UnknownFieldError',
     'RequiredFieldError',
     'FieldTypeError',
+    'ReadOnlyFieldError',
+    'RegexMatchError',
+    'FieldMinLengthError',
 ]
 
 
@@ -237,9 +240,9 @@ class RegexMatchError(MongoRestError):
     def __init__(self, collection=None, field=None, regex=None):
         super(RegexMatchError, self).__init__(35, 'RegexMatchError')
 
-        self['error_message'] = 'Value does not match the regex {0} for ' \
+        self['error_message'] = 'Value does not match the regex \'{0}\' for ' \
                                 'field \'{1}\' of collection \'{2}\'.'.format(
-                                    field, collection
+                                    regex, field, collection
                                 )
         self['collection'] = collection
         self['field'] = field
