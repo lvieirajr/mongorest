@@ -258,8 +258,8 @@ class MinLengthError(MongoRestError):
     def __init__(self, collection=None, field=None, min_length=None):
         super(MinLengthError, self).__init__(36, 'MinLengthError')
 
-        self['error_message'] = 'Length of field \'{0}\' of collection ' \
-                                '\'{1}\' must be at least {2}.'.format(
+        self['error_message'] = 'Minimum length for field \'{0}\' from ' \
+                                'collection \'{1}\' is {2}.'.format(
                                     field, collection, min_length
                                 )
         self['collection'] = collection
@@ -272,8 +272,8 @@ class MaxLengthError(MongoRestError):
     def __init__(self, collection=None, field=None, max_length=None):
         super(MaxLengthError, self).__init__(37, 'MaxLengthError')
 
-        self['error_message'] = 'Length of field \'{0}\' of collection ' \
-                                '\'{1}\' must be at most {2}.'.format(
+        self['error_message'] = 'Maximum length for field \'{0}\' from ' \
+                                'collection \'{1}\' is {2}.'.format(
                                     field, collection, max_length
                                 )
         self['collection'] = collection
@@ -330,7 +330,7 @@ class MinValueError(MongoRestError):
     def __init__(self, collection=None, field=None, min_value=None):
         super(MinValueError, self).__init__(41, 'MinValueError')
 
-        self['error_message'] = 'Minimum value for field \'{0}\' of ' \
+        self['error_message'] = 'Minimum value for field \'{0}\' from ' \
                                 'collection \'{1}\' is {2}.'.format(
                                     field, collection, min_value
                                 )

@@ -13,8 +13,8 @@ class TestMaxLengthError(TestCase):
             {
                 'error_code': 37,
                 'error_type': 'MaxLengthError',
-                'error_message': 'Length of field \'field\' of collection '
-                                 '\'collection\' must be at most max_length.',
+                'error_message': 'Maximum length for field \'field\' from '
+                                 'collection \'collection\' is max_length.',
                 'collection': 'collection',
                 'field': 'field',
                 'max_length': 'max_length'

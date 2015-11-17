@@ -13,8 +13,8 @@ class TestMinLengthError(TestCase):
             {
                 'error_code': 36,
                 'error_type': 'MinLengthError',
-                'error_message': 'Length of field \'field\' of collection '
-                                 '\'collection\' must be at least min_length.',
+                'error_message': 'Minimum length for field \'field\' from '
+                                 'collection \'collection\' is min_length.',
                 'collection': 'collection',
                 'field': 'field',
                 'min_length': 'min_length'

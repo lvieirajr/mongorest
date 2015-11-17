@@ -24,3 +24,4 @@ from .max_length_error import *
 from .length_error import *
 from .value_not_allowed_error import *
 from .values_not_allowed_error import *
+from .min_value_error import *
