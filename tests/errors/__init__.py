@@ -22,3 +22,5 @@ from .regex_match_error import *
 from .field_min_length_error import *
 from .field_max_length_error import *
 from .field_length_error import *
+from .value_not_allowed_error import *
+from .values_not_allowed_error import *

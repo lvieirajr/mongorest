@@ -21,6 +21,8 @@ __all__ = [
     'ReadOnlyFieldError',
     'RegexMatchError',
     'FieldMinLengthError',
+    'FieldMaxLengthError',
+    'FieldLengthError',
 ]
 
 
@@ -291,13 +293,13 @@ class FieldLengthError(MongoRestError):
         self['length'] = length
 
 
-class UnallowedValueError(MongoRestError):
+class ValueNotAllowedError(MongoRestError):
 
     def __init__(self, collection=None, field=None, value=None):
-        super(UnallowedValueError, self).__init__(39, 'UnallowedValueError')
+        super(ValueNotAllowedError, self).__init__(39, 'ValueNotAllowedError')
 
-        self['error_message'] = 'Value \'{0}\' is unallowed for field ' \
-                                '\'{0}\' of collection \'{1}\'.'.format(
+        self['error_message'] = 'Value \'{0}\' is not allowed for field ' \
+                                '\'{1}\' of collection \'{2}\'.'.format(
                                     value, field, collection
                                 )
         self['collection'] = collection
@@ -305,13 +307,15 @@ class UnallowedValueError(MongoRestError):
         self['value'] = value
 
 
-class UnallowedValuesError(MongoRestError):
+class ValuesNotAllowedError(MongoRestError):
 
     def __init__(self, collection=None, field=None, values=None):
-        super(UnallowedValuesError, self).__init__(40, 'UnallowedValuesError')
+        super(ValuesNotAllowedError, self).__init__(
+            40, 'ValuesNotAllowedError'
+        )
 
-        self['error_message'] = 'Values {0} are unallowed for field \'{0}\' ' \
-                                'of collection \'{1}\'.'.format(
+        self['error_message'] = 'Values \'{0}\' are not allowed for field ' \
+                                '\'{1}\' of collection \'{2}\'.'.format(
                                     values, field, collection
                                 )
         self['collection'] = collection
