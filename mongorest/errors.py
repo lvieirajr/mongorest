@@ -20,9 +20,11 @@ __all__ = [
     'FieldTypeError',
     'ReadOnlyFieldError',
     'RegexMatchError',
-    'FieldMinLengthError',
-    'FieldMaxLengthError',
-    'FieldLengthError',
+    'MinLengthError',
+    'MaxLengthError',
+    'LengthError',
+    'ValueNotAllowedError',
+    'ValuesNotAllowedError',
 ]
 
 
@@ -251,10 +253,10 @@ class RegexMatchError(MongoRestError):
         self['regex'] = regex
 
 
-class FieldMinLengthError(MongoRestError):
+class MinLengthError(MongoRestError):
 
     def __init__(self, collection=None, field=None, min_length=None):
-        super(FieldMinLengthError, self).__init__(36, 'FieldMinLengthError')
+        super(MinLengthError, self).__init__(36, 'MinLengthError')
 
         self['error_message'] = 'Length of field \'{0}\' of collection ' \
                                 '\'{1}\' must be at least {2}.'.format(
@@ -265,10 +267,10 @@ class FieldMinLengthError(MongoRestError):
         self['min_length'] = min_length
 
 
-class FieldMaxLengthError(MongoRestError):
+class MaxLengthError(MongoRestError):
 
     def __init__(self, collection=None, field=None, max_length=None):
-        super(FieldMaxLengthError, self).__init__(37, 'FieldMaxLengthError')
+        super(MaxLengthError, self).__init__(37, 'MaxLengthError')
 
         self['error_message'] = 'Length of field \'{0}\' of collection ' \
                                 '\'{1}\' must be at most {2}.'.format(
@@ -279,10 +281,10 @@ class FieldMaxLengthError(MongoRestError):
         self['max_length'] = max_length
 
 
-class FieldLengthError(MongoRestError):
+class LengthError(MongoRestError):
 
     def __init__(self, collection=None, field=None, length=None):
-        super(FieldLengthError, self).__init__(38, 'FieldLengthError')
+        super(LengthError, self).__init__(38, 'LengthError')
 
         self['error_message'] = 'Length of field \'{0}\' of collection ' \
                                 '\'{1}\' must be {2}.'.format(
