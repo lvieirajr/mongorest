@@ -16,7 +16,7 @@ class TestCreateResourceMixin(TestCase):
 
     def setUp(self):
         class Test(Collection):
-            meta = {'required': {'test': six.integer_types}}
+            schema = {'test': {'required': True, 'type': 'integer'}}
 
         class TestCollectionCreate(CreateResourceMixin):
             collection = Test
@@ -54,19 +54,20 @@ class TestCreateResourceMixin(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 1,
-                'error_type': 'ValidationError',
-                'error_message': 'Test document validation failed.',
+                'error_code': 30,
+                'error_type': 'DocumentValidationError',
+                'error_message': 'Validation of document from collection \'Test\' failed.',
                 'errors': [
                     {
-                        'error_code': 2,
+                        'error_code': 32,
                         'error_type': 'RequiredFieldError',
-                        'error_message': 'Field \'test\' is required.',
+                        'error_message': 'Field \'test\' on collection \'Test\' is required.',
                         'collection': 'Test',
                         'field': 'test',
                     },
                 ],
                 'collection': 'Test',
+                'schema': {'test': {'required': True, 'type': 'integer'}},
                 'document': {},
             }
         )
