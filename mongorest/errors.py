@@ -4,17 +4,20 @@ from __future__ import absolute_import, unicode_literals
 __all__ = [
     'MongoRestError',
     'PyMongoError',
+    'SchemaValidationError',
     'SchemaMissingError',
     'SchemaTypeError',
     'SchemaFieldTypeError',
     'UnknownRuleError',
     'FieldDefinitionError',
     'UnknownTypeError',
+    'DocumentError',
     'DocumentMissingError',
     'DocumentTypeError',
     'UnidentifiedDocumentError',
     'DocumentNotFoundError',
-    'SchemaValidationError',
+    'DocumentValidationError',
+    'FieldValidationError',
     'UnknownFieldError',
     'RequiredFieldError',
     'ReadOnlyFieldError',
@@ -25,6 +28,13 @@ __all__ = [
     'LengthError',
     'ValueNotAllowedError',
     'ValuesNotAllowedError',
+    'MinValueError',
+    'MaxValueError',
+    'EmptyNotAllowedError',
+    'NullNotAllowedError',
+    'DependencyError',
+    'ValueDependencyError',
+    'CoercionError',
 ]
 
 
@@ -51,7 +61,11 @@ class PyMongoError(MongoRestError):
 
 
 # Schema Errors: 10 - 19
-class SchemaMissingError(MongoRestError):
+class SchemaValidationError(MongoRestError):
+    pass
+
+
+class SchemaMissingError(SchemaValidationError):
 
     def __init__(self, collection=None):
         super(SchemaMissingError, self).__init__(10, 'SchemaMissingError')
@@ -61,7 +75,7 @@ class SchemaMissingError(MongoRestError):
         self['collection'] = collection
 
 
-class SchemaTypeError(MongoRestError):
+class SchemaTypeError(SchemaValidationError):
 
     def __init__(self, collection=None, schema=None):
         super(SchemaTypeError, self).__init__(11, 'SchemaTypeError')
@@ -72,7 +86,7 @@ class SchemaTypeError(MongoRestError):
         self['schema'] = schema
 
 
-class SchemaFieldTypeError(MongoRestError):
+class SchemaFieldTypeError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
         super(SchemaFieldTypeError, self).__init__(12, 'SchemaFieldTypeError')
@@ -84,7 +98,7 @@ class SchemaFieldTypeError(MongoRestError):
         self['field'] = field
 
 
-class UnknownRuleError(MongoRestError):
+class UnknownRuleError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, rule=None):
         super(UnknownRuleError, self).__init__(13, 'UnknownRuleError')
@@ -98,7 +112,7 @@ class UnknownRuleError(MongoRestError):
         self['rule'] = rule
 
 
-class FieldDefinitionError(MongoRestError):
+class FieldDefinitionError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, rule=None):
         super(FieldDefinitionError, self).__init__(14, 'FieldDefinitionError')
@@ -111,7 +125,7 @@ class FieldDefinitionError(MongoRestError):
         self['field'] = field
 
 
-class UnknownTypeError(MongoRestError):
+class UnknownTypeError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, field_type=None):
         super(UnknownTypeError, self).__init__(15, 'UnknownTypeError')
@@ -127,7 +141,11 @@ class UnknownTypeError(MongoRestError):
 
 
 # Document Errors: 20 - 29
-class DocumentMissingError(MongoRestError):
+class DocumentError(MongoRestError):
+    pass
+
+
+class DocumentMissingError(DocumentError):
 
     def __init__(self, collection=None):
         super(DocumentMissingError, self).__init__(20, 'DocumentMissingError')
@@ -137,7 +155,7 @@ class DocumentMissingError(MongoRestError):
         self['collection'] = collection
 
 
-class DocumentTypeError(MongoRestError):
+class DocumentTypeError(DocumentError):
 
     def __init__(self, collection=None, document=None):
         super(DocumentTypeError, self).__init__(21, 'DocumentTypeError')
@@ -148,7 +166,7 @@ class DocumentTypeError(MongoRestError):
         self['document'] = document
 
 
-class UnidentifiedDocumentError(MongoRestError):
+class UnidentifiedDocumentError(DocumentError):
 
     def __init__(self, collection=None, document=None):
         super(UnidentifiedDocumentError, self).__init__(
@@ -161,7 +179,7 @@ class UnidentifiedDocumentError(MongoRestError):
         self['document'] = document
 
 
-class DocumentNotFoundError(MongoRestError):
+class DocumentNotFoundError(DocumentError):
 
     def __init__(self, collection=None, _id=None):
         super(DocumentNotFoundError, self).__init__(
@@ -174,13 +192,13 @@ class DocumentNotFoundError(MongoRestError):
         self['_id'] = _id
 
 
-# Validation Error: 30
-class SchemaValidationError(MongoRestError):
+# Document Validation Error: 30
+class DocumentValidationError(MongoRestError):
 
     def __init__(self, collection=None, schema=None, document=None,
                  errors=None):
-        super(SchemaValidationError, self).__init__(
-            30, 'SchemaValidationError'
+        super(DocumentValidationError, self).__init__(
+            30, 'DocumentValidationError'
         )
 
         self['error_message'] = 'Validation of document from collection ' \
@@ -192,7 +210,11 @@ class SchemaValidationError(MongoRestError):
 
 
 # Field Validation Errors: 31 - 99
-class UnknownFieldError(MongoRestError):
+class FieldValidationError(MongoRestError):
+    pass
+
+
+class UnknownFieldError(FieldValidationError):
 
     def __init__(self, collection=None, field=None):
         super(UnknownFieldError, self).__init__(31, 'UnknownFieldError')
@@ -203,7 +225,7 @@ class UnknownFieldError(MongoRestError):
         self['field'] = field
 
 
-class RequiredFieldError(MongoRestError):
+class RequiredFieldError(FieldValidationError):
 
     def __init__(self, collection=None, field=None):
         super(RequiredFieldError, self).__init__(32, 'RequiredFieldError')
@@ -214,7 +236,7 @@ class RequiredFieldError(MongoRestError):
         self['field'] = field
 
 
-class ReadOnlyFieldError(MongoRestError):
+class ReadOnlyFieldError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, length=None):
         super(ReadOnlyFieldError, self).__init__(33, 'ReadOnlyFieldError')
@@ -225,7 +247,7 @@ class ReadOnlyFieldError(MongoRestError):
         self['field'] = field
 
 
-class FieldTypeError(MongoRestError):
+class FieldTypeError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, field_type=None):
         super(FieldTypeError, self).__init__(34, 'FieldTypeError')
@@ -239,7 +261,7 @@ class FieldTypeError(MongoRestError):
         self['type'] = field_type
 
 
-class RegexMatchError(MongoRestError):
+class RegexMatchError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, regex=None):
         super(RegexMatchError, self).__init__(35, 'RegexMatchError')
@@ -253,7 +275,7 @@ class RegexMatchError(MongoRestError):
         self['regex'] = regex
 
 
-class MinLengthError(MongoRestError):
+class MinLengthError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, min_length=None):
         super(MinLengthError, self).__init__(36, 'MinLengthError')
@@ -267,7 +289,7 @@ class MinLengthError(MongoRestError):
         self['min_length'] = min_length
 
 
-class MaxLengthError(MongoRestError):
+class MaxLengthError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, max_length=None):
         super(MaxLengthError, self).__init__(37, 'MaxLengthError')
@@ -281,7 +303,7 @@ class MaxLengthError(MongoRestError):
         self['max_length'] = max_length
 
 
-class LengthError(MongoRestError):
+class LengthError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, length=None):
         super(LengthError, self).__init__(38, 'LengthError')
@@ -295,7 +317,7 @@ class LengthError(MongoRestError):
         self['length'] = length
 
 
-class ValueNotAllowedError(MongoRestError):
+class ValueNotAllowedError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, value=None):
         super(ValueNotAllowedError, self).__init__(39, 'ValueNotAllowedError')
@@ -309,7 +331,7 @@ class ValueNotAllowedError(MongoRestError):
         self['value'] = value
 
 
-class ValuesNotAllowedError(MongoRestError):
+class ValuesNotAllowedError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, values=None):
         super(ValuesNotAllowedError, self).__init__(
@@ -325,7 +347,7 @@ class ValuesNotAllowedError(MongoRestError):
         self['values'] = values
 
 
-class MinValueError(MongoRestError):
+class MinValueError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, min_value=None):
         super(MinValueError, self).__init__(41, 'MinValueError')
@@ -339,7 +361,7 @@ class MinValueError(MongoRestError):
         self['min_value'] = min_value
 
 
-class MaxValueError(MongoRestError):
+class MaxValueError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, max_value=None):
         super(MaxValueError, self).__init__(42, 'MaxValueError')
@@ -353,7 +375,7 @@ class MaxValueError(MongoRestError):
         self['max_value'] = max_value
 
 
-class EmptyNotAllowedError(MongoRestError):
+class EmptyNotAllowedError(FieldValidationError):
 
     def __init__(self, collection=None, field=None):
         super(EmptyNotAllowedError, self).__init__(43, 'EmptyNotAllowedError')
@@ -366,7 +388,7 @@ class EmptyNotAllowedError(MongoRestError):
         self['field'] = field
 
 
-class NullNotAllowedError(MongoRestError):
+class NullNotAllowedError(FieldValidationError):
 
     def __init__(self, collection=None, field=None):
         super(NullNotAllowedError, self).__init__(44, 'NullNotAllowedError')
@@ -379,7 +401,7 @@ class NullNotAllowedError(MongoRestError):
         self['field'] = field
 
 
-class DependencyError(MongoRestError):
+class DependencyError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, dependency=None):
         super(DependencyError, self).__init__(45, 'DependencyError')
@@ -393,7 +415,7 @@ class DependencyError(MongoRestError):
         self['dependency'] = dependency
 
 
-class ValueDependencyError(MongoRestError):
+class ValueDependencyError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, dependency=None,
                  dependency_values=None):
@@ -411,7 +433,7 @@ class ValueDependencyError(MongoRestError):
         self['dependency_values'] = dependency_values
 
 
-class CoercionError(MongoRestError):
+class CoercionError(FieldValidationError):
 
     def __init__(self, collection=None, field=None, coercion_type=None):
         super(CoercionError, self).__init__(47, 'CoercionError')

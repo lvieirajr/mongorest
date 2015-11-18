@@ -143,7 +143,7 @@ class Document(object):
                         'errmsg', exc.details.get('err', 'PyMongoError.')
                     ),
                     operation='save',
-                    collection=self.collection.__name__,
+                    collection=self._collection.__name__,
                     document=self._fields,
                 )
 
@@ -175,7 +175,7 @@ class Document(object):
                         return self._fields
                     else:
                         return DocumentNotFoundError(
-                            self.collection.__name__, self._id
+                            self._collection.__name__, self._id
                         )
                 except MongoError as exc:
                     return PyMongoError(
@@ -183,12 +183,12 @@ class Document(object):
                             'errmsg', exc.details.get('err', 'PyMongoError.')
                         ),
                         operation='update',
-                        collection=self.collection.__name__,
+                        collection=self._collection.__name__,
                         document=self._fields,
                     )
             else:
                 return UnidentifiedDocumentError(
-                    self.collection.__name__, self._fields
+                    self._collection.__name__, self._fields
                 )
 
         return self._errors
@@ -211,7 +211,7 @@ class Document(object):
                     return self._fields
                 else:
                     return DocumentNotFoundError(
-                        self.collection.__name__, self._id
+                        self._collection.__name__, self._id
                     )
             except MongoError as exc:
                 return PyMongoError(
@@ -219,10 +219,10 @@ class Document(object):
                         'errmsg', exc.details.get('err', 'PyMongoError.')
                     ),
                     operation='delete',
-                    collection=self.collection.__name__,
+                    collection=self._collection.__name__,
                     document=self._fields,
                 )
         else:
             return UnidentifiedDocumentError(
-                self.collection.__name__, self._fields
+                self._collection.__name__, self._fields
             )

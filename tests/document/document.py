@@ -127,10 +127,7 @@ class TestDocument(TestCase):
 
     def test_errors_returns_documents_errors(self):
         class TestCollection(Collection):
-            meta = {
-                'required': {'test': six.string_types + six.integer_types},
-                'optional': {}
-            }
+            schema = {'test': {'type': 'string', 'required': True}}
 
         document = Document(TestCollection, {'test': ObjectId()})
 
