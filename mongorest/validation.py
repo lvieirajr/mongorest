@@ -20,18 +20,22 @@ class MongoRestValidator(Validator):
         self.validate(document.fields)
         for key, _error in self.flattened_errors.items():
             field = key
-            error = None
+            field_schema = self.get_field_schema(field)
+
+            if _error == 'required field':
+                error = RequiredFieldError(collection_name, field)
 
             if _error.startswith('must be of') and _error.endswith('type'):
-                error = FieldTypeError(collection_name, field, _error[11:-5])
+                error = FieldTypeError(
+                    collection_name, field, field_schema['type']
+                )
 
             if error and isinstance(error, FieldValidationError):
                 if 'error_code' in document._errors:
                     document._errors['errors'].append(error)
                 else:
                     document._errors = DocumentValidationError(
-                        collection_name, collection.schema, document.fields,
-                        [error]
+                        collection_name, self.schema, document.fields, [error]
                     )
 
         return not bool(document.errors)
@@ -52,3 +56,11 @@ class MongoRestValidator(Validator):
                 items.append((flat_key, value))
 
         return dict(items)
+
+    def get_field_schema(self, field):
+        schema, fields = self.schema, field.split('.')
+
+        for field in fields:
+            schema = schema.get(field) or schema.get('schema').get(field)
+
+        return schema

@@ -139,29 +139,27 @@ class TestDocument(TestCase):
 
     def test_save_returns_errors_if_document_is_not_valid(self):
         class TestCollection(Collection):
-            meta = {
-                'required': {'test': ObjectId},
-                'optional': {}
-            }
+            schema = {'test': {'required': True, 'type': 'string'}}
 
         errors = Document(TestCollection).save()
 
         self.assertEqual(
             errors,
             {
-                'error_code': 1,
-                'error_type': 'ValidationError',
-                'error_message': 'TestCollection document validation failed.',
+                'error_code': 30,
+                'error_type': 'DocumentValidationError',
+                'error_message': 'Validation of document from collection \'TestCollection\' failed.',
                 'errors': [
                     {
-                        'error_code': 2,
+                        'error_code': 32,
                         'error_type': 'RequiredFieldError',
-                        'error_message': 'Field \'test\' is required.',
+                        'error_message': 'Field \'test\' on collection \'TestCollection\' is required.',
                         'collection': 'TestCollection',
                         'field': 'test',
                     },
                 ],
                 'collection': 'TestCollection',
+                'schema': {'test': {'required': True, 'type': 'string'}},
                 'document': {},
             }
         )
