@@ -36,11 +36,12 @@ class Validator(CerberusValidator):
 
             if _error == 'required field':
                 error = RequiredFieldError(collection_name, field)
-
-            if _error.startswith('must be of') and _error.endswith('type'):
+            elif _error.startswith('must be of') and _error.endswith('type'):
                 error = FieldTypeError(
                     collection_name, field, field_schema['type']
                 )
+            else:
+                error = SchemaValidationError()
 
             if error and isinstance(error, SchemaValidationError):
                 if 'error_code' in errors:
