@@ -89,8 +89,8 @@ class UnknownRuleError(MongoRestError):
     def __init__(self, collection=None, field=None, rule=None):
         super(UnknownRuleError, self).__init__(13, 'UnknownRuleError')
 
-        self['error_message'] = 'Unknown rule \'{0}\' for field \'{1}\' of ' \
-                                'collection \'{2}\'.'.format(
+        self['error_message'] = 'Unknown rule \'{0}\' for field \'{1}\' ' \
+                                'on collection \'{2}\'.'.format(
                                     rule, field, collection
                                 )
         self['collection'] = collection
@@ -103,7 +103,7 @@ class FieldDefinitionError(MongoRestError):
     def __init__(self, collection=None, field=None, rule=None):
         super(FieldDefinitionError, self).__init__(14, 'FieldDefinitionError')
 
-        self['error_message'] = 'Schema definition for field \'{0}\' of ' \
+        self['error_message'] = 'Schema definition for field \'{0}\' on ' \
                                 'collection \'{1}\' must be a dict.'.format(
                                     field, collection
                                 )
@@ -168,7 +168,7 @@ class DocumentNotFoundError(MongoRestError):
             23, 'DocumentNotFoundError'
         )
 
-        self['error_message'] = '{0} is not a valid _id for a document of ' \
+        self['error_message'] = '{0} is not a valid _id for a document from ' \
                                 'collection \'{1}\'.'.format(_id, collection)
         self['collection'] = collection
         self['_id'] = _id
@@ -197,7 +197,7 @@ class UnknownFieldError(MongoRestError):
     def __init__(self, collection=None, field=None):
         super(UnknownFieldError, self).__init__(31, 'UnknownFieldError')
 
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
+        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
                                 'unknown.'.format(field, collection)
         self['collection'] = collection
         self['field'] = field
@@ -208,7 +208,7 @@ class RequiredFieldError(MongoRestError):
     def __init__(self, collection=None, field=None):
         super(RequiredFieldError, self).__init__(32, 'RequiredFieldError')
 
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
+        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
                                 'required.'.format(field, collection)
         self['collection'] = collection
         self['field'] = field
@@ -219,7 +219,7 @@ class ReadOnlyFieldError(MongoRestError):
     def __init__(self, collection=None, field=None, length=None):
         super(ReadOnlyFieldError, self).__init__(33, 'ReadOnlyFieldError')
 
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
+        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
                                 'read only.'.format(field, collection)
         self['collection'] = collection
         self['field'] = field
@@ -230,7 +230,7 @@ class FieldTypeError(MongoRestError):
     def __init__(self, collection=None, field=None, field_type=None):
         super(FieldTypeError, self).__init__(34, 'FieldTypeError')
 
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' must ' \
+        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' must ' \
                                 'be of type \'{2}\'.'.format(
                                     field, collection, field_type
                                 )
@@ -245,7 +245,7 @@ class RegexMatchError(MongoRestError):
         super(RegexMatchError, self).__init__(35, 'RegexMatchError')
 
         self['error_message'] = 'Value does not match the regex \'{0}\' for ' \
-                                'field \'{1}\' of collection \'{2}\'.'.format(
+                                'field \'{1}\' on collection \'{2}\'.'.format(
                                     regex, field, collection
                                 )
         self['collection'] = collection
@@ -258,7 +258,7 @@ class MinLengthError(MongoRestError):
     def __init__(self, collection=None, field=None, min_length=None):
         super(MinLengthError, self).__init__(36, 'MinLengthError')
 
-        self['error_message'] = 'Minimum length for field \'{0}\' from ' \
+        self['error_message'] = 'Minimum length for field \'{0}\' on ' \
                                 'collection \'{1}\' is {2}.'.format(
                                     field, collection, min_length
                                 )
@@ -272,7 +272,7 @@ class MaxLengthError(MongoRestError):
     def __init__(self, collection=None, field=None, max_length=None):
         super(MaxLengthError, self).__init__(37, 'MaxLengthError')
 
-        self['error_message'] = 'Maximum length for field \'{0}\' from ' \
+        self['error_message'] = 'Maximum length for field \'{0}\' on ' \
                                 'collection \'{1}\' is {2}.'.format(
                                     field, collection, max_length
                                 )
@@ -286,7 +286,7 @@ class LengthError(MongoRestError):
     def __init__(self, collection=None, field=None, length=None):
         super(LengthError, self).__init__(38, 'LengthError')
 
-        self['error_message'] = 'Length of field \'{0}\' of collection ' \
+        self['error_message'] = 'Length of field \'{0}\' on collection ' \
                                 '\'{1}\' must be {2}.'.format(
                                     field, collection, length
                                 )
@@ -301,7 +301,7 @@ class ValueNotAllowedError(MongoRestError):
         super(ValueNotAllowedError, self).__init__(39, 'ValueNotAllowedError')
 
         self['error_message'] = 'Value \'{0}\' is not allowed for field ' \
-                                '\'{1}\' of collection \'{2}\'.'.format(
+                                '\'{1}\' on collection \'{2}\'.'.format(
                                     value, field, collection
                                 )
         self['collection'] = collection
@@ -317,7 +317,7 @@ class ValuesNotAllowedError(MongoRestError):
         )
 
         self['error_message'] = 'Values \'{0}\' are not allowed for field ' \
-                                '\'{1}\' of collection \'{2}\'.'.format(
+                                '\'{1}\' on collection \'{2}\'.'.format(
                                     values, field, collection
                                 )
         self['collection'] = collection
@@ -330,7 +330,7 @@ class MinValueError(MongoRestError):
     def __init__(self, collection=None, field=None, min_value=None):
         super(MinValueError, self).__init__(41, 'MinValueError')
 
-        self['error_message'] = 'Minimum value for field \'{0}\' from ' \
+        self['error_message'] = 'Minimum value for field \'{0}\' on ' \
                                 'collection \'{1}\' is {2}.'.format(
                                     field, collection, min_value
                                 )
@@ -344,7 +344,7 @@ class MaxValueError(MongoRestError):
     def __init__(self, collection=None, field=None, max_value=None):
         super(MaxValueError, self).__init__(42, 'MaxValueError')
 
-        self['error_message'] = 'Maximum value for field \'{0}\' of ' \
+        self['error_message'] = 'Maximum value for field \'{0}\' on ' \
                                 'collection \'{1}\' is {2}.'.format(
                                     field, collection, max_value
                                 )
@@ -359,7 +359,7 @@ class EmptyNotAllowedError(MongoRestError):
         super(EmptyNotAllowedError, self).__init__(43, 'EmptyNotAllowedError')
 
         self['error_message'] = 'Empty values are not allowed for field ' \
-                                '\'{0}\' of collection \'{1}\'.'.format(
+                                '\'{0}\' on collection \'{1}\'.'.format(
                                     field, collection
                                 )
         self['collection'] = collection
@@ -372,7 +372,7 @@ class NullNotAllowedError(MongoRestError):
         super(NullNotAllowedError, self).__init__(44, 'NullNotAllowedError')
 
         self['error_message'] = 'Null values are not allowed for field ' \
-                                '\'{0}\' of collection \'{1}\'.'.format(
+                                '\'{0}\' on collection \'{1}\'.'.format(
                                     field, collection
                                 )
         self['collection'] = collection
@@ -384,10 +384,9 @@ class DependencyError(MongoRestError):
     def __init__(self, collection=None, field=None, dependency=None):
         super(DependencyError, self).__init__(45, 'DependencyError')
 
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
-                                'required if field \'{2}\' of collection ' \
-                                '\'{1}\' is present.'.format(
-                                    dependency, collection, field
+        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
+                                'required if field \'{2}\' is present.'.format(
+                                    field, collection, dependency
                                 )
         self['collection'] = collection
         self['field'] = field
@@ -400,12 +399,11 @@ class ValueDependencyError(MongoRestError):
                  dependency_values=None):
         super(ValueDependencyError, self).__init__(46, 'ValueDependencyError')
 
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\' is ' \
+        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
                                 'required to have values \'{2}\' if field ' \
-                                '\'{3}\' of collection \'{1}\' is present.' \
-                                ''.format(
-                                    dependency, collection, dependency_values,
-                                    field
+                                '\'{3}\' is present.'.format(
+                                    field, collection, dependency_values,
+                                    dependency
                                 )
         self['collection'] = collection
         self['field'] = field
@@ -418,9 +416,9 @@ class CoercionError(MongoRestError):
     def __init__(self, collection=None, field=None, coercion_type=None):
         super(CoercionError, self).__init__(47, 'CoercionError')
 
-        self['error_message'] = 'Field \'{0}\' of collection \'{1}\'' \
+        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' ' \
                                 'could not be coerced into type \'{2}\'.' \
                                 ''.format(field, collection, coercion_type)
         self['collection'] = collection
         self['field'] = field
-        self['type'] = coercion_type
+        self['coercion_type'] = coercion_type

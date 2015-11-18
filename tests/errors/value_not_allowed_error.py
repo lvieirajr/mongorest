@@ -14,7 +14,7 @@ class TestValueNotAllowedError(TestCase):
                 'error_code': 39,
                 'error_type': 'ValueNotAllowedError',
                 'error_message': 'Value \'value\' is not allowed for field '
-                                 '\'field\' of collection \'collection\'.',
+                                 '\'field\' on collection \'collection\'.',
                 'collection': 'collection',
                 'field': 'field',
                 'value': 'value'

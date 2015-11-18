@@ -13,7 +13,7 @@ class TestDocumentNotFoundError(TestCase):
             {
                 'error_code': 23,
                 'error_type': 'DocumentNotFoundError',
-                'error_message': '_id is not a valid _id for a document of '
+                'error_message': '_id is not a valid _id for a document from '
                                  'collection \'collection\'.',
                 'collection': 'collection',
                 '_id': '_id',

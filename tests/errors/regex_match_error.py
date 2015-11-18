@@ -14,7 +14,7 @@ class TestRegexMatchError(TestCase):
                 'error_code': 35,
                 'error_type': 'RegexMatchError',
                 'error_message': 'Value does not match the regex \'regex\' '
-                                 'for field \'field\' of collection '
+                                 'for field \'field\' on collection '
                                  '\'collection\'.',
                 'collection': 'collection',
                 'field': 'field',

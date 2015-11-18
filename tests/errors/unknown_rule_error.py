@@ -14,7 +14,7 @@ class TestUnknownRuleError(TestCase):
                 'error_code': 13,
                 'error_type': 'UnknownRuleError',
                 'error_message': 'Unknown rule \'rule\' for field \'field\' '
-                                 'of collection \'collection\'.',
+                                 'on collection \'collection\'.',
                 'collection': 'collection',
                 'field': 'field',
                 'rule': 'rule',

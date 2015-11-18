@@ -13,7 +13,7 @@ class TestUnknownFieldError(TestCase):
             {
                 'error_code': 31,
                 'error_type': 'UnknownFieldError',
-                'error_message': 'Field \'field\' of collection '
+                'error_message': 'Field \'field\' on collection '
                                  '\'collection\' is unknown.',
                 'collection': 'collection',
                 'field': 'field',

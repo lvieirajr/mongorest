@@ -13,7 +13,7 @@ class TestReadOnlyFieldError(TestCase):
             {
                 'error_code': 33,
                 'error_type': 'ReadOnlyFieldError',
-                'error_message': 'Field \'field\' of collection '
+                'error_message': 'Field \'field\' on collection '
                                  '\'collection\' is read only.',
                 'collection': 'collection',
                 'field': 'field',

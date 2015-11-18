@@ -13,7 +13,7 @@ class TestLengthError(TestCase):
             {
                 'error_code': 38,
                 'error_type': 'LengthError',
-                'error_message': 'Length of field \'field\' of collection '
+                'error_message': 'Length of field \'field\' on collection '
                                  '\'collection\' must be length.',
                 'collection': 'collection',
                 'field': 'field',

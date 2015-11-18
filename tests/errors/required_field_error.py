@@ -13,7 +13,7 @@ class TestRequiredFieldError(TestCase):
             {
                 'error_code': 32,
                 'error_type': 'RequiredFieldError',
-                'error_message': 'Field \'field\' of collection '
+                'error_message': 'Field \'field\' on collection '
                                  '\'collection\' is required.',
                 'collection': 'collection',
                 'field': 'field',

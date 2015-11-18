@@ -13,7 +13,7 @@ class TestFieldDefinitionError(TestCase):
             {
                 'error_code': 14,
                 'error_type': 'FieldDefinitionError',
-                'error_message': 'Schema definition for field \'field\' of '
+                'error_message': 'Schema definition for field \'field\' on '
                                  'collection \'collection\' must be a dict.',
                 'collection': 'collection',
                 'field': 'field',

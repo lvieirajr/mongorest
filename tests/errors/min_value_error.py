@@ -13,7 +13,7 @@ class TestMinValueError(TestCase):
             {
                 'error_code': 41,
                 'error_type': 'MinValueError',
-                'error_message': 'Minimum value for field \'field\' from '
+                'error_message': 'Minimum value for field \'field\' on '
                                  'collection \'collection\' is min_value.',
                 'collection': 'collection',
                 'field': 'field',
