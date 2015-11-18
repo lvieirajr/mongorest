@@ -139,7 +139,7 @@ class TestDocument(TestCase):
 
     def test_save_returns_errors_if_document_is_not_valid(self):
         class TestCollection(Collection):
-            schema = {'test': {'required': True, 'type': 'string'}}
+            schema = {'test': {'required': True, 'type': 'objectid'}}
 
         errors = Document(TestCollection).save()
 
@@ -159,7 +159,7 @@ class TestDocument(TestCase):
                     },
                 ],
                 'collection': 'TestCollection',
-                'schema': {'test': {'required': True, 'type': 'string'}},
+                'schema': {'test': {'required': True, 'type': 'objectid'}},
                 'document': {},
             }
         )

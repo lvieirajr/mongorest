@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from bson.objectid import ObjectId
 from collections import Mapping
 from cerberus import Validator
 
@@ -12,6 +13,10 @@ __all__ = [
 
 
 class MongoRestValidator(Validator):
+
+    def _validate_type_objectid(self, field, value):
+        if not isinstance(value, ObjectId):
+            self._error(field, 'must be of ObjectId type')
 
     def validate_document(self, document):
         collection = document.collection

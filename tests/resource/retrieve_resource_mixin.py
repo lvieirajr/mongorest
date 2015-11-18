@@ -40,13 +40,11 @@ class TestRetrieveResourceMixin(TestCase):
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
             {
-                'error_code': 5,
+                'error_code': 23,
                 'error_type': 'DocumentNotFoundError',
-                'error_message': '{0} is not a valid {1} document _id.'.format(
-                    repr(1), 'Collection'
-                ),
-                '_id': 1,
+                'error_message': '1 is not a valid _id for a document from collection \'Collection\'.',
                 'collection': 'Collection',
+                '_id': 1,
             }
         )
 
