@@ -16,7 +16,7 @@ class TestUpdateResourceMixin(TestCase):
 
     def setUp(self):
         class Test(Collection):
-            meta = {'required': {'test': six.integer_types}}
+            schema = {'test': {'required': True, 'type': 'integer'}}
 
         class TestCollectionUpdate(UpdateResourceMixin):
             collection = Test
@@ -56,22 +56,21 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 1,
-                'error_type': 'ValidationError',
-                'error_message': 'Test document validation failed.',
+                'error_code': 30,
+                'error_type': 'DocumentValidationError',
+                'error_message': 'Validation of document from collection \'Test\' failed.',
                 'errors': [
                     {
-                        'error_code': 3,
+                        'error_code': 34,
                         'error_type': 'FieldTypeError',
-                        'error_message': 'Field \'test\' must be of type(s): {0}.'.format(
-                            ' or '.join(t.__name__ for t in list(six.integer_types))
-                        ),
+                        'error_message': 'Field \'test\' on collection \'Test\' must be of type \'integer\'.',
                         'collection': 'Test',
                         'field': 'test',
-                        'types': ' or '.join(t.__name__ for t in list(six.integer_types)),
+                        'type': 'integer',
                     },
                 ],
                 'collection': 'Test',
+                'schema': {'test': {'required': True, 'type': 'integer'}},
                 'document': {'_id': 1, 'test': '1'},
             }
         )

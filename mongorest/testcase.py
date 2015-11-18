@@ -19,6 +19,7 @@ class TestCase(BaseTestCase):
 
     def __init__(self, methodName='runtest'):
         super(TestCase, self).__init__(methodName)
+        self.maxDiff = None
 
         self.db = db
         self.client = Client
