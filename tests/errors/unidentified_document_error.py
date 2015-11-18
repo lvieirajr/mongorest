@@ -11,7 +11,7 @@ class TestUnidentifiedDocumentError(TestCase):
         self.assertEqual(
             UnidentifiedDocumentError('collection', 'document'),
             {
-                'error_code': 22,
+                'error_code': 11,
                 'error_type': 'UnidentifiedDocumentError',
                 'error_message': 'The given document from collection '
                                  '\'collection\' has no _id.',

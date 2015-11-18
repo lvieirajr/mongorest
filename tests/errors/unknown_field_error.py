@@ -11,7 +11,7 @@ class TestUnknownFieldError(TestCase):
         self.assertEqual(
             UnknownFieldError('collection', 'field'),
             {
-                'error_code': 31,
+                'error_code': 22,
                 'error_type': 'UnknownFieldError',
                 'error_message': 'Field \'field\' on collection '
                                  '\'collection\' is unknown.',

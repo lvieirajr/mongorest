@@ -4,20 +4,11 @@ from __future__ import absolute_import, unicode_literals
 __all__ = [
     'MongoRestError',
     'PyMongoError',
-    'SchemaValidationError',
-    'SchemaMissingError',
-    'SchemaTypeError',
-    'SchemaFieldTypeError',
-    'UnknownRuleError',
-    'FieldDefinitionError',
-    'UnknownTypeError',
     'DocumentError',
-    'DocumentMissingError',
-    'DocumentTypeError',
     'UnidentifiedDocumentError',
     'DocumentNotFoundError',
+    'SchemaValidationError',
     'DocumentValidationError',
-    'FieldValidationError',
     'UnknownFieldError',
     'RequiredFieldError',
     'ReadOnlyFieldError',
@@ -38,12 +29,15 @@ __all__ = [
 ]
 
 
-# Base Error: -1
+# MongoRestError: -1
 class MongoRestError(dict):
 
-    def __init__(self, error_code=-1, error_type='MongoRestError'):
+    def __init__(self, error_code=-1, error_type='MongoRestError',
+                 error_message='MongoRestError'):
         super(MongoRestError, self).__init__([
-            ('error_code', error_code), ('error_type', error_type),
+            ('error_code', error_code),
+            ('error_type', error_type),
+            ('error_message', error_message)
         ])
 
 
@@ -60,121 +54,27 @@ class PyMongoError(MongoRestError):
         self['document'] = document
 
 
-# Schema Errors: 10 - 19
-class SchemaValidationError(MongoRestError):
-    pass
-
-
-class SchemaMissingError(SchemaValidationError):
-
-    def __init__(self, collection=None):
-        super(SchemaMissingError, self).__init__(10, 'SchemaMissingError')
-
-        self['error_message'] = 'Validation schema for collection \'{0}\' ' \
-                                'is missing.'.format(collection)
-        self['collection'] = collection
-
-
-class SchemaTypeError(SchemaValidationError):
-
-    def __init__(self, collection=None, schema=None):
-        super(SchemaTypeError, self).__init__(11, 'SchemaTypeError')
-
-        self['error_message'] = 'Validation schema for collection \'{0}\' ' \
-                                'must be a dict.'.format(collection)
-        self['collection'] = collection
-        self['schema'] = schema
-
-
-class SchemaFieldTypeError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None):
-        super(SchemaFieldTypeError, self).__init__(12, 'SchemaFieldTypeError')
-
-        self['error_message'] = 'Type of field \'{0}\' on collection ' \
-                                '\'{1}\' must be either a list or a ' \
-                                'dict.'.format(field, collection)
-        self['collection'] = collection
-        self['field'] = field
-
-
-class UnknownRuleError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None, rule=None):
-        super(UnknownRuleError, self).__init__(13, 'UnknownRuleError')
-
-        self['error_message'] = 'Unknown rule \'{0}\' for field \'{1}\' ' \
-                                'on collection \'{2}\'.'.format(
-                                    rule, field, collection
-                                )
-        self['collection'] = collection
-        self['field'] = field
-        self['rule'] = rule
-
-
-class FieldDefinitionError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None):
-        super(FieldDefinitionError, self).__init__(14, 'FieldDefinitionError')
-
-        self['error_message'] = 'Schema definition for field \'{0}\' on ' \
-                                'collection \'{1}\' must be a dict.'.format(
-                                    field, collection
-                                )
-        self['collection'] = collection
-        self['field'] = field
-
-
-class UnknownTypeError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None, field_type=None):
-        super(UnknownTypeError, self).__init__(15, 'UnknownTypeError')
-
-        self['error_message'] = 'Type \'{0}\' for field \'{1}\' was not ' \
-                                'recognized on the validation schema for ' \
-                                'collection \'{2}\'.'.format(
-                                    field_type, field, collection
-                                )
-        self['collection'] = collection
-        self['field'] = field
-        self['type'] = field_type
-
-
-# Document Errors: 20 - 29
+# Document Errors: 10 - 19
 class DocumentError(MongoRestError):
-    pass
 
-
-class DocumentMissingError(DocumentError):
-
-    def __init__(self, collection=None):
-        super(DocumentMissingError, self).__init__(20, 'DocumentMissingError')
-
-        self['error_message'] = 'Document missing for collection \'{0}\'.' \
-                                ''.format(collection)
-        self['collection'] = collection
-
-
-class DocumentTypeError(DocumentError):
-
-    def __init__(self, collection=None, document=None):
-        super(DocumentTypeError, self).__init__(21, 'DocumentTypeError')
-
-        self['error_message'] = 'Document for collection \'{0}\' must ' \
-                                'be a dict.'.format(collection)
-        self['collection'] = collection
-        self['document'] = document
+    def __init__(self, error_code=10, error_type='DocumentError',
+                 error_message='DocumentError'):
+        super(DocumentError, self).__init__(
+            error_code, error_type, error_message
+        )
 
 
 class UnidentifiedDocumentError(DocumentError):
 
     def __init__(self, collection=None, document=None):
         super(UnidentifiedDocumentError, self).__init__(
-            22, 'UnidentifiedDocumentError'
+            11,
+            'UnidentifiedDocumentError',
+            'The given document from collection \'{0}\' has no _id.'.format(
+                collection
+            )
         )
 
-        self['error_message'] = 'The given document from collection \'{0}\' ' \
-                                'has no _id.'.format(collection)
         self['collection'] = collection
         self['document'] = document
 
@@ -183,60 +83,75 @@ class DocumentNotFoundError(DocumentError):
 
     def __init__(self, collection=None, _id=None):
         super(DocumentNotFoundError, self).__init__(
-            23, 'DocumentNotFoundError'
+            12,
+            'DocumentNotFoundError',
+            '{0} is not a valid _id for a document from collection \'{1}\'.'
+            ''.format(_id, collection)
         )
 
-        self['error_message'] = '{0} is not a valid _id for a document from ' \
-                                'collection \'{1}\'.'.format(_id, collection)
         self['collection'] = collection
         self['_id'] = _id
 
 
-# Document Validation Error: 30
-class DocumentValidationError(MongoRestError):
+# Schema Validation Errors: 20 - 99
+class SchemaValidationError(MongoRestError):
+
+    def __init__(self, error_code=20, error_type='SchemaValidationError',
+                 error_message='SchemaValidationError'):
+        super(SchemaValidationError, self).__init__(
+            error_code, error_type, error_message
+        )
+
+
+class DocumentValidationError(SchemaValidationError):
 
     def __init__(self, collection=None, schema=None, document=None,
                  errors=None):
         super(DocumentValidationError, self).__init__(
-            30, 'DocumentValidationError'
+            21,
+            'DocumentValidationError',
+            'Validation of document from collection \'{0}\' failed.'.format(
+                collection
+            )
         )
 
-        self['error_message'] = 'Validation of document from collection ' \
-                                '\'{0}\' failed.'.format(collection)
         self['collection'] = collection
         self['schema'] = schema
         self['document'] = document
         self['errors'] = errors or []
 
 
-# Field Validation Errors: 31 - 99
-class FieldValidationError(MongoRestError):
-    pass
-
-
-class UnknownFieldError(FieldValidationError):
+class UnknownFieldError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
-        super(UnknownFieldError, self).__init__(31, 'UnknownFieldError')
+        super(UnknownFieldError, self).__init__(
+            22,
+            'UnknownFieldError',
+            'Field \'{0}\' on collection \'{1}\' is unknown.'.format(
+                field, collection
+            )
+        )
 
-        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
-                                'unknown.'.format(field, collection)
         self['collection'] = collection
         self['field'] = field
 
 
-class RequiredFieldError(FieldValidationError):
+class RequiredFieldError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
-        super(RequiredFieldError, self).__init__(32, 'RequiredFieldError')
+        super(RequiredFieldError, self).__init__(
+            23,
+            'RequiredFieldError',
+            'Field \'{0}\' on collection \'{1}\' is required.'.format(
+                field, collection
+            )
+        )
 
-        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
-                                'required.'.format(field, collection)
         self['collection'] = collection
         self['field'] = field
 
 
-class ReadOnlyFieldError(FieldValidationError):
+class ReadOnlyFieldError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
         super(ReadOnlyFieldError, self).__init__(33, 'ReadOnlyFieldError')
@@ -247,7 +162,7 @@ class ReadOnlyFieldError(FieldValidationError):
         self['field'] = field
 
 
-class FieldTypeError(FieldValidationError):
+class FieldTypeError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, field_type=None):
         super(FieldTypeError, self).__init__(34, 'FieldTypeError')
@@ -261,7 +176,7 @@ class FieldTypeError(FieldValidationError):
         self['type'] = field_type
 
 
-class RegexMatchError(FieldValidationError):
+class RegexMatchError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, regex=None):
         super(RegexMatchError, self).__init__(35, 'RegexMatchError')
@@ -275,7 +190,7 @@ class RegexMatchError(FieldValidationError):
         self['regex'] = regex
 
 
-class MinLengthError(FieldValidationError):
+class MinLengthError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, min_length=None):
         super(MinLengthError, self).__init__(36, 'MinLengthError')
@@ -289,7 +204,7 @@ class MinLengthError(FieldValidationError):
         self['min_length'] = min_length
 
 
-class MaxLengthError(FieldValidationError):
+class MaxLengthError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, max_length=None):
         super(MaxLengthError, self).__init__(37, 'MaxLengthError')
@@ -303,7 +218,7 @@ class MaxLengthError(FieldValidationError):
         self['max_length'] = max_length
 
 
-class LengthError(FieldValidationError):
+class LengthError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, length=None):
         super(LengthError, self).__init__(38, 'LengthError')
@@ -317,7 +232,7 @@ class LengthError(FieldValidationError):
         self['length'] = length
 
 
-class ValueNotAllowedError(FieldValidationError):
+class ValueNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, value=None):
         super(ValueNotAllowedError, self).__init__(39, 'ValueNotAllowedError')
@@ -331,7 +246,7 @@ class ValueNotAllowedError(FieldValidationError):
         self['value'] = value
 
 
-class ValuesNotAllowedError(FieldValidationError):
+class ValuesNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, values=None):
         super(ValuesNotAllowedError, self).__init__(
@@ -347,7 +262,7 @@ class ValuesNotAllowedError(FieldValidationError):
         self['values'] = values
 
 
-class MinValueError(FieldValidationError):
+class MinValueError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, min_value=None):
         super(MinValueError, self).__init__(41, 'MinValueError')
@@ -361,7 +276,7 @@ class MinValueError(FieldValidationError):
         self['min_value'] = min_value
 
 
-class MaxValueError(FieldValidationError):
+class MaxValueError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, max_value=None):
         super(MaxValueError, self).__init__(42, 'MaxValueError')
@@ -375,7 +290,7 @@ class MaxValueError(FieldValidationError):
         self['max_value'] = max_value
 
 
-class EmptyNotAllowedError(FieldValidationError):
+class EmptyNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
         super(EmptyNotAllowedError, self).__init__(43, 'EmptyNotAllowedError')
@@ -388,7 +303,7 @@ class EmptyNotAllowedError(FieldValidationError):
         self['field'] = field
 
 
-class NullNotAllowedError(FieldValidationError):
+class NullNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
         super(NullNotAllowedError, self).__init__(44, 'NullNotAllowedError')
@@ -401,7 +316,7 @@ class NullNotAllowedError(FieldValidationError):
         self['field'] = field
 
 
-class DependencyError(FieldValidationError):
+class DependencyError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, dependency=None):
         super(DependencyError, self).__init__(45, 'DependencyError')
@@ -415,7 +330,7 @@ class DependencyError(FieldValidationError):
         self['dependency'] = dependency
 
 
-class ValueDependencyError(FieldValidationError):
+class ValueDependencyError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, dependency=None,
                  dependency_values=None):
@@ -433,7 +348,7 @@ class ValueDependencyError(FieldValidationError):
         self['dependency_values'] = dependency_values
 
 
-class CoercionError(FieldValidationError):
+class CoercionError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, coercion_type=None):
         super(CoercionError, self).__init__(47, 'CoercionError')
