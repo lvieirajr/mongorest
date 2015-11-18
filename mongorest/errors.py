@@ -114,7 +114,7 @@ class UnknownRuleError(SchemaValidationError):
 
 class FieldDefinitionError(SchemaValidationError):
 
-    def __init__(self, collection=None, field=None, rule=None):
+    def __init__(self, collection=None, field=None):
         super(FieldDefinitionError, self).__init__(14, 'FieldDefinitionError')
 
         self['error_message'] = 'Schema definition for field \'{0}\' on ' \
@@ -238,7 +238,7 @@ class RequiredFieldError(FieldValidationError):
 
 class ReadOnlyFieldError(FieldValidationError):
 
-    def __init__(self, collection=None, field=None, length=None):
+    def __init__(self, collection=None, field=None):
         super(ReadOnlyFieldError, self).__init__(33, 'ReadOnlyFieldError')
 
         self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \

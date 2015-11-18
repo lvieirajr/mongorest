@@ -19,6 +19,8 @@ class MongoRestValidator(Validator):
             self._error(field, 'must be of ObjectId type')
 
     def validate_document(self, document):
+        errors = {}
+
         collection = document.collection
         collection_name = collection.__name__
 
@@ -36,13 +38,14 @@ class MongoRestValidator(Validator):
                 )
 
             if error and isinstance(error, FieldValidationError):
-                if 'error_code' in document._errors:
-                    document._errors['errors'].append(error)
+                if 'error_code' in errors:
+                    errors['errors'].append(error)
                 else:
-                    document._errors = DocumentValidationError(
+                    errors = DocumentValidationError(
                         collection_name, self.schema, document.fields, [error]
                     )
 
+        document._errors = errors
         return not bool(document.errors)
 
     @property
