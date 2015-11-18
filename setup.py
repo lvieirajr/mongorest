@@ -24,6 +24,19 @@ class Test(TestCommand):
         return exit(0) if not (result.failures + result.errors) else exit(1)
 
 
+install_requires = [
+    'cerberus>=0.9.2',
+    'pymongo>=3.1.1',
+    'six>=1.10.0',
+    'werkzeug>=0.11.2',
+]
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    install_requires.append('ordereddict')
+
+
 setup(
     name='mongorest',
     packages=['mongorest'],
@@ -33,7 +46,7 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
-    install_requires=['pymongo', 'werkzeug', 'cerberus', 'six'],
+    install_requires=install_requires,
     cmdclass={'test': Test},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[

@@ -1,8 +1,6 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import six
-
 from bson.objectid import ObjectId
 from mock import patch
 
@@ -43,6 +41,12 @@ class TestDocument(TestCase):
         Document(Collection, processed=True)
 
         self.assertEqual(process.call_count, 0)
+
+    @patch('mongorest.validation.MongoRestValidator.validate_document')
+    def test_init_calls_validate_document(self, validate_document):
+        Document(Collection, processed=True)
+
+        self.assertEqual(validate_document.call_count, 1)
 
     # __getattr__ is not being formally tested.
     # Its usage on the other tested functions will make sure it works.

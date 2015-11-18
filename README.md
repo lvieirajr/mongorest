@@ -12,7 +12,7 @@
 
 # Python Compatibility
 
-* Python -> 2.7
+* Python -> 2.6; 2.7
 * Python3 -> 3.3; 3.4
 * Pypy -> 2.6
 * Pypy3 -> 2.4

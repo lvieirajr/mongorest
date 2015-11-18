@@ -2,7 +2,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import six
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from datetime import datetime
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
@@ -98,7 +101,9 @@ class ListResourceMixin(Resource):
 
         if fields:
             pipeline.append({'$project': {'_id': 0}})
-            pipeline[-1]['$project'].update({field: 1 for field in fields})
+            pipeline[-1]['$project'].update(
+                dict([(field, 1) for field in fields])
+            )
 
         return Response(
             response=self.collection.aggregate(pipeline, serialize=True),
