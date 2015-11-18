@@ -11,4 +11,5 @@ from .resource import *
 from .settings import *
 from .testcase import *
 from .utils import *
+from .validation import *
 from .wsgi import *

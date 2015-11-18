@@ -34,14 +34,17 @@ class Validator(CerberusValidator):
             field = key
             field_schema = self.get_field_schema(field)
 
-            if _error == 'required field':
+            error = None
+            if _error == 'unknown field':
+                error = UnknownFieldError(collection_name, field)
+            elif _error == 'required field':
                 error = RequiredFieldError(collection_name, field)
+            elif _error == 'field is read-only':
+                error = ReadOnlyFieldError(collection_name, field)
             elif _error.startswith('must be of') and _error.endswith('type'):
                 error = FieldTypeError(
                     collection_name, field, field_schema['type']
                 )
-            else:
-                error = SchemaValidationError()
 
             if error and isinstance(error, SchemaValidationError):
                 if 'error_code' in errors:
