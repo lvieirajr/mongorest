@@ -107,7 +107,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
     @serializable
     def update_one(cls, filter, update, upsert=False):
         """
-        Updates a document that passes the filter with the udpate value
+        Updates a document that passes the filter with the update value
         Will upsert a new document if upsert=True and no document is filtered
         """
         return cls.collection.update_one(filter, update, upsert).raw_result
@@ -116,7 +116,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
     @serializable
     def update_many(cls, filter, update, upsert=False):
         """
-        Updates all documents that pass the filter with the udpate value
+        Updates all documents that pass the filter with the update value
         Will upsert a new document if upsert=True and no document is filtered
         """
         return cls.collection.update_many(filter, update, upsert).raw_result

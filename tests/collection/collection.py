@@ -87,7 +87,7 @@ class TestCollection(TestCase):
     def test_update_one_is_decorated_with_serializable(self):
         self.assertIn('serializable', self.collection.update_one.decorators)
 
-    def test_udpate_one_updates_a_document_that_passes_the_filter(self):
+    def test_update_one_updates_a_document_that_passes_the_filter(self):
         _id = self.collection.insert_one({})
 
         self.assertIsNone(self.collection.find_one().get('test'))
@@ -100,7 +100,7 @@ class TestCollection(TestCase):
     def test_update_many_is_decorated_with_serializable(self):
         self.assertIn('serializable', self.collection.update_many.decorators)
 
-    def test_udpate_many_updates_all_documents_that_pass_the_filter(self):
+    def test_update_many_updates_all_documents_that_pass_the_filter(self):
         self.collection.insert_many([{}, {}, {}])
 
         for document in self.collection.find():

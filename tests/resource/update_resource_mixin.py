@@ -76,7 +76,7 @@ class TestUpdateResourceMixin(TestCase):
             }
         )
 
-    def test_udpate_mixin_returns_not_found_if_no_document_matches_id(self):
+    def test_update_mixin_returns_not_found_if_no_document_matches_id(self):
         response = self.update_client.put('/1/', data=serialize({}))
 
         self.assertEqual(response.status_code, 400)
