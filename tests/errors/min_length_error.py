@@ -11,7 +11,7 @@ class TestMinLengthError(TestCase):
         self.assertEqual(
             MinLengthError('collection', 'field', 'min_length'),
             {
-                'error_code': 36,
+                'error_code': 27,
                 'error_type': 'MinLengthError',
                 'error_message': 'Minimum length for field \'field\' on '
                                  'collection \'collection\' is min_length.',

@@ -11,7 +11,7 @@ class TestLengthError(TestCase):
         self.assertEqual(
             LengthError('collection', 'field', 'length'),
             {
-                'error_code': 38,
+                'error_code': 29,
                 'error_type': 'LengthError',
                 'error_message': 'Length of field \'field\' on collection '
                                  '\'collection\' must be length.',

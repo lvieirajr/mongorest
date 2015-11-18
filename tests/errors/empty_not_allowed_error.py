@@ -11,7 +11,7 @@ class TestEmptyNotAllowedError(TestCase):
         self.assertEqual(
             EmptyNotAllowedError('collection', 'field'),
             {
-                'error_code': 43,
+                'error_code': 34,
                 'error_type': 'EmptyNotAllowedError',
                 'error_message': 'Empty values are not allowed for field '
                                  '\'field\' on collection \'collection\'.',

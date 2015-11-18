@@ -11,7 +11,7 @@ class TestRegexMatchError(TestCase):
         self.assertEqual(
             RegexMatchError('collection', 'field', 'regex'),
             {
-                'error_code': 35,
+                'error_code': 26,
                 'error_type': 'RegexMatchError',
                 'error_message': 'Value does not match the regex \'regex\' '
                                  'for field \'field\' on collection '

@@ -154,10 +154,14 @@ class RequiredFieldError(SchemaValidationError):
 class ReadOnlyFieldError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
-        super(ReadOnlyFieldError, self).__init__(33, 'ReadOnlyFieldError')
+        super(ReadOnlyFieldError, self).__init__(
+            24,
+            'ReadOnlyFieldError',
+            'Field \'{0}\' on collection \'{1}\' is read only.'.format(
+                field, collection
+            )
+        )
 
-        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
-                                'read only.'.format(field, collection)
         self['collection'] = collection
         self['field'] = field
 
@@ -165,12 +169,13 @@ class ReadOnlyFieldError(SchemaValidationError):
 class FieldTypeError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, field_type=None):
-        super(FieldTypeError, self).__init__(34, 'FieldTypeError')
+        super(FieldTypeError, self).__init__(
+            25,
+            'FieldTypeError',
+            'Field \'{0}\' on collection \'{1}\' must be of type \'{2}\'.'
+            ''.format(field, collection, field_type)
+        )
 
-        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' must ' \
-                                'be of type \'{2}\'.'.format(
-                                    field, collection, field_type
-                                )
         self['collection'] = collection
         self['field'] = field
         self['type'] = field_type
@@ -179,12 +184,13 @@ class FieldTypeError(SchemaValidationError):
 class RegexMatchError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, regex=None):
-        super(RegexMatchError, self).__init__(35, 'RegexMatchError')
+        super(RegexMatchError, self).__init__(
+            26,
+            'RegexMatchError',
+            'Value does not match the regex \'{0}\' for field \'{1}\' on '
+            'collection \'{2}\'.'.format(regex, field, collection)
+        )
 
-        self['error_message'] = 'Value does not match the regex \'{0}\' for ' \
-                                'field \'{1}\' on collection \'{2}\'.'.format(
-                                    regex, field, collection
-                                )
         self['collection'] = collection
         self['field'] = field
         self['regex'] = regex
@@ -193,12 +199,13 @@ class RegexMatchError(SchemaValidationError):
 class MinLengthError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, min_length=None):
-        super(MinLengthError, self).__init__(36, 'MinLengthError')
+        super(MinLengthError, self).__init__(
+            27,
+            'MinLengthError',
+            'Minimum length for field \'{0}\' on collection \'{1}\' is '
+            '{2}.'.format(field, collection, min_length)
+        )
 
-        self['error_message'] = 'Minimum length for field \'{0}\' on ' \
-                                'collection \'{1}\' is {2}.'.format(
-                                    field, collection, min_length
-                                )
         self['collection'] = collection
         self['field'] = field
         self['min_length'] = min_length
@@ -207,12 +214,13 @@ class MinLengthError(SchemaValidationError):
 class MaxLengthError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, max_length=None):
-        super(MaxLengthError, self).__init__(37, 'MaxLengthError')
+        super(MaxLengthError, self).__init__(
+            28,
+            'MaxLengthError',
+            'Maximum length for field \'{0}\' on collection \'{1}\' is '
+            '{2}.'.format(field, collection, max_length)
+        )
 
-        self['error_message'] = 'Maximum length for field \'{0}\' on ' \
-                                'collection \'{1}\' is {2}.'.format(
-                                    field, collection, max_length
-                                )
         self['collection'] = collection
         self['field'] = field
         self['max_length'] = max_length
@@ -221,12 +229,13 @@ class MaxLengthError(SchemaValidationError):
 class LengthError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, length=None):
-        super(LengthError, self).__init__(38, 'LengthError')
+        super(LengthError, self).__init__(
+            29,
+            'LengthError',
+            'Length of field \'{0}\' on collection \'{1}\' must be {2}.'
+            ''.format(field, collection, length)
+        )
 
-        self['error_message'] = 'Length of field \'{0}\' on collection ' \
-                                '\'{1}\' must be {2}.'.format(
-                                    field, collection, length
-                                )
         self['collection'] = collection
         self['field'] = field
         self['length'] = length
@@ -235,12 +244,13 @@ class LengthError(SchemaValidationError):
 class ValueNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, value=None):
-        super(ValueNotAllowedError, self).__init__(39, 'ValueNotAllowedError')
+        super(ValueNotAllowedError, self).__init__(
+            30,
+            'ValueNotAllowedError',
+            'Value \'{0}\' is not allowed for field \'{1}\' on collection '
+            '\'{2}\'.'.format(value, field, collection),
+        )
 
-        self['error_message'] = 'Value \'{0}\' is not allowed for field ' \
-                                '\'{1}\' on collection \'{2}\'.'.format(
-                                    value, field, collection
-                                )
         self['collection'] = collection
         self['field'] = field
         self['value'] = value
@@ -250,13 +260,12 @@ class ValuesNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, values=None):
         super(ValuesNotAllowedError, self).__init__(
-            40, 'ValuesNotAllowedError'
+            31,
+            'ValuesNotAllowedError',
+            'Values \'{0}\' are not allowed for field \'{1}\' on collection '
+            '\'{2}\'.'.format(values, field, collection)
         )
 
-        self['error_message'] = 'Values \'{0}\' are not allowed for field ' \
-                                '\'{1}\' on collection \'{2}\'.'.format(
-                                    values, field, collection
-                                )
         self['collection'] = collection
         self['field'] = field
         self['values'] = values
@@ -265,12 +274,13 @@ class ValuesNotAllowedError(SchemaValidationError):
 class MinValueError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, min_value=None):
-        super(MinValueError, self).__init__(41, 'MinValueError')
+        super(MinValueError, self).__init__(
+            32,
+            'MinValueError',
+            'Minimum value for field \'{0}\' on collection \'{1}\' is '
+            '{2}.'.format(field, collection, min_value)
+        )
 
-        self['error_message'] = 'Minimum value for field \'{0}\' on ' \
-                                'collection \'{1}\' is {2}.'.format(
-                                    field, collection, min_value
-                                )
         self['collection'] = collection
         self['field'] = field
         self['min_value'] = min_value
@@ -279,12 +289,13 @@ class MinValueError(SchemaValidationError):
 class MaxValueError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, max_value=None):
-        super(MaxValueError, self).__init__(42, 'MaxValueError')
+        super(MaxValueError, self).__init__(
+            33,
+            'MaxValueError',
+            'Maximum value for field \'{0}\' on collection \'{1}\' is '
+            '{2}.'.format(field, collection, max_value)
+        )
 
-        self['error_message'] = 'Maximum value for field \'{0}\' on ' \
-                                'collection \'{1}\' is {2}.'.format(
-                                    field, collection, max_value
-                                )
         self['collection'] = collection
         self['field'] = field
         self['max_value'] = max_value
@@ -293,12 +304,13 @@ class MaxValueError(SchemaValidationError):
 class EmptyNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
-        super(EmptyNotAllowedError, self).__init__(43, 'EmptyNotAllowedError')
+        super(EmptyNotAllowedError, self).__init__(
+            34,
+            'EmptyNotAllowedError',
+            'Empty values are not allowed for field \'{0}\' on collection '
+            '\'{1}\'.'.format(field, collection)
+        )
 
-        self['error_message'] = 'Empty values are not allowed for field ' \
-                                '\'{0}\' on collection \'{1}\'.'.format(
-                                    field, collection
-                                )
         self['collection'] = collection
         self['field'] = field
 
@@ -306,12 +318,13 @@ class EmptyNotAllowedError(SchemaValidationError):
 class NullNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None):
-        super(NullNotAllowedError, self).__init__(44, 'NullNotAllowedError')
+        super(NullNotAllowedError, self).__init__(
+            35,
+            'NullNotAllowedError',
+            'Null values are not allowed for field \'{0}\' on collection '
+            '\'{1}\'.'.format(field, collection)
+        )
 
-        self['error_message'] = 'Null values are not allowed for field ' \
-                                '\'{0}\' on collection \'{1}\'.'.format(
-                                    field, collection
-                                )
         self['collection'] = collection
         self['field'] = field
 
@@ -319,12 +332,13 @@ class NullNotAllowedError(SchemaValidationError):
 class DependencyError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, dependency=None):
-        super(DependencyError, self).__init__(45, 'DependencyError')
+        super(DependencyError, self).__init__(
+            36,
+            'DependencyError',
+            'Field \'{0}\' on collection \'{1}\' is required if field '
+            '\'{2}\' is present.'.format(field, collection, dependency)
+        )
 
-        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
-                                'required if field \'{2}\' is present.'.format(
-                                    field, collection, dependency
-                                )
         self['collection'] = collection
         self['field'] = field
         self['dependency'] = dependency
@@ -334,14 +348,15 @@ class ValueDependencyError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, dependency=None,
                  dependency_values=None):
-        super(ValueDependencyError, self).__init__(46, 'ValueDependencyError')
+        super(ValueDependencyError, self).__init__(
+            37,
+            'ValueDependencyError',
+            'Field \'{0}\' on collection \'{1}\' is required to have values '
+            '\'{2}\' if field \'{3}\' is present.'.format(
+                field, collection, dependency_values, dependency
+            )
+        )
 
-        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' is ' \
-                                'required to have values \'{2}\' if field ' \
-                                '\'{3}\' is present.'.format(
-                                    field, collection, dependency_values,
-                                    dependency
-                                )
         self['collection'] = collection
         self['field'] = field
         self['dependency'] = dependency
@@ -351,11 +366,13 @@ class ValueDependencyError(SchemaValidationError):
 class CoercionError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, coercion_type=None):
-        super(CoercionError, self).__init__(47, 'CoercionError')
+        super(CoercionError, self).__init__(
+            38,
+            'CoercionError',
+            'Field \'{0}\' on collection \'{1}\' could not be coerced into '
+            'type \'{2}\'.'.format(field, collection, coercion_type)
+        )
 
-        self['error_message'] = 'Field \'{0}\' on collection \'{1}\' ' \
-                                'could not be coerced into type \'{2}\'.' \
-                                ''.format(field, collection, coercion_type)
         self['collection'] = collection
         self['field'] = field
         self['coercion_type'] = coercion_type

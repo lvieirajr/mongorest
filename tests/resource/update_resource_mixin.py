@@ -56,12 +56,12 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 30,
+                'error_code': 21,
                 'error_type': 'DocumentValidationError',
                 'error_message': 'Validation of document from collection \'Test\' failed.',
                 'errors': [
                     {
-                        'error_code': 34,
+                        'error_code': 25,
                         'error_type': 'FieldTypeError',
                         'error_message': 'Field \'test\' on collection \'Test\' must be of type \'integer\'.',
                         'collection': 'Test',
@@ -82,7 +82,7 @@ class TestUpdateResourceMixin(TestCase):
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
             {
-                'error_code': 23,
+                'error_code': 12,
                 'error_type': 'DocumentNotFoundError',
                 'error_message': '1 is not a valid _id for a document from collection \'Test\'.',
                 'collection': 'Test',

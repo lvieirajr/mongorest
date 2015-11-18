@@ -40,7 +40,7 @@ class TestDeleteResourceMixin(TestCase):
         self.assertEqual(
             deserialize(response.get_data(as_text=True)),
             {
-                'error_code': 23,
+                'error_code': 12,
                 'error_type': 'DocumentNotFoundError',
                 'error_message': '1 is not a valid _id for a document from collection \'Collection\'.',
                 'collection': 'Collection',

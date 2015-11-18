@@ -37,7 +37,7 @@ class MongoRestValidator(Validator):
                     collection_name, field, field_schema['type']
                 )
 
-            if error and isinstance(error, FieldValidationError):
+            if error and isinstance(error, SchemaValidationError):
                 if 'error_code' in errors:
                     errors['errors'].append(error)
                 else:

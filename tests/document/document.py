@@ -150,12 +150,12 @@ class TestDocument(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 30,
+                'error_code': 21,
                 'error_type': 'DocumentValidationError',
                 'error_message': 'Validation of document from collection \'TestCollection\' failed.',
                 'errors': [
                     {
-                        'error_code': 32,
+                        'error_code': 23,
                         'error_type': 'RequiredFieldError',
                         'error_message': 'Field \'test\' on collection \'TestCollection\' is required.',
                         'collection': 'TestCollection',
@@ -264,12 +264,12 @@ class TestDocument(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 30,
+                'error_code': 21,
                 'error_type': 'DocumentValidationError',
                 'error_message': 'Validation of document from collection \'TestCollection\' failed.',
                 'errors': [
                     {
-                        'error_code': 32,
+                        'error_code': 23,
                         'error_type': 'RequiredFieldError',
                         'error_message': 'Field \'test\' on collection \'TestCollection\' is required.',
                         'collection': 'TestCollection',
@@ -288,7 +288,7 @@ class TestDocument(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 22,
+                'error_code': 11,
                 'error_type': 'UnidentifiedDocumentError',
                 'error_message': 'The given document from collection \'Collection\' has no _id.',
                 'collection': 'Collection',
@@ -323,7 +323,7 @@ class TestDocument(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 23,
+                'error_code': 12,
                 'error_type': 'DocumentNotFoundError',
                 'error_message': '1 is not a valid _id for a document from collection \'Collection\'.',
                 'collection': 'Collection',
@@ -349,7 +349,7 @@ class TestDocument(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 22,
+                'error_code': 11,
                 'error_type': 'UnidentifiedDocumentError',
                 'error_message': 'The given document from collection \'Collection\' has no _id.',
                 'collection': 'Collection',
@@ -382,7 +382,7 @@ class TestDocument(TestCase):
         self.assertEqual(
             errors,
             {
-                'error_code': 23,
+                'error_code': 12,
                 'error_type': 'DocumentNotFoundError',
                 'error_message': '1 is not a valid _id for a document from collection \'Collection\'.',
                 'collection': 'Collection',

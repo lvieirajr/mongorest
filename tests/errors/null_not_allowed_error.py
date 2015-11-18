@@ -11,7 +11,7 @@ class TestNullNotAllowedError(TestCase):
         self.assertEqual(
             NullNotAllowedError('collection', 'field'),
             {
-                'error_code': 44,
+                'error_code': 35,
                 'error_type': 'NullNotAllowedError',
                 'error_message': 'Null values are not allowed for field '
                                  '\'field\' on collection \'collection\'.',

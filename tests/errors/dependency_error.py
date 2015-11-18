@@ -11,7 +11,7 @@ class TestDependencyError(TestCase):
         self.assertEqual(
             DependencyError('collection', 'field', 'dependency'),
             {
-                'error_code': 45,
+                'error_code': 36,
                 'error_type': 'DependencyError',
                 'error_message': 'Field \'field\' on collection '
                                  '\'collection\' is required if field '

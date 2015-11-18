@@ -11,7 +11,7 @@ class TestValueNotAllowedError(TestCase):
         self.assertEqual(
             ValueNotAllowedError('collection', 'field', 'value'),
             {
-                'error_code': 39,
+                'error_code': 30,
                 'error_type': 'ValueNotAllowedError',
                 'error_message': 'Value \'value\' is not allowed for field '
                                  '\'field\' on collection \'collection\'.',

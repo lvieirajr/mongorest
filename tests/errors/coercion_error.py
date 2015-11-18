@@ -11,7 +11,7 @@ class TestCoercionError(TestCase):
         self.assertEqual(
             CoercionError('collection', 'field', 'coercion_type'),
             {
-                'error_code': 47,
+                'error_code': 38,
                 'error_type': 'CoercionError',
                 'error_message': 'Field \'field\' on collection '
                                  '\'collection\' could not be coerced into '

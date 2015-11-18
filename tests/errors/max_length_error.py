@@ -11,7 +11,7 @@ class TestMaxLengthError(TestCase):
         self.assertEqual(
             MaxLengthError('collection', 'field', 'max_length'),
             {
-                'error_code': 37,
+                'error_code': 28,
                 'error_type': 'MaxLengthError',
                 'error_message': 'Maximum length for field \'field\' on '
                                  'collection \'collection\' is max_length.',

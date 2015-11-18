@@ -11,7 +11,7 @@ class TestMaxValueError(TestCase):
         self.assertEqual(
             MaxValueError('collection', 'field', 'max_value'),
             {
-                'error_code': 42,
+                'error_code': 33,
                 'error_type': 'MaxValueError',
                 'error_message': 'Maximum value for field \'field\' on '
                                  'collection \'collection\' is max_value.',

@@ -11,7 +11,7 @@ class TestMinValueError(TestCase):
         self.assertEqual(
             MinValueError('collection', 'field', 'min_value'),
             {
-                'error_code': 41,
+                'error_code': 32,
                 'error_type': 'MinValueError',
                 'error_message': 'Minimum value for field \'field\' on '
                                  'collection \'collection\' is min_value.',

@@ -13,7 +13,7 @@ class TestValueDependencyError(TestCase):
                 'collection', 'field', 'dependency', 'dependency_values'
             ),
             {
-                'error_code': 46,
+                'error_code': 37,
                 'error_type': 'ValueDependencyError',
                 'error_message': 'Field \'field\' on collection '
                                  '\'collection\' is required to have values '
