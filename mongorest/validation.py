@@ -3,16 +3,21 @@ from __future__ import absolute_import, unicode_literals
 
 from bson.objectid import ObjectId
 from collections import Mapping
-from cerberus import Validator
+from cerberus import Validator as CerberusValidator
 
 from .errors import *
 
 __all__ = [
-    'MongoRestValidator',
+    'Validator',
 ]
 
 
-class MongoRestValidator(Validator):
+class Validator(CerberusValidator):
+
+    def __init__(self, schema=None, allow_unknown=True, **kwargs):
+        super(Validator, self).__init__(
+            schema=schema or {}, allow_unknown=allow_unknown, **kwargs
+        )
 
     def _validate_type_objectid(self, field, value):
         if not isinstance(value, ObjectId):

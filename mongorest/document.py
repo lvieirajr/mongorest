@@ -5,7 +5,7 @@ from pymongo.errors import PyMongoError as MongoError
 from types import MethodType, FunctionType
 
 from .decorators import serializable
-from .validation import MongoRestValidator
+from .validation import Validator
 from .errors import (
     PyMongoError,
     UnidentifiedDocumentError,
@@ -40,9 +40,7 @@ class Document(object):
         if not processed:
             self._process()
 
-        MongoRestValidator(
-            schema=self.schema, allow_unknown=allow_unknown
-        ).validate_document(self)
+        Validator(self.schema, allow_unknown).validate_document(self)
 
     def __getattr__(self, attr):
         """
@@ -90,7 +88,7 @@ class Document(object):
         So they will be ready to be saved on the Database
         """
         for attr in dir(self._collection):
-            if attr.lower().startswith('process'):
+            if attr != '_process' and attr.lower().startswith('_process'):
                 self.__getattr__(attr)()
 
     @property
