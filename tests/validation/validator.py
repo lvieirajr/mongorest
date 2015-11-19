@@ -5,8 +5,9 @@ from bson.objectid import ObjectId
 from mock import patch
 
 from mongorest.collection import Collection
-from mongorest.validation import Validator
+from mongorest.errors import *
 from mongorest.testcase import TestCase
+from mongorest.validation import Validator
 
 __all__ = [
     'TestValidator',
@@ -36,9 +37,20 @@ class TestValidator(TestCase):
         self.validator.schema = {}
 
         self.assertTrue(
-            self.validator.validate_document(Collection({'test': ObjectId()}))
+            self.validator.validate_document(Collection())
         )
         self.assertEqual(self.validator.errors, {})
+
+    def test_validate_returns_false_if_errors_are_found(self):
+        self.validator.schema = {'test': {'type': 'objectid'}}
+
+        self.assertFalse(
+            self.validator.validate_document(Collection({'test': 1}))
+        )
+        self.assertEqual(
+            self.validator.errors,
+            {'test': 'must be of ObjectId type'}
+        )
 
     @patch('mongorest.validation.Validator.flatten')
     def test_flattened_errors_returns_flaten_call(self, flatten):
