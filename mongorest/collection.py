@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 
 from re import sub
 from six import with_metaclass
-from types import MethodType, FunctionType
 
 from .database import db
 from .decorators import serializable
@@ -41,14 +40,9 @@ class CollectionMeta(type):
         If it can't find it defaults to returning the attribute from self
         """
         if hasattr(self.collection, attr):
-            attribute = getattr(self.collection, attr)
-
-            if type(attribute) == FunctionType:
-                return MethodType(attribute, self)
-
-            return attribute
+            return getattr(self.collection, attr)
         else:
-            return object.__getattribute__(self, attr)
+            raise AttributeError
 
 
 class Collection(with_metaclass(CollectionMeta, object)):
