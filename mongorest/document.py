@@ -40,7 +40,9 @@ class Document(object):
         if not processed:
             self._process()
 
-        Validator(self.schema, allow_unknown).validate_document(self)
+        validator = Validator(self.schema, allow_unknown)
+        if validator.validate_document(self):
+            self._fields = validator.document
 
     def __getattr__(self, attr):
         """

@@ -24,12 +24,10 @@ class Validator(CerberusValidator):
             self._error(field, 'must be of ObjectId type')
 
     def validate_document(self, document):
-        errors = {}
-
         collection = document.collection
         collection_name = collection.__name__
 
-        self.validate(document.fields)
+        validated, errors = self.validate(document.fields), {}
         for key, _error in self.flattened_errors.items():
             field = key
             field_schema = self.get_field_schema(field)
@@ -78,6 +76,11 @@ class Validator(CerberusValidator):
         schema, fields = self.schema, field.split('.')
 
         for field in fields:
-            schema = schema.get(field) or schema.get('schema').get(field)
+            if field in schema:
+                schema = schema.get(field)
+            elif 'schema' in schema and field in schema.get('schema'):
+                schema = schema.get('schema').get(field)
+            else:
+                return None
 
         return schema

@@ -36,20 +36,36 @@ class TestValidator(TestCase):
     def test_validate_returns_true_if_no_errors_are_found(self):
         self.validator.schema = {}
 
-        self.assertTrue(
-            self.validator.validate_document(Collection())
-        )
+        document = Collection()
+
+        self.assertTrue(self.validator.validate_document(document))
         self.assertEqual(self.validator.errors, {})
 
     def test_validate_returns_false_if_errors_are_found(self):
         self.validator.schema = {'test': {'type': 'objectid'}}
 
-        self.assertFalse(
-            self.validator.validate_document(Collection({'test': 1}))
-        )
+        document = Collection({'test': 'test'})
+
+        self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
-            self.validator.errors,
-            {'test': 'must be of ObjectId type'}
+            self.validator.errors, {'test': 'must be of ObjectId type'}
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_unknown_field_error(self):
+        self.validator.allow_unknown = False
+        self.validator.schema = {}
+
+        document = Collection({'test': '1'})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', schema={}, document=document.fields,
+                errors=[
+                    UnknownFieldError(collection='Collection', field='test')
+                ]
+            )
         )
 
     @patch('mongorest.validation.Validator.flatten')
@@ -75,11 +91,7 @@ class TestValidator(TestCase):
 
     def test_get_field_schema_returns_schema_of_inner_field(self):
         self.validator.schema = {
-            'test': {
-                'type': 'dict', 'schema': {
-                    'test': {'required': True}
-                }
-            }
+            'test': {'type': 'dict', 'schema': {'test': {'required': True}}}
         }
 
         self.assertEqual(
