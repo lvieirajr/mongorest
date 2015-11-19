@@ -366,11 +366,18 @@ class ValueDependencyError(SchemaValidationError):
 class CoercionError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, coercion_type=None):
+        try:
+            coercion_type = repr(coercion_type).split('\'')[1]
+        except:
+            coercion_type = repr(coercion_type).strip('\'')
+
         super(CoercionError, self).__init__(
             38,
             'CoercionError',
             'Field \'{0}\' on collection \'{1}\' could not be coerced into '
-            '{2}.'.format(field, collection, repr(coercion_type).strip('\''))
+            '{2}.'.format(
+                field, collection, coercion_type
+            )
         )
 
         self['collection'] = collection
