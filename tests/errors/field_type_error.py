@@ -14,7 +14,7 @@ class TestFieldTypeError(TestCase):
                 'error_code': 25,
                 'error_type': 'FieldTypeError',
                 'error_message': 'Field \'field\' on collection '
-                                 '\'collection\' must be of type \'type\'.',
+                                 '\'collection\' must be of type type.',
                 'collection': 'collection',
                 'field': 'field',
                 'type': 'type',

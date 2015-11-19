@@ -63,7 +63,7 @@ class TestUpdateResourceMixin(TestCase):
                     {
                         'error_code': 25,
                         'error_type': 'FieldTypeError',
-                        'error_message': 'Field \'test\' on collection \'Test\' must be of type \'integer\'.',
+                        'error_message': 'Field \'test\' on collection \'Test\' must be of type integer.',
                         'collection': 'Test',
                         'field': 'test',
                         'type': 'integer',

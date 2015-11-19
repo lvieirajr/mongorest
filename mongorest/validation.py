@@ -45,8 +45,13 @@ class Validator(CerberusValidator):
             elif _error == 'field is read-only':
                 error = ReadOnlyFieldError(collection_name, field)
             elif _error.startswith('must be of') and _error.endswith('type'):
+                type_or_types = field_schema['type']
+
+                if isinstance(type_or_types, list):
+                    type_or_types = ' or '.join(type_or_types)
+
                 error = FieldTypeError(
-                    collection_name, field, field_schema['type']
+                    collection_name, field, type_or_types
                 )
 
             if error and isinstance(error, SchemaValidationError):

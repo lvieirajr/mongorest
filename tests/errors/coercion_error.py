@@ -15,7 +15,7 @@ class TestCoercionError(TestCase):
                 'error_type': 'CoercionError',
                 'error_message': 'Field \'field\' on collection '
                                  '\'collection\' could not be coerced into '
-                                 'type \'coercion_type\'.',
+                                 'coercion_type.',
                 'collection': 'collection',
                 'field': 'field',
                 'coercion_type': 'coercion_type',

@@ -172,7 +172,7 @@ class FieldTypeError(SchemaValidationError):
         super(FieldTypeError, self).__init__(
             25,
             'FieldTypeError',
-            'Field \'{0}\' on collection \'{1}\' must be of type \'{2}\'.'
+            'Field \'{0}\' on collection \'{1}\' must be of type {2}.'
             ''.format(field, collection, field_type)
         )
 
@@ -370,7 +370,7 @@ class CoercionError(SchemaValidationError):
             38,
             'CoercionError',
             'Field \'{0}\' on collection \'{1}\' could not be coerced into '
-            'type \'{2}\'.'.format(field, collection, coercion_type)
+            '{2}.'.format(field, collection, repr(coercion_type).strip('\''))
         )
 
         self['collection'] = collection
