@@ -16,14 +16,10 @@ __all__ = [
 class TestDocument(TestCase):
 
     # __init__
-    def test_init_sets_correct_collection_if_inherits_from_collection(self):
+    def test_init_sets_collection(self):
         document = Document(Collection)
 
         self.assertEqual(document._collection, Collection)
-
-    def test_init_raises_error_if_collection_does_not_inherit_from_collection(self):
-        with self.assertRaises(AttributeError):
-            Document(Document)
 
     def test_init_sets_correct_fields(self):
         document = Document(Collection, {'test': 'test'})

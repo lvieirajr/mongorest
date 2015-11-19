@@ -60,8 +60,8 @@ class Document(object):
                 return MethodType(attribute, self)
 
             return attribute
-        else:
-            return object.__getattribute__(self, attr)
+
+        raise AttributeError
 
     def __setattr__(self, attr, value):
         """
