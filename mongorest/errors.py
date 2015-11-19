@@ -367,16 +367,16 @@ class CoercionError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, coercion_type=None):
         try:
-            coercion_type = repr(coercion_type).split('\'')[1]
+            coercion_type_repr = repr(coercion_type).split('\'')[1]
         except IndexError:
-            coercion_type = repr(coercion_type).strip('\'')
+            coercion_type_repr = repr(coercion_type).strip('\'')
 
         super(CoercionError, self).__init__(
             38,
             'CoercionError',
             'Field \'{0}\' on collection \'{1}\' could not be coerced into '
             '{2}.'.format(
-                field, collection, coercion_type
+                field, collection, coercion_type_repr
             )
         )
 
