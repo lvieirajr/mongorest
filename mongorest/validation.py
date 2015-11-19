@@ -1,8 +1,13 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+
 from bson.objectid import ObjectId
 from collections import Mapping
+try:
+    from collections import OrderedDict
+except:
+    from ordereddict import OrderedDict
 from cerberus import Validator as CerberusValidator
 
 from .errors import *
@@ -62,6 +67,12 @@ class Validator(CerberusValidator):
     def flatten(self, mapping, parent='', separator='.'):
         items = []
 
+        mapping = OrderedDict(
+            sorted(
+                [key_value for key_value in mapping.items()],
+                key=lambda key_value: key_value[0]
+            )
+        )
         for key, value in mapping.items():
             flat_key = separator.join([parent, key]).strip(separator)
 
@@ -70,7 +81,7 @@ class Validator(CerberusValidator):
             else:
                 items.append((flat_key, value))
 
-        return dict(items)
+        return OrderedDict(items)
 
     def get_field_schema(self, field):
         schema, fields = self.schema, field.split('.')
