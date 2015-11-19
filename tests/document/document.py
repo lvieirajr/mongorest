@@ -47,8 +47,9 @@ class TestDocument(TestCase):
 
         self.assertEqual(validate_document.call_count, 1)
 
-    # __getattr__ is not being formally tested.
-    # Its usage on the other tested functions will make sure it works.
+    def test_get_attr_raises_attribute_error_if_can_not_find_attribute(self):
+        with self.assertRaises(AttributeError):
+            Document(None).test()
 
     def test_set_attr_correctly_sets__errors(self):
         document = Document(Collection)

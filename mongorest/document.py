@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from pymongo.errors import PyMongoError as MongoError
-from types import MethodType, FunctionType
 
 from .decorators import serializable
 from .validation import Validator
@@ -54,14 +53,9 @@ class Document(object):
         if attr in self._fields:
             return self._fields[attr]
         elif hasattr(self._collection, attr):
-            attribute = getattr(self._collection, attr)
-
-            if type(attribute) == FunctionType:
-                return MethodType(attribute, self)
-
-            return attribute
-
-        raise AttributeError
+            return getattr(self._collection, attr)
+        else:
+            raise AttributeError
 
     def __setattr__(self, attr, value):
         """
