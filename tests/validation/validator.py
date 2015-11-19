@@ -61,7 +61,7 @@ class TestValidator(TestCase):
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', schema={}, document=document.fields,
+                collection='Collection', document=document.fields, schema={},
                 errors=[
                     UnknownFieldError(collection='Collection', field='test')
                 ]
@@ -77,8 +77,9 @@ class TestValidator(TestCase):
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', schema={'test': {'required': True}},
-                document=document.fields, errors=[
+                collection='Collection', document=document.fields, schema={
+                    'test': {'required': True}
+                }, errors=[
                     RequiredFieldError(collection='Collection', field='test')
                 ]
             )
@@ -93,8 +94,9 @@ class TestValidator(TestCase):
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', schema={'test': {'readonly': True}},
-                document=document.fields, errors=[
+                collection='Collection', document=document.fields, schema={
+                    'test': {'readonly': True}
+                }, errors=[
                     ReadOnlyFieldError(collection='Collection', field='test')
                 ]
             )
@@ -109,11 +111,72 @@ class TestValidator(TestCase):
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', schema={'test': {'type': 'integer'}},
-                document=document.fields, errors=[
+                collection='Collection', document=document.fields, schema={
+                    'test': {'type': 'integer'}
+                }, errors=[
                     FieldTypeError(
                         collection='Collection', field='test',
                         field_type='integer'
+                    )
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_regex_match_error(self):
+        self.validator.schema = {'test': {'type': 'string', 'regex': '[a-z]+'}}
+
+        document = Collection({'test': '123456'})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', document=document.fields, schema={
+                    'test': {'type': 'string', 'regex': '[a-z]+'}
+                }, errors=[
+                    RegexMatchError(
+                        collection='Collection', field='test',
+                        regex='[a-z]+'
+                    )
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_min_length_error(self):
+        self.validator.schema = {'test': {'type': 'string', 'minlength': 3}}
+
+        document = Collection({'test': '12'})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', document=document.fields, schema={
+                    'test': {'type': 'string', 'minlength': 3}
+                }, errors=[
+                    MinLengthError(
+                        collection='Collection', field='test',
+                        min_length=3
+                    )
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_max_length_error(self):
+        self.validator.schema = {'test': {'type': 'string', 'maxlength': 3}}
+
+        document = Collection({'test': '1234'})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', document=document.fields, schema={
+                    'test': {'type': 'string', 'maxlength': 3}
+                }, errors=[
+                    MaxLengthError(
+                        collection='Collection', field='test',
+                        max_length=3
                     )
                 ]
             )

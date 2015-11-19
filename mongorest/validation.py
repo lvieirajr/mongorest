@@ -53,6 +53,19 @@ class Validator(CerberusValidator):
                 error = FieldTypeError(
                     collection_name, field, type_or_types
                 )
+            elif 'does not match regex' in _error:
+                error = RegexMatchError(
+                    collection_name, field,
+                    _error.split('match regex \'')[1][:-1]
+                )
+            elif _error.startswith('min length is'):
+                error = MinLengthError(
+                    collection_name, field, field_schema['minlength']
+                )
+            elif _error.startswith('max length is'):
+                error = MaxLengthError(
+                    collection_name, field, field_schema['maxlength']
+                )
 
             if error and isinstance(error, SchemaValidationError):
                 if 'error_code' in errors:
