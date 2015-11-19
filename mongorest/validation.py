@@ -74,7 +74,7 @@ class Validator(CerberusValidator):
             )
         )
         for key, value in mapping.items():
-            flat_key = separator.join([parent, key]).strip(separator)
+            flat_key = separator.join([parent, str(key)]).strip(separator)
 
             if isinstance(value, Mapping):
                 items.extend(self.flatten(value, flat_key, separator).items())
@@ -91,7 +91,7 @@ class Validator(CerberusValidator):
                 schema = schema.get(field)
             elif 'schema' in schema and field in schema.get('schema'):
                 schema = schema.get('schema').get(field)
-            else:
-                return None
+            elif 'schema' in schema:
+                schema = schema.get('schema')
 
         return schema

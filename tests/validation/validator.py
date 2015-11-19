@@ -121,10 +121,10 @@ class TestValidator(TestCase):
 
     def test_validate_sets_correct_errors_on_document_if_more_than_one_error(self):
         self.validator.schema = {
-            'test1': {'required': True}, 'test2': {'required': True}
+            'test1': {'required': True}, 'test2': {'required': True},
         }
 
-        document = Collection({})
+        document = Collection()
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
@@ -169,3 +169,11 @@ class TestValidator(TestCase):
             self.validator.get_field_schema('test.test'), {'required': True}
         )
 
+    def test_get_field_schema_returns_inner_schema_of_field(self):
+        self.validator.schema = {
+            'test': {'type': 'list', 'schema': {'type': 'integer'}}
+        }
+
+        self.assertEqual(
+            self.validator.get_field_schema('test.1'), {'type': 'integer'}
+        )
