@@ -368,7 +368,7 @@ class CoercionError(SchemaValidationError):
     def __init__(self, collection=None, field=None, coercion_type=None):
         try:
             coercion_type = repr(coercion_type).split('\'')[1]
-        except:
+        except IndexError:
             coercion_type = repr(coercion_type).strip('\'')
 
         super(CoercionError, self).__init__(

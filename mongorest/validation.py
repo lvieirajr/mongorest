@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 from collections import Mapping
 try:
     from collections import OrderedDict
-except:
+except ImportError:
     from ordereddict import OrderedDict
 from cerberus import Validator as CerberusValidator
 
@@ -32,7 +32,8 @@ class Validator(CerberusValidator):
         collection = document.collection
         collection_name = collection.__name__
 
-        validated, errors = self.validate(document.fields), {}
+        errors = {}
+        self.validate(document.fields)
         for key, _error in self.flattened_errors.items():
             field = key
             field_schema = self.get_field_schema(field)
