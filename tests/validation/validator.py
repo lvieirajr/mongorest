@@ -68,6 +68,77 @@ class TestValidator(TestCase):
             )
         )
 
+    def test_validate_sets_correct_errors_on_document_if_required_field_error(self):
+        self.validator.schema = {'test': {'required': True}}
+
+        document = Collection({})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', schema={'test': {'required': True}},
+                document=document.fields, errors=[
+                    RequiredFieldError(collection='Collection', field='test')
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_read_only_field_error(self):
+        self.validator.schema = {'test': {'readonly': True}}
+
+        document = Collection({'test': 'test'})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', schema={'test': {'readonly': True}},
+                document=document.fields, errors=[
+                    ReadOnlyFieldError(collection='Collection', field='test')
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_field_type_error(self):
+        self.validator.schema = {'test': {'type': 'integer'}}
+
+        document = Collection({'test': 'test'})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', schema={'test': {'type': 'integer'}},
+                document=document.fields, errors=[
+                    FieldTypeError(
+                        collection='Collection', field='test',
+                        field_type='integer'
+                    )
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_more_than_one_error(self):
+        self.validator.schema = {
+            'test1': {'required': True}, 'test2': {'required': True}
+        }
+
+        document = Collection({})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', document=document.fields, schema={
+                    'test1': {'required': True}, 'test2': {'required': True}
+                }, errors=[
+                    RequiredFieldError(collection='Collection', field='test1'),
+                    RequiredFieldError(collection='Collection', field='test2')
+                ]
+            )
+        )
+
     @patch('mongorest.validation.Validator.flatten')
     def test_flattened_errors_returns_flaten_call(self, flatten):
         with self.validator.flattened_errors:
