@@ -184,20 +184,23 @@ class TestValidator(TestCase):
 
     def test_validate_sets_correct_errors_on_document_if_more_than_one_error(self):
         self.validator.schema = {
-            'test1': {'required': True}, 'test2': {'required': True},
+            'test1': {'required': True}, 'test2': {'type': ['list', 'string']},
         }
 
-        document = Collection()
+        document = Collection({'test2': 1})
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
                 collection='Collection', document=document.fields, schema={
-                    'test1': {'required': True}, 'test2': {'required': True}
+                    'test1': {'required': True}, 'test2': {'type': ['list', 'string']}
                 }, errors=[
                     RequiredFieldError(collection='Collection', field='test1'),
-                    RequiredFieldError(collection='Collection', field='test2')
+                    FieldTypeError(
+                        collection='Collection', field='test2',
+                        field_type='list or string'
+                    )
                 ]
             )
         )
