@@ -83,11 +83,11 @@ class Validator(CerberusValidator):
                 )
             elif _error.startswith('min value is '):
                 error = MinValueError(
-                    collection_name, field, field_schema['minvalue']
+                    collection_name, field, field_schema['min']
                 )
             elif _error.startswith('max value is '):
                 error = MaxValueError(
-                    collection_name, field, field_schema['maxvalue']
+                    collection_name, field, field_schema['max']
                 )
 
             if error and isinstance(error, SchemaValidationError):
