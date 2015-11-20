@@ -1,6 +1,9 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from json import loads
+from six import string_types
+
 __all__ = [
     'MongoRestError',
     'PyMongoError',
@@ -247,7 +250,7 @@ class ValueNotAllowedError(SchemaValidationError):
         super(ValueNotAllowedError, self).__init__(
             30,
             'ValueNotAllowedError',
-            'Value \'{0}\' is not allowed for field \'{1}\' on collection '
+            'Value: {0}; is not allowed for field \'{1}\' on collection '
             '\'{2}\'.'.format(value, field, collection),
         )
 
@@ -259,10 +262,26 @@ class ValueNotAllowedError(SchemaValidationError):
 class ValuesNotAllowedError(SchemaValidationError):
 
     def __init__(self, collection=None, field=None, values=None):
+        if isinstance(values, string_types):
+            if values.startswith('[') and values.endswith(']'):
+                values = values.strip('[]')
+
+            values = [value.strip() for value in values.split(',')]
+            for i, value in enumerate(values):
+                if value.startswith('u'):
+                    value = value[1:]
+
+                values[i] = value.strip('\'"')
+
+            values = ', '.join(str(value.strip()) for value in values)
+
+        if isinstance(values, list):
+            values = ', '.join(values)
+
         super(ValuesNotAllowedError, self).__init__(
             31,
             'ValuesNotAllowedError',
-            'Values \'{0}\' are not allowed for field \'{1}\' on collection '
+            'Values: {0}; are not allowed for field \'{1}\' on collection '
             '\'{2}\'.'.format(values, field, collection)
         )
 

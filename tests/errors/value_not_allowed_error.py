@@ -13,7 +13,7 @@ class TestValueNotAllowedError(TestCase):
             {
                 'error_code': 30,
                 'error_type': 'ValueNotAllowedError',
-                'error_message': 'Value \'value\' is not allowed for field '
+                'error_message': 'Value: value; is not allowed for field '
                                  '\'field\' on collection \'collection\'.',
                 'collection': 'collection',
                 'field': 'field',

@@ -67,6 +67,28 @@ class Validator(CerberusValidator):
                 error = MaxLengthError(
                     collection_name, field, field_schema['maxlength']
                 )
+            elif _error.startswith('length of '):
+                error = LengthError(
+                    collection_name, field, len(field_schema['items'])
+                )
+            elif _error.startswith('unallowed value '):
+                error = ValueNotAllowedError(
+                    collection_name, field,
+                    _error.split('unallowed value ')[1]
+                )
+            elif _error.startswith('unallowed values '):
+                error = ValuesNotAllowedError(
+                    collection_name, field,
+                    _error.split('unallowed values ')[1]
+                )
+            elif _error.startswith('min value is '):
+                error = MinValueError(
+                    collection_name, field, field_schema['minvalue']
+                )
+            elif _error.startswith('max value is '):
+                error = MaxValueError(
+                    collection_name, field, field_schema['maxvalue']
+                )
 
             if error and isinstance(error, SchemaValidationError):
                 if 'error_code' in errors:

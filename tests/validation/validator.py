@@ -182,6 +182,70 @@ class TestValidator(TestCase):
             )
         )
 
+    def test_validate_sets_correct_errors_on_document_if_length_error(self):
+        self.validator.schema = {
+            'test': {'type': 'list', 'items': [{'type': 'string'}]}
+        }
+
+        document = Collection({'test': ['test', 'test']})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', document=document.fields, schema={
+                    'test': {'type': 'list', 'items': [{'type': 'string'}]}
+                }, errors=[
+                    LengthError(
+                        collection='Collection', field='test', length=1
+                    )
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_value_not_allowed_error(self):
+        self.validator.schema = {
+            'test': {'type': 'string', 'allowed': ['test']}
+        }
+
+        document = Collection({'test': 'not_test'})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', document=document.fields, schema={
+                    'test': {'type': 'string', 'allowed': ['test']}
+                }, errors=[
+                    ValueNotAllowedError(
+                        collection='Collection', field='test', value='not_test'
+                    )
+                ]
+            )
+        )
+
+    def test_validate_sets_correct_errors_on_document_if_values_not_allowed_error(self):
+        self.validator.schema = {
+            'test': {'type': 'list', 'allowed': ['test']}
+        }
+
+        document = Collection({'test': ['not_test', 'test']})
+
+        self.assertFalse(self.validator.validate_document(document))
+        self.assertEqual(
+            document.errors,
+            DocumentValidationError(
+                collection='Collection', document=document.fields, schema={
+                    'test': {'type': 'list', 'allowed': ['test']}
+                }, errors=[
+                    ValuesNotAllowedError(
+                        collection='Collection', field='test',
+                        values='[\'not_test\']'
+                    )
+                ]
+            )
+        )
+
     def test_validate_sets_correct_errors_on_document_if_more_than_one_error(self):
         self.validator.schema = {
             'test1': {'required': True}, 'test2': {'type': ['list', 'string']},

@@ -7,13 +7,41 @@ from mongorest.testcase import TestCase
 
 class TestValuesNotAllowedError(TestCase):
 
-    def test_values_not_allowed_error_sets_correct_fields(self):
+    def test_values_not_allowed_error_sets_correct_fields_if_list(self):
+        self.assertEqual(
+            ValuesNotAllowedError('collection', 'field', ['values']),
+            {
+                'error_code': 31,
+                'error_type': 'ValuesNotAllowedError',
+                'error_message': 'Values: values; are not allowed for field '
+                                 '\'field\' on collection \'collection\'.',
+                'collection': 'collection',
+                'field': 'field',
+                'values': 'values'
+            }
+        )
+
+    def test_values_not_allowed_error_sets_correct_fields_if_json_string(self):
+        self.assertEqual(
+            ValuesNotAllowedError('collection', 'field', '[\'values\']'),
+            {
+                'error_code': 31,
+                'error_type': 'ValuesNotAllowedError',
+                'error_message': 'Values: values; are not allowed for field '
+                                 '\'field\' on collection \'collection\'.',
+                'collection': 'collection',
+                'field': 'field',
+                'values': 'values'
+            }
+        )
+
+    def test_values_not_allowed_error_sets_correct_fields_if_string(self):
         self.assertEqual(
             ValuesNotAllowedError('collection', 'field', 'values'),
             {
                 'error_code': 31,
                 'error_type': 'ValuesNotAllowedError',
-                'error_message': 'Values \'values\' are not allowed for field '
+                'error_message': 'Values: values; are not allowed for field '
                                  '\'field\' on collection \'collection\'.',
                 'collection': 'collection',
                 'field': 'field',
