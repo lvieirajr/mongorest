@@ -7,7 +7,7 @@ from mock import patch
 from mongorest.collection import Collection
 from mongorest.errors import *
 from mongorest.testcase import TestCase
-from mongorest.validation import Validator
+from mongorest.validator import Validator
 
 __all__ = [
     'TestValidator',
@@ -309,7 +309,7 @@ class TestValidator(TestCase):
             )
         )
 
-    @patch('mongorest.validation.Validator.flatten')
+    @patch('mongorest.validator.Validator.flatten')
     def test_flattened_errors_returns_flaten_call(self, flatten):
         with self.validator.flattened_errors:
             flatten.assert_called_once_with({}, '', '.')

@@ -38,7 +38,7 @@ class TestDocument(TestCase):
 
         self.assertEqual(process.call_count, 0)
 
-    @patch('mongorest.validation.Validator.validate_document')
+    @patch('mongorest.validator.Validator.validate_document')
     def test_init_calls_validate_document(self, validate_document):
         try:
             Document(Collection, processed=True)

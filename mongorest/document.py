@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from pymongo.errors import PyMongoError as MongoError
 
 from .decorators import serializable
-from .validation import Validator
+from .validator import Validator
 from .errors import (
     PyMongoError,
     UnidentifiedDocumentError,
