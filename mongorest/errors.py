@@ -401,4 +401,4 @@ class CoercionError(SchemaValidationError):
 
         self['collection'] = collection
         self['field'] = field
-        self['coercion_type'] = coercion_type
+        self['coercion_type'] = coercion_type_repr

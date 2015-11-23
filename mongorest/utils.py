@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-def deserialize(to_deserialize):
+def deserialize(to_deserialize, *args, **kwargs):
     """
     Deserializes a string into a PyMongo BSON
     """
@@ -19,13 +19,13 @@ def deserialize(to_deserialize):
         try:
             return ObjectId(to_deserialize)
         except Exception:
-            return bson_loads(to_deserialize)
+            return bson_loads(to_deserialize, *args, **kwargs)
     else:
-        return bson_loads(bson_dumps(to_deserialize))
+        return bson_loads(bson_dumps(to_deserialize), *args, **kwargs)
 
 
-def serialize(to_serialize):
+def serialize(to_serialize, *args, **kwargs):
     """
     Serializes a PyMongo BSON into a string
     """
-    return bson_dumps(to_serialize)
+    return bson_dumps(to_serialize, *args, **kwargs)

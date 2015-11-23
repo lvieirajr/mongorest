@@ -33,6 +33,6 @@ class TestCoercionError(TestCase):
                                  '1.',
                 'collection': 'collection',
                 'field': 'field',
-                'coercion_type': 1,
+                'coercion_type': '1',
             }
         )

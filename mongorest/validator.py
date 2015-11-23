@@ -3,10 +3,6 @@ from __future__ import absolute_import, unicode_literals
 
 from bson.objectid import ObjectId
 from collections import Mapping
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
 from cerberus import Validator as CerberusValidator
 
 from .errors import *
@@ -33,72 +29,91 @@ class Validator(CerberusValidator):
 
         errors = {}
         self.validate(document.fields)
-        for key, _error in self.flattened_errors.items():
+        for key, _errors in self.flattened_errors.items():
             field = key
             field_schema = self.get_field_schema(field)
 
-            error = None
-            if _error == 'unknown field':
-                error = UnknownFieldError(collection_name, field)
-            elif _error == 'required field':
-                error = RequiredFieldError(collection_name, field)
-            elif _error == 'field is read-only':
-                error = ReadOnlyFieldError(collection_name, field)
-            elif _error.startswith('must be of') and _error.endswith('type'):
-                type_or_types = field_schema['type']
+            _errors = [_errors] if not isinstance(_errors, list) else _errors
+            for _error in _errors:
+                error = None
 
-                if isinstance(type_or_types, list):
-                    type_or_types = ' or '.join(type_or_types)
+                if _error == 'unknown field':
+                    error = UnknownFieldError(collection_name, field)
+                elif _error == 'required field':
+                    error = RequiredFieldError(collection_name, field)
+                elif _error == 'field is read-only':
+                    error = ReadOnlyFieldError(collection_name, field)
+                elif _error.startswith('must be ') and _error.endswith('type'):
+                    type_or_types = field_schema['type']
 
-                error = FieldTypeError(
-                    collection_name, field, type_or_types
-                )
-            elif 'does not match regex' in _error:
-                error = RegexMatchError(
-                    collection_name, field,
-                    _error.split('match regex \'')[1][:-1]
-                )
-            elif _error.startswith('min length is'):
-                error = MinLengthError(
-                    collection_name, field, field_schema['minlength']
-                )
-            elif _error.startswith('max length is'):
-                error = MaxLengthError(
-                    collection_name, field, field_schema['maxlength']
-                )
-            elif _error.startswith('length of '):
-                error = LengthError(
-                    collection_name, field, len(field_schema['items'])
-                )
-            elif _error.startswith('unallowed value '):
-                error = ValueNotAllowedError(
-                    collection_name, field,
-                    _error.split('unallowed value ')[1]
-                )
-            elif _error.startswith('unallowed values '):
-                error = ValuesNotAllowedError(
-                    collection_name, field,
-                    _error.split('unallowed values ')[1]
-                )
-            elif _error.startswith('min value is '):
-                error = MinValueError(
-                    collection_name, field, field_schema['min']
-                )
-            elif _error.startswith('max value is '):
-                error = MaxValueError(
-                    collection_name, field, field_schema['max']
-                )
+                    if isinstance(type_or_types, list):
+                        type_or_types = ' or '.join(type_or_types)
 
-            if error and isinstance(error, SchemaValidationError):
-                if 'error_code' in errors:
-                    errors['errors'].append(error)
-                else:
-                    errors = DocumentValidationError(
-                        collection_name, self.schema, document.fields, [error]
+                    error = FieldTypeError(
+                        collection_name, field, type_or_types
+                    )
+                elif 'does not match regex' in _error:
+                    error = RegexMatchError(
+                        collection_name, field,
+                        _error.split('match regex \'')[1][:-1]
+                    )
+                elif _error.startswith('min length is'):
+                    error = MinLengthError(
+                        collection_name, field, field_schema['minlength']
+                    )
+                elif _error.startswith('max length is'):
+                    error = MaxLengthError(
+                        collection_name, field, field_schema['maxlength']
+                    )
+                elif _error.startswith('length of '):
+                    error = LengthError(
+                        collection_name, field, len(field_schema['items'])
+                    )
+                elif _error.startswith('unallowed value '):
+                    error = ValueNotAllowedError(
+                        collection_name, field,
+                        _error.split('unallowed value ')[1]
+                    )
+                elif _error.startswith('unallowed values '):
+                    error = ValuesNotAllowedError(
+                        collection_name, field,
+                        _error.split('unallowed values ')[1]
+                    )
+                elif _error.startswith('min value is '):
+                    error = MinValueError(
+                        collection_name, field, field_schema['min']
+                    )
+                elif _error.startswith('max value is '):
+                    error = MaxValueError(
+                        collection_name, field, field_schema['max']
+                    )
+                elif _error.endswith('could not be coerced'):
+                    error = CoercionError(
+                        collection_name, field, field_schema['coerce']
                     )
 
-        document._errors = errors
-        return not bool(document.errors)
+                if error:
+                    if isinstance(error, SchemaValidationError):
+                        try:
+                            errors['errors'].append(error)
+                        except KeyError:
+                            errors = DocumentValidationError(
+                                collection_name, self.schema, document.fields,
+                                [error]
+                            )
+                    else:
+                        errors = error
+
+        if errors:
+            if 'errors' in errors:
+                errors['errors'] = sorted(
+                    errors['errors'], key=lambda e: e['field']
+                )
+
+            document._errors = errors
+            return False
+
+        return True
 
     @property
     def flattened_errors(self):
@@ -107,12 +122,6 @@ class Validator(CerberusValidator):
     def flatten(self, mapping, parent='', separator='.'):
         items = []
 
-        mapping = OrderedDict(
-            sorted(
-                [key_value for key_value in mapping.items()],
-                key=lambda key_value: key_value[0]
-            )
-        )
         for key, value in mapping.items():
             flat_key = separator.join([parent, str(key)]).strip(separator)
 
@@ -121,7 +130,7 @@ class Validator(CerberusValidator):
             else:
                 items.append((flat_key, value))
 
-        return OrderedDict(items)
+        return dict(items)
 
     def get_field_schema(self, field):
         schema, fields = self.schema, field.split('.')
