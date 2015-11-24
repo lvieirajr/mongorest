@@ -2,10 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import six
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 from datetime import datetime
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response

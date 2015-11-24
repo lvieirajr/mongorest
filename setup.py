@@ -31,12 +31,6 @@ install_requires = [
     'werkzeug>=0.11.2',
 ]
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    install_requires.append('ordereddict')
-
-
 setup(
     name='mongorest',
     packages=['mongorest'],
@@ -56,7 +50,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
