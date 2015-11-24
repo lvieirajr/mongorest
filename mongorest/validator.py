@@ -87,22 +87,15 @@ class Validator(CerberusValidator):
                     error = MaxValueError(
                         collection_name, field, field_schema['max']
                     )
-                elif _error.endswith('could not be coerced'):
-                    error = CoercionError(
-                        collection_name, field, field_schema['coerce']
-                    )
 
-                if error:
-                    if isinstance(error, SchemaValidationError):
-                        try:
-                            errors['errors'].append(error)
-                        except KeyError:
-                            errors = DocumentValidationError(
-                                collection_name, self.schema, document.fields,
-                                [error]
-                            )
-                    else:
-                        errors = error
+                if error and isinstance(error, SchemaValidationError):
+                    try:
+                        errors['errors'].append(error)
+                    except KeyError:
+                        errors = DocumentValidationError(
+                            collection_name, self.schema, document.fields,
+                            [error]
+                        )
 
         if errors:
             if 'errors' in errors:
