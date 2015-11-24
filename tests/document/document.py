@@ -26,22 +26,34 @@ class TestDocument(TestCase):
 
         self.assertEqual(document._fields, {'test': 'test'})
 
-    @patch('mongorest.document.Document._process')
-    def test_init_calls_process_if_not_processed(self, process):
-        Document(Collection, processed=False)
+    @patch('mongorest.document.Document._preprocess')
+    def test_init_calls_preprocess_if_preprocess_is_true(self, preprocess):
+        Document(Collection, preprocess=True)
 
-        self.assertEqual(process.call_count, 1)
+        self.assertEqual(preprocess.call_count, 1)
 
-    @patch('mongorest.document.Document._process')
-    def test_init_does_not_call_process_if_processed(self, process):
-        Document(Collection, processed=True)
+    @patch('mongorest.document.Document._preprocess')
+    def test_init_does_not_call_preprocess_if_preprocess_is_false(self, preprocess):
+        Document(Collection, preprocess=False)
 
-        self.assertEqual(process.call_count, 0)
+        self.assertEqual(preprocess.call_count, 0)
+
+    @patch('mongorest.document.Document._postprocess')
+    def test_init_calls_preprocess_if_preprocess_is_true(self, postprocess):
+        Document(Collection, postprocess=True)
+
+        self.assertEqual(postprocess.call_count, 1)
+
+    @patch('mongorest.document.Document._postprocess')
+    def test_init_does_not_call_preprocess_if_preprocess_is_false(self, postprocess):
+        Document(Collection, postprocess=False)
+
+        self.assertEqual(postprocess.call_count, 0)
 
     @patch('mongorest.validator.Validator.validate_document')
     def test_init_calls_validate_document(self, validate_document):
         try:
-            Document(Collection, processed=True)
+            Document(Collection)
         except:
             pass
 
@@ -87,16 +99,27 @@ class TestDocument(TestCase):
             '<Document<Collection> object at {0}>'.format(hex(id(document)))
         )
 
-    # _process
-    def test_process_calls_collections_process_functions(self):
+    # _preprocess
+    def test_preprocess_calls_collections_process_functions(self):
         class TestCollection(Collection):
-            def _process1(self):
+            def _preprocess1(self):
                 pass
 
-        with patch.object(TestCollection, '_process1') as process1:
+        with patch.object(TestCollection, '_preprocess1') as peprocess1:
             Document(TestCollection)
 
-            self.assertEqual(process1.call_count, 1)
+            self.assertEqual(peprocess1.call_count, 1)
+
+    # _postprocess
+    def test_postprocess_calls_collections_process_functions(self):
+        class TestCollection(Collection):
+            def _postprocess1(self):
+                pass
+
+        with patch.object(TestCollection, '_postprocess1') as postprocess1:
+            Document(TestCollection)
+
+            self.assertEqual(postprocess1.call_count, 1)
 
     # is_valid
     def test_is_valid_returns_true_if_no_errors(self):

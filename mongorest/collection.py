@@ -7,6 +7,7 @@ from six import with_metaclass
 from .database import db
 from .decorators import serializable
 from .document import Document
+from .validator import Validator
 
 __all__ = [
     'Collection',
@@ -31,6 +32,14 @@ class CollectionMeta(type):
 
         if 'schema' not in members:
             members['schema'] = {}
+
+        if 'allow_unknown' not in members:
+            members['allow_unknown'] = True
+
+        members['validator'] = Validator(
+            schema=members['schema'],
+            allow_unknown=members['allow_unknown']
+        )
 
         return super(mcs, mcs).__new__(mcs, *(name, bases, members), **kwargs)
 
@@ -151,22 +160,24 @@ class Collection(with_metaclass(CollectionMeta, object)):
         return cls.collection.count(filter, **kwargs)
 
     @classmethod
-    def get(cls, filter=None, **kwargs):
+    def get(cls, filter=None, preprocess=True, postprocess=True, **kwargs):
         """
         Returns a Document if any document is filtered, returns None otherwise
         """
         document = Document(
-            cls, cls.collection.find_one(filter, **kwargs), True
+            cls, cls.collection.find_one(filter, **kwargs), preprocess,
+            postprocess
         )
         return document if document.fields else None
 
     @classmethod
-    def documents(cls, filter=None, **kwargs):
+    def documents(cls, filter=None, preprocess=True, postprocess=True,
+                  **kwargs):
         """
         Returns a list of Documents if any document is filtered
         """
         return [
-            Document(cls, document, True)
+            Document(cls, document, preprocess, postprocess)
             for document in cls.collection.find(filter, **kwargs)
         ]
 

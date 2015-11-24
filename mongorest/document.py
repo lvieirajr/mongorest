@@ -4,7 +4,6 @@ from __future__ import absolute_import, unicode_literals
 from pymongo.errors import PyMongoError as MongoError
 
 from .decorators import serializable
-from .validator import Validator
 from .errors import (
     PyMongoError,
     UnidentifiedDocumentError,
@@ -23,8 +22,8 @@ class Document(object):
     Will use the meta of the Collection to do so.
     """
 
-    def __init__(self, collection, fields=None, processed=False,
-                 allow_unknown=True):
+    def __init__(self, collection, fields=None, preprocess=True,
+                 postprocess=True):
         """
         Initializes the Document Object with the given attributes
         Processes the fields if not processed
@@ -36,12 +35,14 @@ class Document(object):
         self._fields = fields or {}
         self._errors = {}
 
-        if not processed:
-            self._process()
+        if preprocess:
+            self._preprocess()
 
-        validator = Validator(self.schema, allow_unknown)
-        if validator.validate_document(self):
-            self._fields = validator.document
+        if self._collection.validator.validate_document(self):
+            self._fields = self._collection.validator.document
+
+        if postprocess:
+            self._postprocess()
 
     def __getattr__(self, attr):
         """
@@ -77,14 +78,23 @@ class Document(object):
             self._collection.__name__, hex(id(self)),
         )
 
-    def _process(self):
+    def _preprocess(self):
         """
-        Calls every collection method that starts with 'process'.
-        Does this in order to process the values on the fields
-        So they will be ready to be saved on the Database
+        Calls every collection method that starts with '_preprocess'.
+        Does this in order to preprocess the values to be validated
         """
         for attr in dir(self._collection):
-            if attr != '_process' and attr.lower().startswith('_process'):
+            if attr != '_preprocess' and attr.startswith('_preprocess'):
+                self.__getattr__(attr)()
+
+    def _postprocess(self):
+        """
+        Calls every collection method that starts with '_postprocess'.
+        Does this in order to postprocess the values already validated, so
+        they will be ready to be saved on the Database
+        """
+        for attr in dir(self._collection):
+            if attr != '_postprocess' and attr.startswith('_postprocess'):
                 self.__getattr__(attr)()
 
     @property
