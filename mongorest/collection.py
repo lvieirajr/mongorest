@@ -160,7 +160,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
         return cls.collection.count(filter, **kwargs)
 
     @classmethod
-    def get(cls, filter=None, preprocess=True, postprocess=True, **kwargs):
+    def get(cls, filter=None, preprocess=False, postprocess=False, **kwargs):
         """
         Returns a Document if any document is filtered, returns None otherwise
         """
@@ -171,7 +171,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
         return document if document.fields else None
 
     @classmethod
-    def documents(cls, filter=None, preprocess=True, postprocess=True,
+    def documents(cls, filter=None, preprocess=False, postprocess=False,
                   **kwargs):
         """
         Returns a list of Documents if any document is filtered

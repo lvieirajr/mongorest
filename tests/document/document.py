@@ -61,7 +61,7 @@ class TestDocument(TestCase):
 
     def test_get_attr_raises_attribute_error_if_can_not_find_attribute(self):
         with self.assertRaises(AttributeError):
-            Document(None).test()
+            Document(Collection)._()
 
     def test_set_attr_correctly_sets__errors(self):
         document = Document(Collection)
