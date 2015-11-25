@@ -23,11 +23,6 @@ __all__ = [
     'ValuesNotAllowedError',
     'MinValueError',
     'MaxValueError',
-    'EmptyNotAllowedError',
-    'NullNotAllowedError',
-    'DependencyError',
-    'ValueDependencyError',
-    'CoercionError',
 ]
 
 
@@ -43,7 +38,7 @@ class MongoRestError(dict):
         ])
 
 
-# PyMongo Errors: 0 - 9
+# PyMongo Error: 0
 class PyMongoError(MongoRestError):
 
     def __init__(self, error_message=None, operation=None, collection=None,
@@ -54,6 +49,16 @@ class PyMongoError(MongoRestError):
         self['operation'] = operation
         self['collection'] = collection
         self['document'] = document
+
+
+# Authorization Errors: 1 - 9
+class UnauthorizedError(MongoRestError):
+
+    def __init__(self, error_code=1, error_type='UnauthorizedError',
+                 error_message='Unauthorized.'):
+        super(UnauthorizedError, self).__init__(
+            error_code, error_type, error_message
+        )
 
 
 # Document Errors: 10 - 19
@@ -317,87 +322,3 @@ class MaxValueError(SchemaValidationError):
         self['collection'] = collection
         self['field'] = field
         self['max_value'] = max_value
-
-
-class EmptyNotAllowedError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None):
-        super(EmptyNotAllowedError, self).__init__(
-            34,
-            'EmptyNotAllowedError',
-            'Empty values are not allowed for field \'{0}\' on collection '
-            '\'{1}\'.'.format(field, collection)
-        )
-
-        self['collection'] = collection
-        self['field'] = field
-
-
-class NullNotAllowedError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None):
-        super(NullNotAllowedError, self).__init__(
-            35,
-            'NullNotAllowedError',
-            'Null values are not allowed for field \'{0}\' on collection '
-            '\'{1}\'.'.format(field, collection)
-        )
-
-        self['collection'] = collection
-        self['field'] = field
-
-
-class DependencyError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None, dependency=None):
-        super(DependencyError, self).__init__(
-            36,
-            'DependencyError',
-            'Field \'{0}\' on collection \'{1}\' is required if field '
-            '\'{2}\' is present.'.format(field, collection, dependency)
-        )
-
-        self['collection'] = collection
-        self['field'] = field
-        self['dependency'] = dependency
-
-
-class ValueDependencyError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None, dependency=None,
-                 dependency_values=None):
-        super(ValueDependencyError, self).__init__(
-            37,
-            'ValueDependencyError',
-            'Field \'{0}\' on collection \'{1}\' is required to have values '
-            '\'{2}\' if field \'{3}\' is present.'.format(
-                field, collection, dependency_values, dependency
-            )
-        )
-
-        self['collection'] = collection
-        self['field'] = field
-        self['dependency'] = dependency
-        self['dependency_values'] = dependency_values
-
-
-class CoercionError(SchemaValidationError):
-
-    def __init__(self, collection=None, field=None, coercion_type=None):
-        try:
-            coercion_type_repr = repr(coercion_type).split('\'')[1]
-        except IndexError:
-            coercion_type_repr = repr(coercion_type).strip('\'')
-
-        super(CoercionError, self).__init__(
-            38,
-            'CoercionError',
-            'Field \'{0}\' on collection \'{1}\' could not be coerced into '
-            '{2}.'.format(
-                field, collection, coercion_type_repr
-            )
-        )
-
-        self['collection'] = collection
-        self['field'] = field
-        self['coercion_type'] = coercion_type_repr

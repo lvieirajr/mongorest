@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from functools import wraps
 from werkzeug.wrappers import Response
 
+from .errors import UnauthorizedError
 from .settings import settings
 from .utils import serialize
 
@@ -33,7 +34,7 @@ def login_required(wrapped):
             return wrapped(*args, **kwargs)
 
         return Response(
-            response=serialize({'unauthorized': 'Unauthorized.'}),
+            response=serialize(UnauthorizedError()),
             content_type='application/json',
             status=401,
         )
