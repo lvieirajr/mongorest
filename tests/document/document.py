@@ -39,13 +39,22 @@ class TestDocument(TestCase):
         self.assertEqual(preprocess.call_count, 0)
 
     @patch('mongorest.document.Document._postprocess')
-    def test_init_calls_preprocess_if_preprocess_is_true(self, postprocess):
+    def test_init_calls_postprocess_if_postprocess_is_true(self, postprocess):
         Document(Collection, postprocess=True)
 
         self.assertEqual(postprocess.call_count, 1)
 
     @patch('mongorest.document.Document._postprocess')
-    def test_init_does_not_call_preprocess_if_preprocess_is_false(self, postprocess):
+    def test_init_does_not_call_postprocess_if_postprocess_is_true_but_invalid_document(self, postprocess):
+        class TestCollection(Collection):
+            schema = {'test': {'type': 'integer'}}
+
+        Document(TestCollection, {'test': 'test'}, postprocess=True)
+
+        self.assertEqual(postprocess.call_count, 0)
+
+    @patch('mongorest.document.Document._postprocess')
+    def test_init_does_not_call_postprocess_if_postprocess_is_false(self, postprocess):
         Document(Collection, postprocess=False)
 
         self.assertEqual(postprocess.call_count, 0)

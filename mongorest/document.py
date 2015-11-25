@@ -41,8 +41,8 @@ class Document(object):
         if self._collection.validator.validate_document(self):
             self._fields = self._collection.validator.document
 
-        if postprocess:
-            self._postprocess()
+            if postprocess:
+                self._postprocess()
 
     def __getattr__(self, attr):
         """
