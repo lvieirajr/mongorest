@@ -1,9 +1,10 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import inspect
 from re import sub
 from six import with_metaclass
-from types import FunctionType, MethodType
+from types import MethodType
 
 from .database import db
 from .decorators import serializable
@@ -52,8 +53,8 @@ class CollectionMeta(type):
         if hasattr(self.collection, attr):
             attribute = getattr(self.collection, attr)
 
-            if type(attribute) == FunctionType:
-                return MethodType(attribute, self)
+            if inspect.isfunction(attribute):
+                attribute = MethodType(attribute, self)
 
             return attribute
         else:
@@ -187,8 +188,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
             for document in cls.collection.find(filter, **kwargs)
         ]
 
-    @classmethod
-    def restrict_unique(cls, document):
+    def restrict_unique(self):
         """
         Should return False if uniqueness restriction is not enforced or if
         document passes the restrictions enforced.
@@ -198,8 +198,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
         """
         return False
 
-    @classmethod
-    def restrict_update(cls, document):
+    def restrict_update(self):
         """
         Should return False if update restriction is not enforced or if
         document passes the restrictions enforced.
@@ -209,8 +208,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
         """
         return False
 
-    @classmethod
-    def cascade_update(cls, document):
+    def cascade_update(self):
         """
         Should cascade the update to the required documents after the given
         document was updated.
@@ -218,8 +216,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
         """
         pass
 
-    @classmethod
-    def restrict_delete(cls, document):
+    def restrict_delete(self):
         """
         Should return False if delete restriction is not enforced or if
         document passes the restrictions enforced.
@@ -229,8 +226,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
         """
         return False
 
-    @classmethod
-    def cascade_delete(cls, document):
+    def cascade_delete(self):
         """
         Should cascade the delete to the required documents after the given
         document was deleted.

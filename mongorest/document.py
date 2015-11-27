@@ -1,8 +1,9 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import inspect
 from pymongo.errors import PyMongoError as MongoError
-from types import FunctionType, MethodType
+from types import MethodType
 
 from .decorators import serializable
 from .errors import (
@@ -55,10 +56,17 @@ class Document(object):
         if attr in self._fields:
             return self._fields[attr]
         elif hasattr(self._collection, attr):
-            attribute = getattr(self.collection, attr)
+            attribute = getattr(self._collection, attr)
 
-            if type(attribute) == FunctionType:
-                return MethodType(attribute, self)
+            collection_methods = [
+                'restrict_unique', 'restrict_update', 'cascade_update',
+                'restrict_delete', 'cascade_delete',
+            ]
+            if inspect.ismethod(attribute) and attr in collection_methods:
+                attribute = attribute.im_func
+
+            if inspect.isfunction(attribute):
+                attribute = MethodType(attribute, self)
 
             return attribute
         else:
@@ -140,7 +148,7 @@ class Document(object):
         If the Document contains an _id it will be replaced instead of inserted
         """
         if self.is_valid:
-            restricted = self.restrict_unique(self)
+            restricted = self.restrict_unique()
             if restricted:
                 return restricted
 
@@ -167,11 +175,11 @@ class Document(object):
         """
         if self.is_valid:
             if '_id' in self._fields:
-                restricted = self.restrict_unique(self)
+                restricted = self.restrict_unique()
                 if restricted:
                     return restricted
 
-                restricted = self.restrict_update(self)
+                restricted = self.restrict_update()
                 if restricted:
                     return restricted
 
@@ -181,7 +189,7 @@ class Document(object):
                     )
 
                     if replaced.get('nMatched', replaced.get('n', 0)):
-                        self.cascade_update(self)
+                        self.cascade_update()
                         return self._fields
                     else:
                         return DocumentNotFoundError(
@@ -209,7 +217,7 @@ class Document(object):
         Deletes the document if it is already saved in the collection
         """
         if '_id' in self._fields:
-            restricted = self.restrict_delete(self)
+            restricted = self.restrict_delete()
             if restricted:
                 return restricted
 
@@ -217,7 +225,7 @@ class Document(object):
                 deleted = self.delete_one({'_id': self._id})
 
                 if deleted['n'] == 1:
-                    self.cascade_delete(self)
+                    self.cascade_delete()
                     return self._fields
                 else:
                     return DocumentNotFoundError(

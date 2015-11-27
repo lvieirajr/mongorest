@@ -216,8 +216,7 @@ class TestDocument(TestCase):
     def test_save_returns_error_if_restricted_unique(self):
         class TestCollection(Collection):
 
-            @classmethod
-            def restrict_unique(cls, document):
+            def restrict_unique(self):
                 return {
                     'error_code': 7, 'error_type': 'NotUnique',
                     'error_message': 'Document is not unique.',
@@ -252,8 +251,7 @@ class TestDocument(TestCase):
     def test_update_returns_error_if_restricted_unique(self):
         class TestCollection(Collection):
 
-            @classmethod
-            def restrict_unique(cls, document):
+            def restrict_unique(self):
                 return {
                     'error_code': 7, 'error_type': 'NotUnique',
                     'error_message': 'Document is not unique.',
@@ -271,8 +269,7 @@ class TestDocument(TestCase):
     def test_update_returns_error_if_restricted_update(self):
         class TestCollection(Collection):
 
-            @classmethod
-            def restrict_update(cls, document):
+            def restrict_update(self):
                 return {
                     'error_code': 8, 'error_type': 'RestrictedUpdate',
                     'error_message': 'Document can not be updated.'
@@ -392,8 +389,7 @@ class TestDocument(TestCase):
     def test_delete_returns_error_if_restricted_delete(self):
         class TestCollection(Collection):
 
-            @classmethod
-            def restrict_delete(cls, document):
+            def restrict_delete(self):
                 return {
                     'error_code': 9, 'error_type': 'RestrictedDelete',
                     'error_message': 'Document can not be deleted.'
