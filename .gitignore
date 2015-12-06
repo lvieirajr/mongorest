@@ -62,4 +62,5 @@ docs/_build/
 # PyBuilder
 target/
 
-#Other
+#Pyenv
+.python-version

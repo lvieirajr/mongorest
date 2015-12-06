@@ -12,10 +12,10 @@
 
 # Python Compatibility
 
-* Python -> 2.7
-* Python3 -> 3.3; 3.4
-* Pypy -> 2.6
-* Pypy3 -> 2.4
+* Python >= 2.7
+* Python3 >= 3.3
+* Pypy >= 2.6
+* Pypy3 >= 2.4
 
 
 # Mongo Compatibility
@@ -25,10 +25,10 @@
 
 # Requirements
 
-* Cerberus
-* PyMongo
-* Six
-* Werkzeug
+* Cerberus >= 0.9.2
+* PyMongo >= 3.0.0
+* Six >= 1.10.0
+* Werkzeug >= 0.10.4
 
 
 # Installation

@@ -26,9 +26,9 @@ class Test(TestCommand):
 
 install_requires = [
     'cerberus>=0.9.2',
-    'pymongo>=3.1.1',
+    'pymongo>=3.0.0',
     'six>=1.10.0',
-    'werkzeug>=0.11.2',
+    'werkzeug>=0.10.4',
 ]
 
 setup(
@@ -54,6 +54,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
