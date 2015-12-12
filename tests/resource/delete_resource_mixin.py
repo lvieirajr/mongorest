@@ -1,12 +1,10 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from werkzeug.wrappers import Response
-
 from mongorest.resource import DeleteResourceMixin
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
 from mongorest.wsgi import WSGIDispatcher
-from mongorest.utils import deserialize
 
 
 class TestDeleteResourceMixin(TestCase):
@@ -38,7 +36,7 @@ class TestDeleteResourceMixin(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
+            response.json,
             {
                 'error_code': 12,
                 'error_type': 'DocumentNotFoundError',
@@ -56,7 +54,5 @@ class TestDeleteResourceMixin(TestCase):
         response = self.delete_client.delete('/1/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            deserialize(response.get_data(as_text=True)), {'_id': 1}
-        )
+        self.assertEqual(response.json, {'_id': 1})
         self.assertIsNone(self.db.collection.find_one({'_id': 1}))

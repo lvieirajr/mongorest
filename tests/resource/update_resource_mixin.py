@@ -1,15 +1,12 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import six
-
-from werkzeug.wrappers import Response
-
 from mongorest.collection import Collection
 from mongorest.resource import UpdateResourceMixin
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
+from mongorest.utils import serialize
 from mongorest.wsgi import WSGIDispatcher
-from mongorest.utils import deserialize, serialize
 
 
 class TestUpdateResourceMixin(TestCase):
@@ -50,7 +47,7 @@ class TestUpdateResourceMixin(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        errors = deserialize(response.get_data(as_text=True))
+        errors = response.json
         errors['document'].pop('updated_at')
 
         self.assertEqual(
@@ -80,7 +77,7 @@ class TestUpdateResourceMixin(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
+            response.json,
             {
                 'error_code': 12,
                 'error_type': 'DocumentNotFoundError',
@@ -96,7 +93,7 @@ class TestUpdateResourceMixin(TestCase):
         response = self.update_client.put(
             '/1/', data=serialize({'test': 2})
         )
-        data = deserialize(response.get_data(as_text=True))
+        data = response.json
         data.pop('updated_at')
 
         self.assertEqual(response.status_code, 200)

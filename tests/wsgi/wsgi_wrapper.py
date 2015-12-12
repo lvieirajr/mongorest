@@ -2,10 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from werkzeug.routing import Map, Rule
-from werkzeug.wrappers import Response
-from werkzeug.exceptions import BadRequest
 
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
 from mongorest.wsgi import WSGIWrapper, WSGIDispatcher
 
 

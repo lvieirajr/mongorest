@@ -1,15 +1,12 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import six
-
-from werkzeug.wrappers import Response
-
 from mongorest.collection import Collection
 from mongorest.resource import CreateResourceMixin
 from mongorest.testcase import TestCase
+from mongorest.utils import serialize
+from mongorest.wrappers import Response
 from mongorest.wsgi import WSGIDispatcher
-from mongorest.utils import deserialize, serialize
 
 
 class TestCreateResourceMixin(TestCase):
@@ -47,7 +44,7 @@ class TestCreateResourceMixin(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-        errors = deserialize(response.get_data(as_text=True))
+        errors = response.json
         errors['document'].pop('created_at')
         errors['document'].pop('updated_at')
 
@@ -77,7 +74,7 @@ class TestCreateResourceMixin(TestCase):
             '/', data=serialize({'test': 1, '_id': 1})
         )
 
-        data = deserialize(response.get_data(as_text=True))
+        data = response.json
         data.pop('created_at')
         data.pop('updated_at')
 

@@ -1,12 +1,10 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from werkzeug.wrappers import Response
-
 from mongorest.resource import RetrieveResourceMixin
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
 from mongorest.wsgi import WSGIDispatcher
-from mongorest.utils import deserialize
 
 
 class TestRetrieveResourceMixin(TestCase):
@@ -38,7 +36,7 @@ class TestRetrieveResourceMixin(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
+            response.json,
             {
                 'error_code': 12,
                 'error_type': 'DocumentNotFoundError',
@@ -55,6 +53,6 @@ class TestRetrieveResourceMixin(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            deserialize(response.get_data(as_text=True)),
+            response.json,
             {'_id': 1}
         )

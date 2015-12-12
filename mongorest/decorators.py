@@ -2,11 +2,11 @@
 from __future__ import absolute_import, unicode_literals
 
 from functools import wraps
-from werkzeug.wrappers import Response
 
 from .errors import UnauthorizedError
 from .settings import settings
 from .utils import serialize
+from .wrappers import Response
 
 __all__ = [
     'login_required',
@@ -33,11 +33,7 @@ def login_required(wrapped):
             setattr(request, auth_collection, auth_document)
             return wrapped(*args, **kwargs)
 
-        return Response(
-            response=serialize(UnauthorizedError()),
-            content_type='application/json',
-            status=401,
-        )
+        return Response(response=serialize(UnauthorizedError()), status=401)
 
     if hasattr(wrapped, 'decorators'):
         wrapper.decorators = wrapped.decorators

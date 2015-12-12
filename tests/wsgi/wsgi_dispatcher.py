@@ -4,10 +4,10 @@ from __future__ import absolute_import, unicode_literals
 from os import environ
 
 from werkzeug.routing import Map, Rule
-from werkzeug.wrappers import Response
 
 from mongorest.middlewares import CORSMiddleware
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
 from mongorest.wsgi import WSGIWrapper, WSGIDispatcher
 
 

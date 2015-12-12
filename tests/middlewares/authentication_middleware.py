@@ -3,11 +3,11 @@ from __future__ import absolute_import, unicode_literals
 
 from os import environ
 from pydoc import locate
-from werkzeug.wrappers import Response
 
 from mongorest.resource import ListResourceMixin
 from mongorest.settings import settings
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
 from mongorest.wsgi import WSGIDispatcher
 
 

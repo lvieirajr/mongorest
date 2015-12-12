@@ -2,10 +2,10 @@
 from __future__ import absolute_import, unicode_literals
 
 from werkzeug.routing import Rule
-from werkzeug.wrappers import Response
 
 from mongorest.resource import Resource
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
 
 
 class TestResourceMeta(TestCase):

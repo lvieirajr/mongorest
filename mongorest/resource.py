@@ -2,14 +2,13 @@
 from __future__ import absolute_import, unicode_literals
 
 import six
-from collections import OrderedDict
 from datetime import datetime
 from werkzeug.routing import Map, Rule
-from werkzeug.wrappers import Response
 
 from .collection import Collection
 from .errors import DocumentNotFoundError
 from .utils import deserialize, serialize
+from .wrappers import Response
 from .wsgi import WSGIWrapper
 
 __all__ = [
@@ -75,23 +74,18 @@ class ListResourceMixin(Resource):
         """
         Returns the list of documents found on the collection
         """
-        args = deserialize(dict(request.args.items()))
-        pipeline = [{'$match': deserialize(args.pop('match', '{}'))}]
+        pipeline = [{'$match': request.args.pop('match', {})}]
 
-        sort = deserialize(
-            args.pop('sort', '{}'), object_pairs_hook=OrderedDict
-        )
+        sort = request.args.pop('sort', {})
         if sort:
             pipeline.append({'$sort': sort})
 
-        project = deserialize(args.pop('project', '{}'))
+        project = request.args.pop('project', {})
         if project:
             pipeline.append({'$project': project})
 
         return Response(
-            response=self.collection.aggregate(pipeline, serialize=True),
-            content_type='application/json',
-            status=200
+            response=serialize(self.collection.aggregate(pipeline)), status=200
         )
 
 
@@ -105,14 +99,13 @@ class CreateResourceMixin(Resource):
         """
         Creates a new document based on the given data
         """
-        document = self.collection(deserialize(request.get_data(as_text=True)))
+        document = self.collection(request.json)
         document.created_at = datetime.now()
         document.updated_at = document.created_at
 
         created = document.save()
         return Response(
             response=serialize(created),
-            content_type='application/json',
             status=(
                 201 if not all(
                     key in created for key in [
@@ -137,17 +130,12 @@ class RetrieveResourceMixin(Resource):
 
         retrieved = self.collection.find_one({'_id': _id})
         if retrieved:
-            return Response(
-                response=serialize(retrieved),
-                content_type='application/json',
-                status=200
-            )
+            return Response(response=serialize(retrieved), status=200)
         else:
             return Response(
                 response=serialize(
                     DocumentNotFoundError(self.collection.__name__, _id)
                 ),
-                content_type='application/json',
                 status=400
             )
 
@@ -166,15 +154,12 @@ class UpdateResourceMixin(Resource):
 
         to_update = self.collection.find_one({'_id': _id})
         if to_update:
-            document = self.collection(
-                dict(to_update, **deserialize(request.get_data(as_text=True)))
-            )
+            document = self.collection(dict(to_update, **request.json))
             document.updated_at = datetime.now()
 
             updated = document.update()
             return Response(
                 response=serialize(updated),
-                content_type='application/json',
                 status=(
                     200 if not all(
                         key in updated for key in [
@@ -188,7 +173,6 @@ class UpdateResourceMixin(Resource):
                 response=serialize(
                     DocumentNotFoundError(self.collection.__name__, _id)
                 ),
-                content_type='application/json',
                 status=400
             )
 
@@ -211,7 +195,6 @@ class DeleteResourceMixin(Resource):
 
             return Response(
                 response=serialize(deleted),
-                content_type='application/json',
                 status=(
                     200 if not all(
                         key in deleted for key in [
@@ -225,6 +208,5 @@ class DeleteResourceMixin(Resource):
                 response=serialize(
                     DocumentNotFoundError(self.collection.__name__, _id)
                 ),
-                content_type='application/json',
                 status=404
             )

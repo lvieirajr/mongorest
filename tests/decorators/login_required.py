@@ -3,10 +3,10 @@ from __future__ import absolute_import, unicode_literals
 
 from mock import Mock
 from os import environ
-from werkzeug.wrappers import Response
 
 from mongorest.decorators import login_required, serializable
 from mongorest.testcase import TestCase
+from mongorest.wrappers import Response
 
 
 class TestLoginRequired(TestCase):

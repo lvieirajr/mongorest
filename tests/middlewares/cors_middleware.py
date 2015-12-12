@@ -2,10 +2,10 @@
 from __future__ import absolute_import, unicode_literals
 
 from os import environ
-from werkzeug.wrappers import Response
 
 from mongorest.testcase import TestCase
 from mongorest.resource import ListResourceMixin
+from mongorest.wrappers import Response
 from mongorest.wsgi import WSGIDispatcher
 
 

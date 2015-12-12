@@ -4,10 +4,10 @@ from __future__ import absolute_import, unicode_literals
 from pydoc import locate
 from werkzeug.exceptions import HTTPException, NotFound
 from werkzeug.routing import Map
-from werkzeug.wrappers import Request
 from werkzeug.wsgi import DispatcherMiddleware
 
 from .settings import settings
+from .wrappers import Request
 
 __all__ = [
     'WSGIWrapper',
