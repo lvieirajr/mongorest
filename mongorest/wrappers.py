@@ -37,7 +37,7 @@ class Request(WerkzeugRequest):
 
 class Response(WerkzeugResponse):
 
-    default_mimetype='application/json'
+    default_mimetype = 'application/json'
 
     @property
     def json(self):
