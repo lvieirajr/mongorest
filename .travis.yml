@@ -6,7 +6,7 @@ services:
 install:
   - pip install --upgrade pip
   - pip install --upgrade setuptools
-  - pip install tox coverage coveralls
+  - pip install -r requirements.txt
 env:
   - TOXENV=py27
   - TOXENV=py33
