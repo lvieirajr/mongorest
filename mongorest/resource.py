@@ -84,9 +84,7 @@ class ListResourceMixin(Resource):
         if project:
             pipeline.append({'$project': project})
 
-        return Response(
-            response=serialize(self.collection.aggregate(pipeline)), status=200
-        )
+        return Response(serialize(self.collection.aggregate(pipeline)))
 
 
 class CreateResourceMixin(Resource):
@@ -130,7 +128,7 @@ class RetrieveResourceMixin(Resource):
 
         retrieved = self.collection.find_one({'_id': _id})
         if retrieved:
-            return Response(response=serialize(retrieved), status=200)
+            return Response(serialize(retrieved))
         else:
             return Response(
                 response=serialize(
