@@ -12,4 +12,5 @@ from .settings import *
 from .testcase import *
 from .utils import *
 from .validator import *
+from .wrappers import *
 from .wsgi import *

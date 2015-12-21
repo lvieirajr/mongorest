@@ -25,10 +25,10 @@ class Test(TestCommand):
 
 
 install_requires = [
-    'cerberus>=0.9.2',
+    'cerberus>=0.9',
     'pymongo>=3.0.0',
     'six>=1.10.0',
-    'werkzeug>=0.10.4',
+    'werkzeug>=0.10',
 ]
 
 setup(
