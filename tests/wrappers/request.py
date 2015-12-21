@@ -14,14 +14,26 @@ from mongorest.wrappers import Request
 class TestRequest(TestCase):
 
     def test_init_makes_args_become_a_dict_with_ordered_values_for_each_key(self):
-        request = Request(
+        request1 = Request(
             environ={
                 'QUERY_STRING': 'test={"a":2,"b":3}',
                 'wsgi.input': io.BytesIO(b''),
             }
         )
 
+        request2 = Request(
+            environ={
+                'QUERY_STRING': 'test={"b":2,"a":3}',
+                'wsgi.input': io.BytesIO(b''),
+            }
+        )
+
         self.assertEqual(
-            request.args,
+            request1.args,
             {'test': OrderedDict([('a', 2), ('b', 3)])}
+        )
+
+        self.assertEqual(
+            request2.args,
+            {'test': OrderedDict([('b', 2), ('a', 3)])}
         )
