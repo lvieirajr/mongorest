@@ -30,8 +30,7 @@ setup(
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
     download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
-    install_requires=['pymongo', 'werkzeug', 'six'],
-    dependency_links=['https://github.com/arngarden/MongoDBProxy/tarball/master#egg=MongoDBProxy'],
+    install_requires=['pymongo', 'werkzeug', 'six', 'mongodbproxy'],
     cmdclass={'test': Test},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
     classifiers=[
