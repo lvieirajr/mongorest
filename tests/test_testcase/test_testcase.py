@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from logging import getLogger, CRITICAL
 
+from mongo_proxy import MongoProxy
 from pymongo.database import Database
 from werkzeug.test import Client
 
@@ -15,7 +16,7 @@ class TestTestCase(TestCase):
         self.test_case = TestCase(methodName='__call__')
 
     def test_testcase_has_instance_of_pymongos_database(self):
-        self.assertIsInstance(self.test_case.db, Database)
+        self.assertIsInstance(self.test_case.db, MongoProxy)
 
     def test_testcase_has_werkzeugs_test_client(self):
         self.assertEqual(self.test_case.client, Client)

@@ -1,3 +1,4 @@
+-e git://github.com/arngarden/MongoDBProxy.git#egg=MongoDBProxy
 pymongo==3.0.3
 six==1.9.0
 werkzeug==0.10.4

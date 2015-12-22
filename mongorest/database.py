@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from mongo_proxy import MongoProxy
 from pymongo import MongoClient
 from pymongo.uri_parser import parse_uri
 
@@ -40,7 +41,7 @@ def _get_db():
         if 'OPTIONS' in mongo and mongo['OPTIONS']:
             uri += '?{0}'.format('&'.join(mongo['OPTIONS']))
 
-    return MongoClient(uri)[parse_uri(uri)['database']]
+    return MongoProxy(MongoClient(uri)[parse_uri(uri)['database']])
 
 
 db = _get_db()
