@@ -2,11 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from logging import getLogger, CRITICAL
-
-from mongo_proxy import MongoProxy
-from pymongo.database import Database
 from werkzeug.test import Client
 
+from mongorest.database import MongoProxy
 from mongorest.testcase import TestCase
 
 

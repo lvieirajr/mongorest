@@ -2,10 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from os import environ
-from mongo_proxy import MongoProxy
-from pymongo.database import Database
 
-from mongorest.database import db, _get_db
+from mongorest.database import db, _get_db, MongoProxy
 from mongorest.testcase import TestCase
 
 
