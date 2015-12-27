@@ -33,6 +33,7 @@ DEFAULT = {
         'DATABASE': 'mongorest',
         'OPTIONS': [],
     },
+    'RECONNECT_RETRIES': 5,
     'SESSION_STORE': '',
 }
 

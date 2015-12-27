@@ -3,9 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 from logging import getLogger, CRITICAL
 
-from pymongo.database import Database
 from werkzeug.test import Client
 
+from mongorest.database import AutoReconnectProxy
 from mongorest.testcase import TestCase
 
 
@@ -14,8 +14,8 @@ class TestTestCase(TestCase):
     def setUp(self):
         self.test_case = TestCase(methodName='__call__')
 
-    def test_testcase_has_instance_of_pymongos_database(self):
-        self.assertIsInstance(self.test_case.db, Database)
+    def test_testcase_has_instance_of_proxied_pymongo_database(self):
+        self.assertIsInstance(self.test_case.db, AutoReconnectProxy)
 
     def test_testcase_has_werkzeugs_test_client(self):
         self.assertEqual(self.test_case.client, Client)

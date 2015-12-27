@@ -2,16 +2,15 @@
 from __future__ import absolute_import, unicode_literals
 
 from os import environ
-from pymongo.database import Database
 
-from mongorest.database import db, _get_db
+from mongorest.database import db, _get_db, AutoReconnectProxy
 from mongorest.testcase import TestCase
 
 
 class TestDatabase(TestCase):
 
-    def test_db_is_a_pymongo_database(self):
-        self.assertIsInstance(db, Database)
+    def test_db_is_a_proxied_pymongo_database(self):
+        self.assertIsInstance(db, AutoReconnectProxy)
 
     def test_db_connected_to_correct_database(self):
         self.assertEqual(db.name, 'mongorest')

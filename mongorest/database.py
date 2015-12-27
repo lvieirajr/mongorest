@@ -1,13 +1,99 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from pymongo import MongoClient
+import time
+
+from pymongo.collection import Collection
+from pymongo.database import Database
+from pymongo.errors import AutoReconnect
+from pymongo.mongo_client import MongoClient
+from pymongo.mongo_replica_set_client import MongoReplicaSetClient
 from pymongo.uri_parser import parse_uri
 
 
 __all__ = [
     'db',
 ]
+
+
+EXECUTABLE_MONGO_METHODS = set(
+    attr
+    for obj in [Collection, Database, MongoClient, MongoReplicaSetClient]
+    for attr in dir(obj)
+    if not attr.startswith('_') and hasattr(getattr(obj, attr), '__call__')
+)
+
+
+class Executable(object):
+
+    def __init__(self, operation):
+        self.operation = operation
+
+    def __call__(self, *args, **kwargs):
+        from .settings import settings
+
+        retries = 0
+        while retries < settings.RECONNECT_RETRIES:
+            try:
+                return self.operation(*args, **kwargs)
+            except AutoReconnect:
+                time.sleep(pow(2, retries))
+
+            retries += 1
+
+        return self.operation(*args, **kwargs)
+
+    def __dir__(self):
+        return dir(self.operation)
+
+    def __str__(self):
+        return self.operation.__str__()
+
+    def __repr__(self):
+        return self.operation.__repr__()
+
+
+class AutoReconnectProxy(object):
+
+    def __init__(self, proxied):
+        self.proxied = proxied
+
+    def __getitem__(self, key):
+        item = self.proxied[key]
+
+        if hasattr(item, '__call__'):
+            return AutoReconnectProxy(item)
+
+        return item
+
+    def __getattr__(self, attr):
+        attribute = getattr(self.proxied, attr)
+
+        if hasattr(attr, '__call__'):
+            if attr in EXECUTABLE_MONGO_METHODS:
+                return Executable(attr)
+            else:
+                return AutoReconnectProxy(attr)
+
+        return attribute
+
+    def __call__(self, *args, **kwargs):
+        return self.proxied(*args, **kwargs)
+
+    def __dir__(self):
+        return dir(self.proxied)
+
+    def __str__(self):
+        return self.proxied.__str__()
+
+    def __repr__(self):
+        return self.proxied.__repr__()
+
+    def __eq__(self, other):
+        return self.proxied == other.proxied
+
+    def __nonzero__(self):
+        return True
 
 
 def _get_db():
@@ -40,7 +126,7 @@ def _get_db():
         if 'OPTIONS' in mongo and mongo['OPTIONS']:
             uri += '?{0}'.format('&'.join(mongo['OPTIONS']))
 
-    return MongoClient(uri)[parse_uri(uri)['database']]
+    return AutoReconnectProxy(MongoClient(uri))[parse_uri(uri)['database']]
 
 
 db = _get_db()
