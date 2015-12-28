@@ -24,27 +24,28 @@ EXECUTABLE_MONGO_METHODS = set(
 )
 
 
-class Executable(object):
-
-    def __init__(self, operation):
-        self.operation = operation
-
-    def __call__(self, *args, **kwargs):
-        from .settings import settings
-
-        retries = 0
-        while retries < settings.RECONNECT_RETRIES:
-            try:
-                return self.operation(*args, **kwargs)
-            except AutoReconnect:
-                time.sleep(pow(2, retries))
-
-            retries += 1
-
-        return self.operation(*args, **kwargs)
-
-
 class AutoReconnectProxy(object):
+
+    class Executable(object):
+
+        def __init__(self, operation):
+            self.operation = operation
+
+        def __call__(self, *args, **kwargs):
+            from .settings import settings
+
+            retries = 0
+            while retries < settings.RECONNECT_RETRIES:
+                try:
+                    return self.operation(*args, **kwargs)
+                except AutoReconnect:
+                    time.sleep(pow(2, retries))
+
+                retries += 1
+
+            return self.operation(*args, **kwargs)
+
+    executable = Executable
 
     def __init__(self, proxied):
         self.proxied = proxied
@@ -62,7 +63,7 @@ class AutoReconnectProxy(object):
 
         if hasattr(attribute, '__call__'):
             if attr in EXECUTABLE_MONGO_METHODS:
-                return Executable(attribute)
+                return self.executable(attribute)
             else:
                 return AutoReconnectProxy(attribute)
 
