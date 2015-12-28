@@ -43,15 +43,6 @@ class Executable(object):
 
         return self.operation(*args, **kwargs)
 
-    def __dir__(self):
-        return dir(self.operation)
-
-    def __str__(self):
-        return self.operation.__str__()
-
-    def __repr__(self):
-        return self.operation.__repr__()
-
 
 class AutoReconnectProxy(object):
 
@@ -69,25 +60,16 @@ class AutoReconnectProxy(object):
     def __getattr__(self, attr):
         attribute = getattr(self.proxied, attr)
 
-        if hasattr(attr, '__call__'):
+        if hasattr(attribute, '__call__'):
             if attr in EXECUTABLE_MONGO_METHODS:
-                return Executable(attr)
+                return Executable(attribute)
             else:
-                return AutoReconnectProxy(attr)
+                return AutoReconnectProxy(attribute)
 
         return attribute
 
     def __call__(self, *args, **kwargs):
         return self.proxied(*args, **kwargs)
-
-    def __dir__(self):
-        return dir(self.proxied)
-
-    def __str__(self):
-        return self.proxied.__str__()
-
-    def __repr__(self):
-        return self.proxied.__repr__()
 
     def __eq__(self, other):
         return self.proxied == other.proxied
