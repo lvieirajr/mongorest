@@ -50,7 +50,7 @@ class CollectionMeta(type):
         Tries to find the attribute in the underlying PyMongo collection
         If it can't find it defaults to returning the attribute from self
         """
-        if hasattr(self.collection, attr):
+        if attr in dir(self.collection):
             attribute = getattr(self.collection, attr)
 
             if inspect.isfunction(attribute):

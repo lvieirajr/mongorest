@@ -17,6 +17,9 @@ class AutoReconnectProxy(object):
     def __init__(self, proxied):
         self.proxied = proxied
 
+    def __dir__(self):
+        return dir(self.proxied)
+
     def __getitem__(self, key):
         item = self.proxied[key]
 
