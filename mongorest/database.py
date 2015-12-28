@@ -3,49 +3,16 @@ from __future__ import absolute_import, unicode_literals
 
 import time
 
-from pymongo.collection import Collection
-from pymongo.database import Database
 from pymongo.errors import AutoReconnect
 from pymongo.mongo_client import MongoClient
-from pymongo.mongo_replica_set_client import MongoReplicaSetClient
 from pymongo.uri_parser import parse_uri
-
 
 __all__ = [
     'db',
 ]
 
 
-EXECUTABLE_MONGO_METHODS = set(
-    attr
-    for obj in [Collection, Database, MongoClient, MongoReplicaSetClient]
-    for attr in dir(obj)
-    if not attr.startswith('_') and hasattr(getattr(obj, attr), '__call__')
-)
-
-
 class AutoReconnectProxy(object):
-
-    class Executable(object):
-
-        def __init__(self, operation):
-            self.operation = operation
-
-        def __call__(self, *args, **kwargs):
-            from .settings import settings
-
-            retries = 0
-            while retries < settings.RECONNECT_RETRIES:
-                try:
-                    return self.operation(*args, **kwargs)
-                except AutoReconnect:
-                    time.sleep(pow(2, retries))
-
-                retries += 1
-
-            return self.operation(*args, **kwargs)
-
-    executable = Executable
 
     def __init__(self, proxied):
         self.proxied = proxied
@@ -54,7 +21,7 @@ class AutoReconnectProxy(object):
         item = self.proxied[key]
 
         if hasattr(item, '__call__'):
-            return AutoReconnectProxy(item)
+            item = AutoReconnectProxy(item)
 
         return item
 
@@ -62,21 +29,26 @@ class AutoReconnectProxy(object):
         attribute = getattr(self.proxied, attr)
 
         if hasattr(attribute, '__call__'):
-            if attr in EXECUTABLE_MONGO_METHODS:
-                return self.executable(attribute)
-            else:
-                return AutoReconnectProxy(attribute)
+            attribute = AutoReconnectProxy(attribute)
 
         return attribute
 
     def __call__(self, *args, **kwargs):
+        from .settings import settings
+
+        retries = 0
+        while retries < settings.RECONNECT_RETRIES:
+            try:
+                return self.proxied(*args, **kwargs)
+            except AutoReconnect:
+                time.sleep(pow(2, retries))
+
+            retries += 1
+
         return self.proxied(*args, **kwargs)
 
     def __eq__(self, other):
         return self.proxied == other.proxied
-
-    def __nonzero__(self):
-        return True
 
 
 def _get_db():
