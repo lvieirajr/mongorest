@@ -27,7 +27,7 @@ class Request(WerkzeugRequest):
             for key, value in self.args.items()
         )
         self.form = dict(
-            (key, deserialize(value, object_pairs_hook=OrderedDict))
+            (key, deserialize(value))
             for key, value in self.form.items()
         )
         self.json = deserialize(self.data.decode() or {})
