@@ -1,9 +1,12 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import logging
 import time
 
-from pymongo.errors import AutoReconnect
+from pymongo.collection import Collection
+from pymongo.database import Database
+from pymongo.errors import ConnectionFailure
 from pymongo.mongo_client import MongoClient
 from pymongo.uri_parser import parse_uri
 
@@ -12,10 +15,11 @@ __all__ = [
 ]
 
 
-class AutoReconnectProxy(object):
+class ConnectionFailureProxy(object):
 
     def __init__(self, proxied):
         self.proxied = proxied
+        self.logger = logging.getLogger(__name__)
 
     def __dir__(self):
         return dir(self.proxied)
@@ -24,7 +28,7 @@ class AutoReconnectProxy(object):
         item = self.proxied[key]
 
         if hasattr(item, '__call__'):
-            item = AutoReconnectProxy(item)
+            item = ConnectionFailureProxy(item)
 
         return item
 
@@ -32,7 +36,7 @@ class AutoReconnectProxy(object):
         attribute = getattr(self.proxied, attr)
 
         if hasattr(attribute, '__call__'):
-            attribute = AutoReconnectProxy(attribute)
+            attribute = ConnectionFailureProxy(attribute)
 
         return attribute
 
@@ -43,8 +47,23 @@ class AutoReconnectProxy(object):
         while retries < settings.RECONNECT_RETRIES:
             try:
                 return self.proxied(*args, **kwargs)
-            except AutoReconnect:
-                time.sleep(pow(2, retries))
+            except ConnectionFailure:
+                sleep_time = pow(2, retries)
+
+                self.logger.warning(
+                    'Attempting to reconnect in {0} seconds.'.format(
+                        sleep_time
+                    )
+                )
+
+                client = self.proxied
+                if isinstance(self.proxied, Database):
+                    client = self.proxied.client
+                elif isinstance(self.proxied, Collection):
+                    client = self.proxied.database.client
+
+                client.close()
+                time.sleep(sleep_time)
 
             retries += 1
 
@@ -84,7 +103,10 @@ def _get_db():
         if 'OPTIONS' in mongo and mongo['OPTIONS']:
             uri += '?{0}'.format('&'.join(mongo['OPTIONS']))
 
-    return AutoReconnectProxy(MongoClient(uri))[parse_uri(uri)['database']]
+    client = ConnectionFailureProxy(MongoClient(uri, connect=False))
+    database = client[parse_uri(uri)['database']]
+
+    return database
 
 
 db = _get_db()
