@@ -1,97 +1,77 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import logging
 import time
 
 from pymongo.collection import Collection
 from pymongo.database import Database
-from pymongo.errors import AutoReconnect
+from pymongo.errors import ConnectionFailure
 from pymongo.mongo_client import MongoClient
-from pymongo.mongo_replica_set_client import MongoReplicaSetClient
 from pymongo.uri_parser import parse_uri
-
 
 __all__ = [
     'db',
-    'Executable',
-    'MongoProxy'
 ]
 
 
-EXECUTABLE_MONGO_METHODS = set(
-    attr
-    for obj in [Collection, Database, MongoClient, MongoReplicaSetClient]
-    for attr in dir(obj)
-    if not attr.startswith('_') and hasattr(getattr(obj, attr), '__call__')
-)
+class ConnectionFailureProxy(object):
 
-
-class Executable(object):
-
-    def __init__(self, method):
-        self.method = method
-
-    def __call__(self, *args, **kwargs):
-        retries = 0
-
-        while retries < 5:
-            try:
-                return self.method(*args, **kwargs)
-            except AutoReconnect:
-                time.sleep(pow(2, retries))
-
-            retries += 1
-
-        return self.method(*args, **kwargs)
+    def __init__(self, proxied):
+        self.proxied = proxied
+        self.logger = logging.getLogger(__name__)
 
     def __dir__(self):
-        return dir(self.method)
-
-    def __str__(self):
-        return self.method.__str__()
-
-    def __repr__(self):
-        return self.method.__repr__()
-
-
-class MongoProxy(object):
-
-    def __init__(self, conn):
-        self.conn = conn
+        return dir(self.proxied)
 
     def __getitem__(self, key):
-        item = self.conn[key]
+        item = self.proxied[key]
 
         if hasattr(item, '__call__'):
-            return MongoProxy(item)
+            item = ConnectionFailureProxy(item)
 
         return item
 
-    def __getattr__(self, key):
-        attr = getattr(self.conn, key)
+    def __getattr__(self, attr):
+        attribute = getattr(self.proxied, attr)
 
-        if hasattr(attr, '__call__'):
-            if key in EXECUTABLE_MONGO_METHODS:
-                return Executable(attr)
-            else:
-                return MongoProxy(attr)
+        if hasattr(attribute, '__call__'):
+            attribute = ConnectionFailureProxy(attribute)
 
-        return attr
+        return attribute
 
     def __call__(self, *args, **kwargs):
-        return self.conn(*args, **kwargs)
+        from .settings import settings
 
-    def __dir__(self):
-        return dir(self.conn)
+        retries = 0
+        while retries < settings.RETRY_LIMIT:
+            try:
+                return self.proxied(*args, **kwargs)
+            except ConnectionFailure:
+                if settings.LINEAR_RETRIES:
+                    sleep_time = settings.BASE_RETRY_TIME
+                else:
+                    sleep_time = pow(settings.BASE_RETRY_TIME, retries)
 
-    def __str__(self):
-        return self.conn.__str__()
+                self.logger.warning(
+                    'Retry nº {0} in {1} seconds.'.format(retries, sleep_time)
+                )
 
-    def __repr__(self):
-        return self.conn.__repr__()
+                client = self.proxied
+                if isinstance(self.proxied, Database):
+                    client = self.proxied.client
+                elif isinstance(self.proxied, Collection):
+                    client = self.proxied.database.client
 
-    def __nonzero__(self):
-        return True
+                client.close()
+                time.sleep(sleep_time)
+
+            retries += 1
+
+        return self.proxied(*args, **kwargs)
+
+    def __eq__(self, other):
+        return self.proxied == other.proxied
 
 
 def _get_db():
@@ -124,7 +104,10 @@ def _get_db():
         if 'OPTIONS' in mongo and mongo['OPTIONS']:
             uri += '?{0}'.format('&'.join(mongo['OPTIONS']))
 
-    return MongoProxy(MongoClient(uri))[parse_uri(uri)['database']]
+    client = ConnectionFailureProxy(MongoClient(uri, connect=False))
+    database = client[parse_uri(uri)['database']]
+
+    return database
 
 
 db = _get_db()

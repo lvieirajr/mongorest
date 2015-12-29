@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from logging import getLogger, CRITICAL
 from werkzeug.test import Client
 
-from mongorest.database import MongoProxy
+from mongorest.database import ConnectionFailureProxy
 from mongorest.testcase import TestCase
 
 
@@ -14,7 +14,7 @@ class TestTestCase(TestCase):
         self.test_case = TestCase(methodName='__call__')
 
     def test_testcase_has_instance_of_pymongos_database(self):
-        self.assertIsInstance(self.test_case.db, MongoProxy)
+        self.assertIsInstance(self.test_case.db, ConnectionFailureProxy)
 
     def test_testcase_has_werkzeugs_test_client(self):
         self.assertEqual(self.test_case.client, Client)

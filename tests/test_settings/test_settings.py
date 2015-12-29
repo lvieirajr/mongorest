@@ -47,6 +47,10 @@ class TestSettings(TestCase):
         self.assertEqual(settings.MONGODB['DATABASE'], 'mongorest')
         self.assertEqual(settings.MONGODB['OPTIONS'], [])
 
+        self.assertEqual(settings.RETRY_LIMIT, 5)
+        self.assertEqual(settings.BASE_RETRY_TIME, 2)
+        self.assertEqual(settings.LINEAR_RETRIES, False)
+
         self.assertEqual(settings.SESSION_STORE, '')
 
     def test_a_default_setting_can_be_overwritten(self):

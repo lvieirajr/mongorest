@@ -3,14 +3,14 @@ from __future__ import absolute_import, unicode_literals
 
 from os import environ
 
-from mongorest.database import db, _get_db, MongoProxy
+from mongorest.database import db, _get_db, ConnectionFailureProxy
 from mongorest.testcase import TestCase
 
 
 class TestDatabase(TestCase):
 
     def test_db_is_a_pymongo_database(self):
-        self.assertIsInstance(db, MongoProxy)
+        self.assertIsInstance(db, ConnectionFailureProxy)
 
     def test_db_connected_to_correct_database(self):
         self.assertEqual(db.name, 'mongorest')
