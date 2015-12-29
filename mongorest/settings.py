@@ -33,7 +33,9 @@ DEFAULT = {
         'DATABASE': 'mongorest',
         'OPTIONS': [],
     },
-    'RECONNECT_RETRIES': 5,
+    'RETRY_LIMIT': 5,
+    'BASE_RETRY_TIME': 2,
+    'LINEAR_RETRIES': False,
     'SESSION_STORE': '',
 }
 

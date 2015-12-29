@@ -44,16 +44,17 @@ class ConnectionFailureProxy(object):
         from .settings import settings
 
         retries = 0
-        while retries < settings.RECONNECT_RETRIES:
+        while retries < settings.RETRY_LIMIT:
             try:
                 return self.proxied(*args, **kwargs)
             except ConnectionFailure:
-                sleep_time = pow(2, retries)
+                if settings.LINEAR_RETRIES:
+                    sleep_time = settings.BASE_RETRY_TIME
+                else:
+                    sleep_time = pow(settings.BASE_RETRY_TIME, retries)
 
                 self.logger.warning(
-                    'Attempting to reconnect in {0} seconds.'.format(
-                        sleep_time
-                    )
+                    'Retry nº {0} in {1} seconds.'.format(retries, sleep_time)
                 )
 
                 client = self.proxied
