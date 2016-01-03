@@ -57,13 +57,20 @@ class ConnectionFailureProxy(object):
                     'Retry nº {0} in {1} seconds.'.format(retries, sleep_time)
                 )
 
-                client = self.proxied
-                if isinstance(self.proxied, Database):
-                    client = self.proxied.client
-                elif isinstance(self.proxied, Collection):
-                    client = self.proxied.database.client
+                attempts, client = 0, self.proxied
+                while not isinstance(client, MongoClient) or attempts >= 5:
+                    attempts += 1
 
-                client.close()
+                    if isinstance(client, Database):
+                        client = client.client
+                    elif isinstance(client, Collection):
+                        client = client.database.client
+                    else:
+                        client = client.__self__
+
+                if isinstance(client, MongoClient):
+                    client.close()
+
                 time.sleep(sleep_time)
 
             retries += 1
