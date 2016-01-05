@@ -58,19 +58,20 @@ class AuthenticationMiddleware(object):
         })
 
         def authentication(status, headers, exc_info=None):
-            headers.extend([
-                (
-                    'Set-Cookie', dump_cookie(
-                        'session_id', environ['session'].sid, 7 * 24 * 60 * 60,
-                        domain=settings.DOMAIN
-                    )
-                ),
-                (
-                    'HTTP_AUTHORIZATION', 'Token {0}'.format(
-                        environ['session'].sid
-                    )
-                ),
-            ])
+            if environ.get(auth_collection.__name__.lower()):
+                headers.extend([
+                    (
+                        'Set-Cookie', dump_cookie(
+                            'session_id', environ['session'].sid,
+                            30 * 24 * 60 * 60, domain=settings.DOMAIN
+                        )
+                    ),
+                    (
+                        'HTTP_AUTHORIZATION', 'Token {0}'.format(
+                            environ['session'].sid
+                        )
+                    ),
+                ])
 
             return start_response(status, headers, exc_info)
 
