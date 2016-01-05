@@ -13,7 +13,7 @@ from mongorest.wsgi import WSGIDispatcher
 
 class TestAuthenticationMiddleware(TestCase):
 
-    def test_raises_value_error_if_session_store_is_not_sub_class_of_session_store(self):
+    def test_authentication_middleware_raises_value_error_if_session_store_is_not_sub_class_of_session_store(self):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_session_store_error_settings'
 
         self.test_client = self.client(
@@ -25,7 +25,7 @@ class TestAuthenticationMiddleware(TestCase):
 
         environ.pop('MONGOREST_SETTINGS_MODULE')
 
-    def test_raises_value_error_if_auth_collection_is_not_sub_class_of_collection(self):
+    def test_authentication_middleware_raises_value_error_if_auth_collection_is_not_sub_class_of_collection(self):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_auth_colelction_error_settings'
 
         self.test_client = self.client(
@@ -37,7 +37,7 @@ class TestAuthenticationMiddleware(TestCase):
 
         environ.pop('MONGOREST_SETTINGS_MODULE')
 
-    def test_adds_authorization_header_to_response_without_token(self):
+    def test_authentication_middleware_does_not_set_token_or_cookie_or_header_if_not_authorized(self):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_auth_settings'
 
         self.test_client = self.client(
@@ -46,18 +46,19 @@ class TestAuthenticationMiddleware(TestCase):
 
         response = self.test_client.get('/')
 
-        self.assertIn('HTTP_AUTHORIZATION', response.headers)
-        self.assertIn('Token ', response.headers.get('HTTP_AUTHORIZATION'))
+        self.assertNotIn('HTTP_AUTHORIZATION', response.headers)
+        self.assertNotIn('Set-Cookie', response.headers)
 
         environ.pop('MONGOREST_SETTINGS_MODULE')
 
-    def test_adds_authorization_header_to_response_with_token(self):
+    def test_authentication_middleware_adds_authorization_header_to_response_authorized_with_token(self):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_auth_settings'
 
         class TestResource(ListResourceMixin):
 
             def list(self, request):
                 request.environ['session']['test'] = 'test'
+                request.environ['collection'] = 'collection'
                 return Response()
 
         self.test_client = self.client(
@@ -79,13 +80,14 @@ class TestAuthenticationMiddleware(TestCase):
 
         environ.pop('MONGOREST_SETTINGS_MODULE')
 
-    def test_adds_authorization_header_to_response_with_cookie(self):
+    def test_authentication_middleware_adds_authorization_header_to_response_authorized_with_cookie(self):
         environ['MONGOREST_SETTINGS_MODULE'] = 'tests.fixtures.middlewares_test_auth_settings'
 
         class TestResource(ListResourceMixin):
 
             def list(self, request):
                 request.environ['session']['test'] = 'test'
+                request.environ['collection'] = 'collection'
                 return Response()
 
         self.test_client = self.client(
