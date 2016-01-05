@@ -16,7 +16,7 @@ class TestRequest(TestCase):
 
     def test_init_makes_args_become_a_dict_with_ordered_values_for_each_key(self):
         request1 = Request(
-            create_environ(method='POST', query_string='test={"a":1,"b":2}')
+            create_environ(method='POST', query_string='test={"a":1,"b":2}&bla=2')
         )
 
         request2 = Request(
@@ -24,7 +24,7 @@ class TestRequest(TestCase):
         )
 
         self.assertEqual(
-            request1.args, {'test': OrderedDict([('a', 1), ('b', 2)])}
+            request1.args, {'test': OrderedDict([('a', 1), ('b', 2)]), 'bla': 2}
         )
 
         self.assertEqual(
@@ -32,9 +32,9 @@ class TestRequest(TestCase):
         )
 
     def test_init_makes_form_a_dict_with_decoded_and_deserialized_form_data(self):
-        request = Request(create_environ(data={'a': 1, 'b': 2}))
+        request = Request(create_environ(data={'a': '{"a":2}', 'b': '3'}))
 
-        self.assertEqual(request.form, {'a': 1, 'b': 2})
+        self.assertEqual(request.form, {'a': {'a': 2}, 'b': 3})
 
     def test_init_makes_json_a_dict_with_decoded_and_deserialized_data(self):
         request = Request(create_environ(data='{"a":1,"b":2}'))
