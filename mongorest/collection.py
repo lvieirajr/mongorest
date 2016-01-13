@@ -208,7 +208,7 @@ class Collection(with_metaclass(CollectionMeta, object)):
         """
         return False
 
-    def cascade_update(self):
+    def cascade_update(self, old=None):
         """
         Should cascade the update to the required documents after the given
         document was updated.

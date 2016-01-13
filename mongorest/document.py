@@ -184,12 +184,13 @@ class Document(object):
                     return restricted
 
                 try:
-                    replaced = self.replace_one(
+                    to_update = self.find_one({'_id': self._id})
+                    updated = self.replace_one(
                         {'_id': self._id}, self._fields
                     )
 
-                    if replaced.get('nMatched', replaced.get('n', 0)):
-                        self.cascade_update()
+                    if updated.get('nMatched', updated.get('n', 0)):
+                        self.cascade_update(old=to_update)
                         return self._fields
                     else:
                         return DocumentNotFoundError(

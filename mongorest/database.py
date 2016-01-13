@@ -59,8 +59,11 @@ class ConnectionFailureProxy(object):
                 )
 
                 client, attempts = self.proxied, 0
-                while not isinstance(client, MongoClient) or attempts >= 3:
-                    if isinstance(client, Database):
+                while attempts <= 3:
+                    if isinstance(client, MongoClient):
+                        client.close()
+                        break
+                    elif isinstance(client, Database):
                         client = client.client
                     elif isinstance(client, Collection):
                         client = client.database
@@ -68,9 +71,6 @@ class ConnectionFailureProxy(object):
                         client = client.__self__
 
                     attempts += 1
-
-                if isinstance(client, MongoClient):
-                    client.close()
 
                 time.sleep(sleep_time)
 
