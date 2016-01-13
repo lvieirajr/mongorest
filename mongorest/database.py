@@ -24,6 +24,12 @@ class ConnectionFailureProxy(object):
     def __dir__(self):
         return dir(self.proxied)
 
+    def __str__(self):
+        return self.proxied.__str__()
+
+    def __repr__(self):
+        return self.proxied.__repr__()
+
     def __getitem__(self, key):
         item = self.proxied[key]
 
