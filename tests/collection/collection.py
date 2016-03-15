@@ -49,8 +49,13 @@ class TestCollection(TestCase):
     def test_init_does_not_call_after_validation_failed_if_validation_fails_and_after_validation_returns_something(self, after_validation_failed):
         self.collection.schema = {'test': {'required': True}}
         self.collection.after_validation = lambda self: True
+
         self.collection()
+
         self.collection.schema = {}
+        self.collection.after_validation = lambda self: None
+
+
 
         self.assertEqual(after_validation_failed.call_count, 0)
 
@@ -69,9 +74,251 @@ class TestCollection(TestCase):
     @patch('mongorest.collection.Collection.after_validation_succeeded')
     def test_init_does_not_call_after_validation_succeeded_if_validation_succeeds_and_after_validation_returns_something(self, after_validation_succeeded):
         self.collection.after_validation = lambda self: True
+
         self.collection()
 
+        self.collection.after_validation = lambda self: None
+
         self.assertEqual(after_validation_succeeded.call_count, 0)
+
+    # __setattr__
+    def test___setattr____correctly_sets_collection(self):
+        document = Collection()
+
+        self.assertEqual(document.collection, self.db['collection'])
+
+        document.collection = self.db['test_collection']
+
+        self.assertEqual(document.collection, self.db['test_collection'])
+
+        document.collection = self.db['collection']
+
+    def test___setattr____correctly_sets_schema(self):
+        document = Collection()
+
+        self.assertEqual(document.schema, {})
+
+        document.schema = {'test': {'required': True}}
+
+        self.assertEqual(document.schema, {'test': {'required': True}})
+
+        document.schema = {}
+
+    def test___setattr____correctly_sets_allow_unknown(self):
+        document = Collection()
+
+        self.assertEqual(document.allow_unknown, True)
+
+        document.allow_unknown = False
+
+        self.assertEqual(document.allow_unknown, False)
+
+        document.allow_unknown = True
+
+    def test___setattr____correctly_sets__document(self):
+        document = Collection()
+
+        self.assertEqual(document._document, {})
+
+        document._document = {'test': 'test'}
+
+        self.assertEqual(document._document, {'test': 'test'})
+
+    def test___setattr____correctly_sets__errors(self):
+        document = Collection()
+
+        self.assertEqual(document._errors, {})
+
+        document._errors = {'error': 'error'}
+
+        self.assertEqual(document._errors, {'error': 'error'})
+
+    # __getattr__
+    def test___getattr___raises_attribute_error_if_can_not_find_attribute(self):
+        with self.assertRaises(AttributeError):
+            Collection._()
+
+    # __repr__
+    def test___repr___returns_correct_representation_of_the_document(self):
+        document = Collection()
+
+        self.assertEqual(
+            document.__repr__(),
+            '<Document<Collection> object at {0}>'.format(hex(id(document)))
+        )
+
+    # document
+    def test_document_returns_empty_dict_if_no_fields_on_document(self):
+        document = Collection()
+
+        self.assertEqual(document.document, {})
+
+    def test_document_returns_dict_of_fields_from_the_document(self):
+        _id = ObjectId()
+        document = Collection({'_id': _id})
+
+        self.assertEqual(document.document, {'_id': _id})
+
+    # errors
+    def test_errors_returns_empty_dict_if_no_errors_on_document(self):
+        document = Collection()
+
+        self.assertEqual(document.errors, {})
+
+    def test_errors_returns_dict_of_errors_from_the_document(self):
+        document = Collection()
+        document._errors = {'error': 'error'}
+
+        self.assertEqual(document.errors, {'error': 'error'})
+
+    # is_valid
+    def test_is_valid_returns_true_if_no_errors_on_document(self):
+        document = Collection()
+
+        self.assertTrue(document.is_valid)
+
+    def test_is_valid_returns_false_if_document_has_errors(self):
+        document = Collection()
+        document._errors = {'error': 'error'}
+
+        self.assertFalse(document.is_valid)
+
+    # insert
+    def test_insert_is_decorated_with_serializable(self):
+        self.assertIn('serializable', Collection.insert.decorators)
+
+    def test_insert_returns_errors_if_document_is_not_valid(self):
+        Collection.schema = {'test': {'required': True}}
+        errors = Collection().insert()
+        Collection.schema = {}
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 21,
+                'error_type': 'DocumentValidationError',
+                'error_message': 'Validation of document from collection \'Collection\' failed.',
+                'errors': [
+                    {
+                        'error_code': 23,
+                        'error_type': 'RequiredFieldError',
+                        'error_message': 'Field \'test\' on collection \'Collection\' is required.',
+                        'collection': 'Collection',
+                        'field': 'test',
+                    },
+                ],
+                'collection': 'Collection',
+                'schema': {'test': {'required': True}},
+                'document': {},
+            }
+        )
+
+    def test_insert_returns_errors_if_error_ocurred_during_save(self):
+        Collection.collection.create_index('test', unique=True)
+        Collection.insert_one({'test': 'test'})
+
+        errors = Collection({'test': 'test'}).insert()
+
+        self.assertEqual(errors['error_code'], 0)
+        self.assertEqual(errors['error_type'], 'PyMongoError')
+
+        Collection.drop_index('test_1')
+
+    def test_insert_returns_error_if_restricted_unique(self):
+        Collection.before_save = lambda self: {
+            'error_code': 7, 'error_type': 'NotUnique',
+            'error_message': 'Document is not unique.',
+        }
+
+        errors = Collection().insert()
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 7, 'error_type': 'NotUnique',
+                'error_message': 'Document is not unique.'
+            }
+        )
+
+        Collection.before_save = lambda self: None
+
+    def test_insert_returns_document_if_is_valid(self):
+        document = Collection()
+
+        self.assertEqual(document.insert(), document.document)
+
+    # update
+    def test_update_is_decorated_with_serializable(self):
+        self.assertIn('serializable', Collection.update.decorators)
+
+    def test_update_returns_before_if_before_update_returns_something(self):
+        Collection.before_update = lambda self, old: {
+            'error_code': 7, 'error_type': 'NotUnique',
+            'error_message': 'Document is not unique.',
+        }
+
+        Collection({'_id': 1}).insert()
+        errors = Collection({'_id': 1}).update()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 7, 'error_type': 'NotUnique',
+                'error_message': 'Document is not unique.'
+            }
+        )
+
+        Collection.before_update = lambda self, old: None
+
+    # delete
+    def test_delete_is_decorated_with_serializable(self):
+        self.assertIn('serializable', Collection.delete.decorators)
+
+    def test_delete_returns_errors_if_document_has_no_id(self):
+        errors = Collection().delete()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 11,
+                'error_type': 'UnidentifiedDocumentError',
+                'error_message': 'The given document from collection \'Collection\' has no _id.',
+                'collection': 'Collection',
+                'document': {},
+            }
+        )
+
+    def test_delete_returns_before_if_before_update_returns_something(self):
+        Collection.before_delete = lambda self: {
+            'error_code': 9, 'error_type': 'RestrictedDelete',
+            'error_message': 'Document can not be deleted.'
+        }
+
+        Collection({'_id': 1}).insert()
+        errors = Collection({'_id': 1}).delete()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 9, 'error_type': 'RestrictedDelete',
+                'error_message': 'Document can not be deleted.'
+            }
+        )
+
+        Collection.before_delete = lambda self: None
+
+    def test_delete_returns_errors_if_document_not_found(self):
+        errors = Collection({'_id': 1}).delete()
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 12,
+                'error_type': 'DocumentNotFoundError',
+                'error_message': '1 is not a valid _id for a document from collection \'Collection\'.',
+                'collection': 'Collection',
+                '_id': 1,
+            }
+        )
 
     # find_one
     def test_find_one_is_decorated_with_serializable(self):

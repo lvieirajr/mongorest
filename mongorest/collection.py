@@ -54,6 +54,21 @@ class CollectionMeta(type):
 
         return super(mcs, mcs).__new__(mcs, *(name, bases, members), **kwargs)
 
+    def __getattr__(self, name):
+        """
+        Returns the attribute from the _document if it exists.
+        Returns it from the collection if not on _document, but on collection.
+        """
+        if name in dir(self.collection):
+            attribute = getattr(self.collection, name)
+
+            if inspect.isfunction(attribute):
+                attribute = types.MethodType(attribute, self)
+
+            return attribute
+        else:
+            raise AttributeError
+
 
 class Collection(six.with_metaclass(CollectionMeta, object)):
     """
@@ -88,15 +103,15 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         else:
             self._document[key] = value
 
-    def __getattr__(self, item):
+    def __getattr__(self, name):
         """
         Returns the attribute from the _document if it exists.
         Returns it from the collection if not on _document, but on collection.
         """
-        if item in self._document:
-            return self._document[item]
-        elif item in dir(self.collection):
-            attribute = getattr(self.collection, item)
+        if name in self._document:
+            return self._document[name]
+        elif name in dir(self.collection):
+            attribute = getattr(self.collection, name)
 
             if inspect.isfunction(attribute):
                 attribute = types.MethodType(attribute, self)
@@ -135,7 +150,8 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         return not self._errors
 
-    def insert(self):
+    @serializable
+    def insert(self, **kwargs):
         """
         Saves the Document to the database if it is valid.
         Returns errors otherwise.
@@ -162,7 +178,8 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
 
         return self._errors
 
-    def update(self):
+    @serializable
+    def update(self, **kwargs):
         """
         Updates the document with the given _id saved in the collection
         """
@@ -200,7 +217,8 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
 
         return self._errors
 
-    def delete(self):
+    @serializable
+    def delete(self, **kwargs):
         """
         Deletes the document if it is saved in the collection
         """
