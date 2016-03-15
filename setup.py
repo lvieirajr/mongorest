@@ -21,6 +21,7 @@ class Test(TestCommand):
                 'tests.{0}'.format(self.test_suite).strip('. ')
             )
         )
+
         return exit(0) if not (result.failures + result.errors) else exit(1)
 
 

@@ -1,9 +1,10 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from inspect import getmembers
-from pydoc import locate
-from os import environ
+import copy
+import inspect
+import os
+import pydoc
 
 __all__ = [
     'settings',
@@ -47,27 +48,30 @@ class Settings(object):
     Uses the environment variable MONGOREST_SETTINGS_MODULE to find where the
     Settings are store
     """
+    _settings = copy.deepcopy(DEFAULT)
+    _settings_module = None
 
-    def __getattr__(self, attr):
-        self._settings = DEFAULT
+    def __getattr__(self, name):
+        settings_module = os.environ.get('MONGOREST_SETTINGS_MODULE')
 
-        settings_module = environ.get('MONGOREST_SETTINGS_MODULE')
-        if settings_module:
-            loaded_settings = locate(settings_module)
+        if not settings_module:
+            self._settings_module = None
+            self._settings = copy.deepcopy(DEFAULT)
+        if settings_module and self._settings_module != settings_module:
+            self._settings_module = settings_module
 
             self._settings = dict(
-                self._settings,
-                **dict(
-                    (name, setting)
-                    for (name, setting) in getmembers(loaded_settings)
-                    if name.isupper()
+                self._settings, **dict(
+                    (name, setting) for (name, setting) in inspect.getmembers(
+                        pydoc.locate(settings_module)
+                    ) if name.isupper()
                 )
-            )
+             )
 
-        if attr not in self._settings:
-            raise AttributeError('Invalid setting: \'{0}\''.format(attr))
-
-        return self._settings[attr]
+        try:
+            return self._settings[name]
+        except KeyError:
+            raise AttributeError('Invalid setting: \'{0}\''.format(name))
 
 
 settings = Settings()

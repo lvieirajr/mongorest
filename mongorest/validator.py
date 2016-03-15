@@ -24,11 +24,10 @@ class Validator(CerberusValidator):
             self._error(field, 'must be of ObjectId type')
 
     def validate_document(self, document):
-        collection = document.collection
-        collection_name = collection.__name__
+        self.schema = document.schema
+        collection_name, errors = type(document).__name__, {}
 
-        errors = {}
-        self.validate(document.fields)
+        self.validate(document.document)
         for key, _errors in self.flattened_errors.items():
             field = key
             field_schema = self.get_field_schema(field)
@@ -93,7 +92,7 @@ class Validator(CerberusValidator):
                         errors['errors'].append(error)
                     except KeyError:
                         errors = DocumentValidationError(
-                            collection_name, self.schema, document.fields,
+                            collection_name, self.schema, document.document,
                             [error]
                         )
 

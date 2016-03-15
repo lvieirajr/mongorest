@@ -98,10 +98,10 @@ class CreateResourceMixin(Resource):
         Creates a new document based on the given data
         """
         document = self.collection(request.json)
-        document.created_at = datetime.now()
+        document.created_at = datetime.utcnow()
         document.updated_at = document.created_at
 
-        created = document.save()
+        created = document.insert()
         return Response(
             response=serialize(created),
             status=(
@@ -153,7 +153,7 @@ class UpdateResourceMixin(Resource):
         to_update = self.collection.find_one({'_id': _id})
         if to_update:
             document = self.collection(dict(to_update, **request.json))
-            document.updated_at = datetime.now()
+            document.updated_at = datetime.utcnow()
 
             updated = document.update()
             return Response(

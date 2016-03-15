@@ -20,31 +20,31 @@ class TestValidator(TestCase):
         self.validator = Validator()
 
     def test_validate_type_objectid_sets_error_if_not_objectid(self):
-        self.validator.schema = {'test': {'type': 'objectid'}}
-        self.validator.validate_document(Collection({'test': 1}))
+        document = Collection({'test': 1})
+        document.schema = {'test': {'type': 'objectid'}}
 
+        self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             self.validator.errors, {'test': 'must be of ObjectId type'}
         )
 
     def test_validate_type_objectid_does_not_set_error_if_type_is_correct(self):
-        self.validator.schema = {'test': {'type': 'objectid'}}
-        self.validator.validate_document(Collection({'test': ObjectId()}))
+        document = Collection({'test': ObjectId()})
+        document.schema = {'test': {'type': 'objectid'}}
 
+        self.assertTrue(self.validator.validate_document(document))
         self.assertEqual(self.validator.errors, {})
 
     def test_validate_returns_true_if_no_errors_are_found(self):
-        self.validator.schema = {}
-
         document = Collection()
+        document.schema = {}
 
         self.assertTrue(self.validator.validate_document(document))
         self.assertEqual(self.validator.errors, {})
 
     def test_validate_returns_false_if_errors_are_found(self):
-        self.validator.schema = {'test': {'type': 'objectid'}}
-
         document = Collection({'test': 'test'})
+        document.schema = {'test': {'type': 'objectid'}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
@@ -52,16 +52,15 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_unknown_field_error(self):
-        self.validator.allow_unknown = False
-        self.validator.schema = {}
-
         document = Collection({'test': '1'})
+        document.schema = {}
+        self.validator.allow_unknown = False
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={},
+                collection='Collection', document=document.document, schema={},
                 errors=[
                     UnknownFieldError(collection='Collection', field='test')
                 ]
@@ -69,15 +68,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_required_field_error(self):
-        self.validator.schema = {'test': {'required': True}}
-
         document = Collection({})
+        document.schema = {'test': {'required': True}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'required': True}
                 }, errors=[
                     RequiredFieldError(collection='Collection', field='test')
@@ -86,15 +84,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_read_only_field_error(self):
-        self.validator.schema = {'test': {'readonly': True}}
-
         document = Collection({'test': 'test'})
+        document.schema = {'test': {'readonly': True}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'readonly': True}
                 }, errors=[
                     ReadOnlyFieldError(collection='Collection', field='test')
@@ -103,15 +100,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_field_type_error(self):
-        self.validator.schema = {'test': {'type': 'integer'}}
-
         document = Collection({'test': 'test'})
+        document.schema = {'test': {'type': 'integer'}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'integer'}
                 }, errors=[
                     FieldTypeError(
@@ -123,15 +119,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_regex_match_error(self):
-        self.validator.schema = {'test': {'type': 'string', 'regex': '[a-z]+'}}
-
         document = Collection({'test': '123456'})
+        document.schema = {'test': {'type': 'string', 'regex': '[a-z]+'}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'string', 'regex': '[a-z]+'}
                 }, errors=[
                     RegexMatchError(
@@ -143,15 +138,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_min_length_error(self):
-        self.validator.schema = {'test': {'type': 'string', 'minlength': 3}}
-
         document = Collection({'test': '12'})
+        document.schema = {'test': {'type': 'string', 'minlength': 3}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'string', 'minlength': 3}
                 }, errors=[
                     MinLengthError(
@@ -163,15 +157,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_max_length_error(self):
-        self.validator.schema = {'test': {'type': 'string', 'maxlength': 3}}
-
         document = Collection({'test': '1234'})
+        document.schema = {'test': {'type': 'string', 'maxlength': 3}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'string', 'maxlength': 3}
                 }, errors=[
                     MaxLengthError(
@@ -183,17 +176,16 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_length_error(self):
-        self.validator.schema = {
+        document = Collection({'test': ['test', 'test']})
+        document.schema = {
             'test': {'type': 'list', 'items': [{'type': 'string'}]}
         }
-
-        document = Collection({'test': ['test', 'test']})
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'list', 'items': [{'type': 'string'}]}
                 }, errors=[
                     LengthError(
@@ -204,17 +196,16 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_value_not_allowed_error(self):
-        self.validator.schema = {
+        document = Collection({'test': 'not_test'})
+        document.schema = {
             'test': {'type': 'string', 'allowed': ['test']}
         }
-
-        document = Collection({'test': 'not_test'})
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'string', 'allowed': ['test']}
                 }, errors=[
                     ValueNotAllowedError(
@@ -225,17 +216,16 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_values_not_allowed_error(self):
-        self.validator.schema = {
+        document = Collection({'test': ['not_test', 'test']})
+        document.schema = {
             'test': {'type': 'list', 'allowed': ['test']}
         }
-
-        document = Collection({'test': ['not_test', 'test']})
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'list', 'allowed': ['test']}
                 }, errors=[
                     ValuesNotAllowedError(
@@ -247,15 +237,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_min_value_error(self):
-        self.validator.schema = {'test': {'type': 'integer', 'min': 10}}
-
         document = Collection({'test': 0})
+        document.schema = {'test': {'type': 'integer', 'min': 10}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'integer', 'min': 10}
                 }, errors=[
                     MinValueError(
@@ -267,15 +256,14 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_max_value_error(self):
-        self.validator.schema = {'test': {'type': 'integer', 'max': 10}}
-
         document = Collection({'test': 11})
+        document.schema = {'test': {'type': 'integer', 'max': 10}}
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test': {'type': 'integer', 'max': 10}
                 }, errors=[
                     MaxValueError(
@@ -287,17 +275,16 @@ class TestValidator(TestCase):
         )
 
     def test_validate_sets_correct_errors_on_document_if_more_than_one_error(self):
-        self.validator.schema = {
+        document = Collection({'test2': 1})
+        document.schema = {
             'test1': {'required': True}, 'test2': {'type': ['list', 'string']},
         }
-
-        document = Collection({'test2': 1})
 
         self.assertFalse(self.validator.validate_document(document))
         self.assertEqual(
             document.errors,
             DocumentValidationError(
-                collection='Collection', document=document.fields, schema={
+                collection='Collection', document=document.document, schema={
                     'test1': {'required': True}, 'test2': {'type': ['list', 'string']}
                 }, errors=[
                     RequiredFieldError(collection='Collection', field='test1'),

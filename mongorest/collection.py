@@ -2,13 +2,19 @@
 from __future__ import absolute_import, unicode_literals
 
 import inspect
-from re import sub
-from six import with_metaclass
-from types import MethodType
+import re
+import six
+import types
 
-from .database import db
+from pymongo.errors import PyMongoError as PyMongoException
+
 from .decorators import serializable
-from .document import Document
+from .errors import (
+    PyMongoError,
+    DocumentNotFoundError,
+    UnidentifiedDocumentError
+)
+from .utils import deserialize, serialize
 from .validator import Validator
 
 __all__ = [
@@ -26,11 +32,14 @@ class CollectionMeta(type):
         bases = args[1]
         members = args[2].copy()
 
+        from .database import db
         if 'collection' not in members:
-            collection = sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-            collection = sub('([a-z0-9])([A-Z])', r'\1_\2', collection.lower())
-
-            members['collection'] = db[collection]
+            members['collection'] = db[
+                re.sub(
+                    '([a-z0-9])([A-Z])', r'\1_\2',
+                    re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name).lower()
+                )
+            ]
 
         if 'schema' not in members:
             members['schema'] = {}
@@ -45,38 +54,193 @@ class CollectionMeta(type):
 
         return super(mcs, mcs).__new__(mcs, *(name, bases, members), **kwargs)
 
-    def __getattr__(self, attr):
+
+class Collection(six.with_metaclass(CollectionMeta, object)):
+    """
+    Base Class for Collections.
+    """
+
+    def __init__(self, document=None):
+        self._document = deserialize(serialize(document or {}))
+        self._errors = {}
+
+        if not self.before_validation():
+            if self.validator.validate_document(self):
+                self._document = self.validator.document
+
+                if not self.after_validation():
+                    self.after_validation_succeeded()
+            else:
+                if not self.after_validation():
+                    self.after_validation_failed()
+
+    def __setattr__(self, key, value):
         """
-        Tries to find the attribute in the underlying PyMongo collection
-        If it can't find it defaults to returning the attribute from self
+        Sets the value to the given key if it is one of the specified keys.
+        Sets the given key on the _document to the given value otherwise.
         """
-        if attr in dir(self.collection):
-            attribute = getattr(self.collection, attr)
+        keys = {
+            'collection', 'schema', 'allow_unknown', '_document', '_errors'
+        }
+
+        if key in keys:
+            object.__setattr__(self, key, value)
+        else:
+            self._document[key] = value
+
+    def __getattr__(self, item):
+        """
+        Returns the attribute from the _document if it exists.
+        Returns it from the collection if not on _document, but on collection.
+        """
+        if item in self._document:
+            return self._document[item]
+        elif item in dir(self.collection):
+            attribute = getattr(self.collection, item)
 
             if inspect.isfunction(attribute):
-                attribute = MethodType(attribute, self)
+                attribute = types.MethodType(attribute, self)
 
             return attribute
         else:
             raise AttributeError
 
-
-class Collection(with_metaclass(CollectionMeta, object)):
-    """
-    Base Class for Collections.
-    """
-
-    def __new__(cls, *args, **kwargs):
+    def __repr__(self):
         """
-        Instantiating a Collection will return a Document from that Collection
+        Returns the representation of the Object formated like:
+        <Document<{%Collection Name%}> object at {%object id%}>
         """
-        return Document(cls, *args, **kwargs)
+        return '<Document<{0}> object at {1}>'.format(
+            type(self).__name__, hex(id(self)),
+        )
+
+    @property
+    def document(self):
+        """
+        Returns the document
+        """
+        return self._document
+
+    @property
+    def errors(self):
+        """
+        Returns the validation errors
+        """
+        return self._errors
+
+    @property
+    def is_valid(self):
+        """
+        Returns True if no validation errors have been found, False otherwise.
+        """
+        return not self._errors
+
+    def insert(self):
+        """
+        Saves the Document to the database if it is valid.
+        Returns errors otherwise.
+        """
+        if self.is_valid:
+            before = self.before_save()
+            if before:
+                return before
+
+            try:
+                self._document['_id'] = self.insert_one(self._document)
+
+                self.after_save()
+
+                return self._document
+            except PyMongoException as exc:
+                return PyMongoError(
+                    error_message=exc.details.get(
+                        'errmsg', exc.details.get('err', 'PyMongoError.')
+                    ),
+                    operation='insert', collection=type(self).__name__,
+                    document=self._document,
+                )
+
+        return self._errors
+
+    def update(self):
+        """
+        Updates the document with the given _id saved in the collection
+        """
+        if self.is_valid:
+            if '_id' in self._document:
+                to_update = self.find_one({'_id': self._id})
+
+                if to_update:
+                    before = self.before_update(old=to_update)
+                    if before:
+                        return before
+
+                    try:
+                        self.replace_one({'_id': self._id}, self._document)
+
+                        self.after_update(old=to_update)
+
+                        return self._document
+                    except PyMongoException as exc:
+                        return PyMongoError(
+                            error_message=exc.details.get(
+                                'errmsg', exc.details.get(
+                                    'err', 'PyMongoError.'
+                                )
+                            ),
+                            operation='update', collection=type(self).__name__,
+                            document=self._document,
+                        )
+                else:
+                    return DocumentNotFoundError(type(self).__name__, self._id)
+            else:
+                return UnidentifiedDocumentError(
+                    type(self).__name__, self._document
+                )
+
+        return self._errors
+
+    def delete(self):
+        """
+        Deletes the document if it is saved in the collection
+        """
+        if self.is_valid:
+            if '_id' in self._document:
+                to_update = self.find_one({'_id': self._id})
+
+                if to_update:
+                    before = self.before_delete()
+                    if before:
+                        return before
+
+                    try:
+                        self.delete_one({'_id': self._id})
+
+                        self.after_delete()
+
+                        return self._document
+                    except PyMongoException as exc:
+                        return PyMongoError(
+                            error_message=exc.details.get(
+                                'errmsg', exc.details.get(
+                                    'err', 'PyMongoError.'
+                                )
+                            ),
+                            operation='delete', collection=type(self).__name__,
+                            document=self._document,
+                        )
+                else:
+                    return DocumentNotFoundError(type(self).__name__, self._id)
+            else:
+                return UnidentifiedDocumentError(
+                    type(self).__name__, self._document
+                )
 
     @classmethod
     @serializable
     def find_one(cls, filter=None, *args, **kwargs):
         """
-        Returns one document dict if at least one passes the filter
+        Returns one document dict if one passes the filter.
         Returns None otherwise.
         """
         return cls.collection.find_one(filter, *args, **kwargs)
@@ -167,69 +331,50 @@ class Collection(with_metaclass(CollectionMeta, object)):
         return cls.collection.count(filter, **kwargs)
 
     @classmethod
-    def get(cls, filter=None, preprocess=False, postprocess=False, **kwargs):
+    def get(cls, filter=None, **kwargs):
         """
         Returns a Document if any document is filtered, returns None otherwise
         """
-        document = Document(
-            cls, cls.collection.find_one(filter, **kwargs), preprocess,
-            postprocess
-        )
-        return document if document.fields else None
+        document = cls(cls.find_one(filter, **kwargs))
+        return document if document.document and document.is_valid else None
 
     @classmethod
-    def documents(cls, filter=None, preprocess=False, postprocess=False,
-                  **kwargs):
+    def documents(cls, filter=None, **kwargs):
         """
         Returns a list of Documents if any document is filtered
         """
+        documents = [cls(document) for document in cls.find(filter, **kwargs)]
         return [
-            Document(cls, document, preprocess, postprocess)
-            for document in cls.collection.find(filter, **kwargs)
+            document for document in documents
+            if document.document and document.is_valid
         ]
 
-    def restrict_unique(self):
-        """
-        Should return False if uniqueness restriction is not enforced or if
-        document passes the restrictions enforced.
-        Should return an error dict if uniqueness restriction is enforced and
-        document does not pass the restrictions enforced.
-        Should be overwritten by subclasses.
-        """
-        return False
+    def before_validation(self):
+        return
 
-    def restrict_update(self):
-        """
-        Should return False if update restriction is not enforced or if
-        document passes the restrictions enforced.
-        Should return an error dict if update restriction is enforced and
-        document does not pass the restrictions enforced.
-        Should be overwritten by subclasses.
-        """
-        return False
+    def after_validation(self):
+        return
 
-    def cascade_update(self, old=None):
-        """
-        Should cascade the update to the required documents after the given
-        document was updated.
-        Should be overwritten by subclasses.
-        """
-        pass
+    def after_validation_failed(self):
+        return
 
-    def restrict_delete(self):
-        """
-        Should return False if delete restriction is not enforced or if
-        document passes the restrictions enforced.
-        Should return an error dict if delete restriction is enforced and
-        document does not pass the restrictions enforced.
-        Should be overwritten by subclasses.
-        """
-        return False
+    def after_validation_succeeded(self):
+        return
 
-    def cascade_delete(self):
-        """
-        Should cascade the delete to the required documents after the given
-        document was deleted.
-        Should be overwritten by subclasses.
-        """
-        pass
+    def before_save(self):
+        return
+
+    def after_save(self):
+        return
+
+    def before_update(self, old):
+        return
+
+    def after_update(self, old):
+        return
+
+    def before_delete(self):
+        return
+
+    def after_delete(self):
+        return
