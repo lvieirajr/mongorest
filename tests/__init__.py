@@ -4,7 +4,6 @@ from __future__ import absolute_import, unicode_literals
 from .collection import *
 from .database import *
 from .decorators import *
-from .document import *
 from .errors import *
 from .middlewares import *
 from .resource import *
