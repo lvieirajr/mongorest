@@ -12,8 +12,7 @@ class TestCollectionMeta(TestCase):
         self.assertEqual(Collection.collection, self.db['collection'])
         self.assertEqual(Collection.schema, {})
         self.assertTrue(Collection.allow_unknown)
-        self.assertEqual(Collection.validator.schema, Validator({}, True).schema)
-        self.assertEqual(Collection.validator.allow_unknown, Validator({}, True).allow_unknown)
+        self.assertIsInstance(Collection.validator, Validator)
 
     def test_get_attr_raises_exception_if_can_not_find_attr(self):
         with self.assertRaises(AttributeError):

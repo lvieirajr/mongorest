@@ -13,51 +13,6 @@
 #
 #
 # class TestDocument(TestCase):
-#     def test_update_returns_error_if_restricted_update(self):
-#         class TestCollection(Collection):
-#
-#             def restrict_update(self):
-#                 return {
-#                     'error_code': 8, 'error_type': 'RestrictedUpdate',
-#                     'error_message': 'Document can not be updated.'
-#                 }
-#
-#         errors = Document(TestCollection, {'_id': 1}).update()
-#         self.assertEqual(
-#             errors,
-#             {
-#                 'error_code': 8, 'error_type': 'RestrictedUpdate',
-#                 'error_message': 'Document can not be updated.'
-#             }
-#         )
-#
-#     def test_update_returns_errors_if_document_is_not_valid(self):
-#         class TestCollection(Collection):
-#             schema = {'test': {'required': True}}
-#
-#         errors = Document(TestCollection).update()
-#
-#         self.assertEqual(
-#             errors,
-#             {
-#                 'error_code': 21,
-#                 'error_type': 'DocumentValidationError',
-#                 'error_message': 'Validation of document from collection \'TestCollection\' failed.',
-#                 'errors': [
-#                     {
-#                         'error_code': 23,
-#                         'error_type': 'RequiredFieldError',
-#                         'error_message': 'Field \'test\' on collection \'TestCollection\' is required.',
-#                         'collection': 'TestCollection',
-#                         'field': 'test',
-#                     },
-#                 ],
-#                 'collection': 'TestCollection',
-#                 'schema': {'test': {'required': True}},
-#                 'document': {},
-#             }
-#         )
-#
 #     def test_update_returns_errors_if_document_has_no_id(self):
 #         errors = Document(Collection).update()
 #

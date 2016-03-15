@@ -269,6 +269,35 @@ class TestCollection(TestCase):
 
         Collection.before_update = lambda self, old: None
 
+    def test_update_returns_errors_if_document_is_not_valid(self):
+        document = Collection().insert()
+        Collection.schema = {'test': {'required': True}}
+
+        errors = Collection(document).update()
+
+        Collection.schema = {}
+
+        self.assertEqual(
+            errors,
+            {
+                'error_code': 21,
+                'error_type': 'DocumentValidationError',
+                'error_message': 'Validation of document from collection \'Collection\' failed.',
+                'errors': [
+                    {
+                        'error_code': 23,
+                        'error_type': 'RequiredFieldError',
+                        'error_message': 'Field \'test\' on collection \'Collection\' is required.',
+                        'collection': 'Collection',
+                        'field': 'test',
+                    },
+                ],
+                'collection': 'Collection',
+                'schema': {'test': {'required': True}},
+                'document': document,
+            }
+        )
+
     # delete
     def test_delete_is_decorated_with_serializable(self):
         self.assertIn('serializable', Collection.delete.decorators)
