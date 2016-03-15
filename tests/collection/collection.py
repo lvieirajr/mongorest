@@ -45,6 +45,15 @@ class TestCollection(TestCase):
 
         self.assertEqual(after_validation_failed.call_count, 1)
 
+    @patch('mongorest.collection.Collection.after_validation_failed')
+    def test_init_does_not_call_after_validation_failed_if_validation_fails_and_after_validation_returns_something(self, after_validation_failed):
+        self.collection.schema = {'test': {'required': True}}
+        self.collection.after_validation = lambda self: True
+        self.collection()
+        self.collection.schema = {}
+
+        self.assertEqual(after_validation_failed.call_count, 0)
+
     @patch('mongorest.collection.Collection.after_validation')
     def test_init_calls_after_validation_if_validation_succeeds(self, after_validation):
         self.collection()
@@ -56,6 +65,13 @@ class TestCollection(TestCase):
         self.collection()
 
         self.assertEqual(after_validation_succeeded.call_count, 1)
+
+    @patch('mongorest.collection.Collection.after_validation_succeeded')
+    def test_init_does_not_call_after_validation_succeeded_if_validation_succeeds_and_after_validation_returns_something(self, after_validation_succeeded):
+        self.collection.after_validation = lambda self: True
+        self.collection()
+
+        self.assertEqual(after_validation_succeeded.call_count, 0)
 
     # find_one
     def test_find_one_is_decorated_with_serializable(self):
