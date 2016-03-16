@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from functools import wraps
 from mock import Mock
 from os import environ
 
@@ -21,10 +22,29 @@ class TestLoginRequired(TestCase):
 
         self.func = test
 
-    def test_login_required_appends_to_the_list_of_decorators(self):
+    def test_login_required_creates_list_of_decorators_if_it_is_the_first(self):
         @login_required
         def test(self, request, **kwargs):
             return Response()
+
+        self.assertIn('login_required', test.decorators)
+
+    def test_login_required_appends_to_the_list_of_decorators_if_it_is_not_the_first(self):
+        def test_decorator(wrapped):
+            @wraps(wrapped)
+            def wrapper(*args, **kwargs):
+                return wrapped(*args, **kwargs)
+
+            if hasattr(wrapped, 'decorators'):
+                wrapper.decorators = wrapped.decorators
+                wrapper.decorators.append('test_decorator')
+            else:
+                wrapper.decorators = ['test_decorator']
+
+        @login_required
+        @test_decorator
+        def test(*args, **kwargs):
+            return {}
 
         self.assertIn('login_required', test.decorators)
 

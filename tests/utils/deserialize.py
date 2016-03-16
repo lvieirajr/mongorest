@@ -27,6 +27,11 @@ class TestDeserialize(TestCase):
     def test_deserializing_a_serialized_list_returns_the_same_list(self):
         self.assertEqual(deserialize('[1, 2, 3]'), [1, 2, 3])
 
+    def test_deserializing_an_object_id_string_returns_an_object_id(self):
+        oid = ObjectId('0123456789ab0123456789ab')
+
+        self.assertEqual(deserialize('0123456789ab0123456789ab'), oid)
+
     def test_deserializing_a_serialized_object_id_returns_the_original_object_id(self):
         oid = ObjectId('0123456789ab0123456789ab')
 
