@@ -25,10 +25,13 @@ class ConnectionFailureProxy(object):
         return dir(self.proxied)
 
     def __str__(self):
-        return self.proxied.__str__()
+        return str(self.proxied)
 
     def __repr__(self):
-        return self.proxied.__repr__()
+        return repr(self.proxied)
+
+    def __eq__(self, other):
+        return self.proxied == other.proxied
 
     def __getitem__(self, key):
         item = self.proxied[key]
@@ -81,9 +84,6 @@ class ConnectionFailureProxy(object):
                 time.sleep(sleep_time)
 
         return self.proxied(*args, **kwargs)
-
-    def __eq__(self, other):
-        return self.proxied == other.proxied
 
 
 def _get_db():
