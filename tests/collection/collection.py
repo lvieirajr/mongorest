@@ -136,7 +136,12 @@ class TestCollection(TestCase):
     # __getattr__
     def test___getattr___raises_attribute_error_if_can_not_find_attribute(self):
         with self.assertRaises(AttributeError):
-            Collection._()
+            Collection()._()
+
+    def test___getattr___returns_attribute_from_collection(self):
+        attribute = Collection().drop_index
+
+        self.assertEqual(attribute.__class__.__name__, 'ConnectionFailureProxy')
 
     # __repr__
     def test___repr___returns_correct_representation_of_the_document(self):
