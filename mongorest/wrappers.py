@@ -25,15 +25,15 @@ class Request(WerkzeugRequest):
         args = {}
         for key, value in self.args.items():
             try:
-                args[key] = deserialize(value, object_pairs_hook=OrderedDict)
-            except Exception:
+                value = deserialize(value, object_pairs_hook=OrderedDict)
+            finally:
                 args[key] = value
 
         form = {}
         for key, value in self.form.items():
             try:
-                form[key] = deserialize(value, object_pairs_hook=OrderedDict)
-            except Exception:
+                value = deserialize(value, object_pairs_hook=OrderedDict)
+            finally:
                 form[key] = value
 
         self.args = args
