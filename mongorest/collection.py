@@ -157,14 +157,14 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         Returns errors otherwise.
         """
         if self.is_valid:
-            before = self.before_save()
+            before = self.before_insert()
             if before:
                 return before
 
             try:
                 self._document['_id'] = self.insert_one(self._document)
 
-                self.after_save()
+                self.after_insert()
 
                 return self._document
             except PyMongoException as exc:
@@ -379,10 +379,10 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
     def after_validation_succeeded(self):
         return
 
-    def before_save(self):
+    def before_insert(self):
         return
 
-    def after_save(self):
+    def after_insert(self):
         return
 
     def before_update(self, old):

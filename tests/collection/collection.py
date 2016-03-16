@@ -218,7 +218,7 @@ class TestCollection(TestCase):
             }
         )
 
-    def test_insert_returns_errors_if_error_ocurred_during_save(self):
+    def test_insert_returns_errors_if_error_ocurred_during_insertion(self):
         Collection.collection.create_index('test', unique=True)
         Collection.insert_one({'test': 'test'})
 
@@ -230,7 +230,7 @@ class TestCollection(TestCase):
         Collection.drop_index('test_1')
 
     def test_insert_returns_error_if_restricted_unique(self):
-        Collection.before_save = lambda self: {
+        Collection.before_insert = lambda self: {
             'error_code': 7, 'error_type': 'NotUnique',
             'error_message': 'Document is not unique.',
         }
@@ -244,7 +244,7 @@ class TestCollection(TestCase):
             }
         )
 
-        Collection.before_save = lambda self: None
+        Collection.before_insert = lambda self: None
 
     def test_insert_returns_document_if_is_valid(self):
         document = Collection()
@@ -317,7 +317,7 @@ class TestCollection(TestCase):
             }
         )
 
-    def test_update_returns_errors_if_error_ocurred_during_save(self):
+    def test_update_returns_errors_if_error_ocurred_during_update(self):
         Collection.collection.create_index('test', unique=True)
         Collection.insert_one({'test': 'test1'})
 
@@ -597,11 +597,11 @@ class TestCollection(TestCase):
     def test_after_validation_succeeded_returns_none(self):
         self.assertIsNone(self.collection().after_validation_succeeded())
 
-    def test_before_save_returns_none(self):
-        self.assertIsNone(self.collection().before_save())
+    def test_before_insert_returns_none(self):
+        self.assertIsNone(self.collection().before_insert())
 
-    def test_after_save_returns_none(self):
-        self.assertIsNone(self.collection().after_save())
+    def test_after_insert_returns_none(self):
+        self.assertIsNone(self.collection().after_insert())
 
     def test_before_update_returns_none(self):
         self.assertIsNone(self.collection().before_update(self.collection()))
