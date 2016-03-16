@@ -35,6 +35,8 @@ class TestSerializable(TestCase):
             else:
                 wrapper.decorators = ['test_decorator']
 
+            return wrapper
+
         @serializable
         @test_decorator
         def test(*args, **kwargs):

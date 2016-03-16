@@ -41,6 +41,8 @@ class TestLoginRequired(TestCase):
             else:
                 wrapper.decorators = ['test_decorator']
 
+            return wrapper
+
         @login_required
         @test_decorator
         def test(*args, **kwargs):
