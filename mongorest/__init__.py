@@ -5,4 +5,4 @@ from .collection import Collection
 from .wrappers import Request, Response
 from .utils import deserialize, serialize
 
-__version__ = '3.2.0'
+__version__ = '3.2.1'
