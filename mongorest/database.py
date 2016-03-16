@@ -61,7 +61,7 @@ class ConnectionFailureProxy(object):
 
                 retries += 1
                 self.logger.warning(
-                    'Retry nº {0} in {1} seconds.'.format(retries, sleep_time)
+                    'Retry nº %s in %s seconds.', retries, sleep_time
                 )
 
                 client, attempts = self.proxied, 0
