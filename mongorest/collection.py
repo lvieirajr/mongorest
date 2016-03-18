@@ -362,10 +362,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         Returns a list of Documents if any document is filtered
         """
         documents = [cls(document) for document in cls.find(filter, **kwargs)]
-        return [
-            document for document in documents
-            if document.document and document.is_valid
-        ]
+        return [document for document in documents if document.document]
 
     def before_validation(self):
         return
