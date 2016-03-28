@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import copy
 import inspect
 import re
 import six
@@ -14,7 +15,6 @@ from .errors import (
     DocumentNotFoundError,
     UnidentifiedDocumentError
 )
-from .utils import deserialize, serialize
 from .validator import Validator
 
 __all__ = [
@@ -76,7 +76,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
     """
 
     def __init__(self, document=None):
-        self._document = deserialize(serialize(document or {}))
+        self._document = copy.deepcopy(document or {})
         self._errors = {}
 
         if not self.before_validation():
