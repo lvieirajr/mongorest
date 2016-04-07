@@ -67,7 +67,7 @@ class CollectionMeta(type):
 
             return attribute
         else:
-            raise AttributeError
+            raise AttributeError(name)
 
 
 class Collection(six.with_metaclass(CollectionMeta, object)):
@@ -88,6 +88,15 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
             else:
                 if not self.after_validation():
                     self.after_validation_failed()
+
+    def __repr__(self):
+        """
+        Returns the representation of the Object formated like:
+        <Document<{%Collection Name%}> object at {%object id%}>
+        """
+        return '<Document<{0}> object at {1}>'.format(
+            type(self).__name__, hex(id(self)),
+        )
 
     def __setattr__(self, key, value):
         """
@@ -118,16 +127,13 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
 
             return attribute
         else:
-            raise AttributeError
+            raise AttributeError(name)
 
-    def __repr__(self):
-        """
-        Returns the representation of the Object formated like:
-        <Document<{%Collection Name%}> object at {%object id%}>
-        """
-        return '<Document<{0}> object at {1}>'.format(
-            type(self).__name__, hex(id(self)),
-        )
+    def __deepcopy__(self, memo):
+        copy = self.__class__(self._document)
+        memo[id(self)] = copy
+
+        return copy
 
     @property
     def document(self):
