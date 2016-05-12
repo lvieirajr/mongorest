@@ -36,7 +36,7 @@ class CollectionMeta(type):
         if 'collection' not in members:
             members['collection'] = db[
                 re.sub(
-                    '((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', '_\1', name
+                    r'((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', name
                 ).lower()
             ]
 
