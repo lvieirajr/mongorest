@@ -36,9 +36,8 @@ class CollectionMeta(type):
         if 'collection' not in members:
             members['collection'] = db[
                 re.sub(
-                    '([a-z0-9])([A-Z])', r'\1_\2',
-                    re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name).lower()
-                )
+                    '((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', '_\1', name
+                ).lower()
             ]
 
         if 'schema' not in members:
@@ -360,7 +359,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         Returns a Document if any document is filtered, returns None otherwise
         """
         document = cls(cls.find_one(filter, **kwargs))
-        return document if document.document and document.is_valid else None
+        return document if document.document else None
 
     @classmethod
     def documents(cls, filter=None, **kwargs):
