@@ -186,7 +186,9 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
     @serializable
     def update(self, **kwargs):
         """
-        Updates the document with the given _id saved in the collection
+        Updates the document with the given _id saved in the collection if it
+        is valid.
+        Returns errors otherwise.
         """
         if self.is_valid:
             if '_id' in self._document:
@@ -225,7 +227,7 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
     @serializable
     def delete(self, **kwargs):
         """
-        Deletes the document if it is saved in the collection
+        Deletes the document if it is saved in the collection.
         """
         if self.is_valid:
             if '_id' in self._document:
@@ -370,31 +372,76 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         return [document for document in documents if document.document]
 
     def before_validation(self):
+        """
+        Callback called before the validation of a document occurs.
+        Should return None to allow the validation process to happen.
+        If anything else is returned the validation is not executed and
+        __init__ is finished
+        """
         return
 
     def after_validation(self):
+        """
+        Callback called after the validation of a document occurs.
+        Should return None to allow the next callbacks to run.
+        If anything else is returned the next callbacks are not called and
+        __init__ is finished
+        """
         return
 
     def after_validation_failed(self):
+        """
+        Callback called after the validation of a document fails.
+        """
         return
 
     def after_validation_succeeded(self):
+        """
+        Callback called after the validation of a document succeeds.
+        """
         return
 
     def before_insert(self):
+        """
+        Callback called before an insert occurs.
+        Should return None to allow the insert to happen.
+        If anything else is returned the insert will not occur and the returned
+        value will be the return of the insert function
+        """
         return
 
     def after_insert(self):
+        """
+        Callback called after an insert occurs.
+        """
         return
 
     def before_update(self, old):
+        """
+        Callback called before an update occurs.
+        Should return None to allow the update to happen.
+        If anything else is returned the update will not occur and the returned
+        value will be the return of the update function
+        """
         return
 
     def after_update(self, old):
+        """
+        Callback called after an update occurs.
+        """
         return
 
     def before_delete(self):
+        """
+        Callback called before a delete occurs.
+        Should return None to allow the delete to happen.
+        If anything else is returned the delete will not occur and the returned
+        value will be the return of the delete function
+        """
         return
 
     def after_delete(self):
+        """
+        Callback called after a delete occurs.
+        """
         return
