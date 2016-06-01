@@ -20,15 +20,15 @@
 
 # Mongo Compatibility
 
-* MongoDB >= 2.2
+* MongoDB >= 2.4
 
 
 # Requirements
 
-* Cerberus >= 0.9.2
+* Cerberus >= 0.9.0
 * PyMongo >= 3.0.0
 * Six >= 1.10.0
-* Werkzeug >= 0.10.4
+* Werkzeug >= 0.10.0
 
 
 # Installation
@@ -40,128 +40,68 @@
 
 To define the settings for your project you should set the environment variable `MONGOREST_SETTINGS_MODULE` to the module where the settings are stored:
 
+```python
+from os import environ
+environ['MONGOREST_SETTINGS_MODULE'] = 'project.settings'
+```
 
-    from os import environ
-    
-    environ['MONGOREST_SETTINGS_MODULE'] = 'project.settings'
-    
-    
-To connect to your database you should specify the `MONGODB` setting on your mongorest settings module. <br />
-You can set the connection `URI`, or use other options like setting the `HOSTS` and `PORTS` of your replica-set. <br />
-If you are not using a replica-set you can just set the one `HOST` and `PORT`. <br />
+To connect to your database you should specify the `MONGODB` setting on your mongorest settings module.
+You can set the connection `URI`, or use other options like setting the `HOSTS` and `PORTS` of your replica-set.
+If you are not using a replica-set you can just set the one `HOST` and `PORT`.
 
-    MONGODB = {
-        'URI': '',
-        'USERNAME': '',
-        'PASSWORD': '',
-        'HOSTS': ['localhost'],
-        'PORTS': [27017],
-        'DATABASE': 'mongorest-test',
-        'OPTIONS': [],
+```python
+MONGODB = {
+    'URI': '',
+    'USERNAME': '',
+    'PASSWORD': '',
+    'HOSTS': ['localhost'],
+    'PORTS': [27017],
+    'DATABASE': 'mongorest-test',
+    'OPTIONS': [],
+}
+```
+
+Here is a basic example of how easy it is to create an example library API with **MongoRest**:
+
+```python
+from mongorest.collection import Collection
+
+class Book(Collection):
+    schema = {
+        'name': {'type': 'string', 'required': True},
+        'genre': {'type': 'string', 'required': True},
+        'author': {'type': 'string', 'required': True},
+        'number_of_pages': {'type': 'integer'},
+        'release_date': {'type': 'datetime'},
     }
+```
 
+First we created our Book collection that inherited from the `mongorest.Collection` class, then ee added a `schema` to specify the fields, and their types.
+For more details on schema creation visit the documentation for **Cerberus** in this [LINK][cerberus].
 
-Here is a basic example of how easy it is to create an API with **MongoRest**:
+```python
+from mongorest.resource import ListResourceMixin, CreateResourceMixin
 
+class BookResource(ListResourceMixin, CreateResourceMixin):
+    collection = Book
+    endpoint = 'books'
+```
 
-    from mongorest.collection import Collection
+Here, by inheriting from these mongorest-builtin Mixins, our resource already has the list and create actions.
+We also defined what will be the collection and endpoint this Resource refers to.
 
-    class Book(Collection):
-        meta = {
-            'required': {
-               'name': str, 'author': str, 'genre': str
-            }
-            'optional': {
-               'number_of_pages': int, 'date_of_release': datetime,
-            }
-        }
+```python        
+from mongorest.wsgi import WSGIDispatcher
+from werkzeug.serving import run_simple
 
-First we created our Book collection that inherited from the `Collection` class. <br />
-We added a `meta` to specify the required and optional fields, and their types. <br />
+if __name__ == '__main__':
+    wsgi_app = WSGIDispatcher([BookResource])
+    run_simple('localhost', 8000, wsgi_app)
+```
 
+Now we just had to instantiate the application as a `WSGIDispatcher` passing it our list of resources.
+After that, we started our server and the API is ready to be consumed.
 
-    from mongorest.resource import (
-        ListResourceMixin, CreateResourceMixin, RetrieveResourceMixin,
-    )
-
-    class BookResource(ListResourceMixin, CreateResourceMixin, 
-                                                RetrieveResourceMixin):
-        collection = Book
-        endpoint = 'books'
-        
-Here, by inheriting from these Mixins, our Resource already has the list, create and retrieve actions. <br />
-We also defined what will be the collection and endpoint this Resource refers to. <br />
-
-        
-    from mongorest.wsgi import WSGIDispatcher
-    from werkzeug.serving import run_simple
-
-    if __name__ == '__main__':
-        app = WSGIDispatcher([BookResource])
-        run_simple('localhost', 8000, app)
-    
-Now we just had to instantiate the application as a `WSGIDispatcher` passing it our list of resources. <br />
-Then we started our server and the API is ready to be consumed. <br />
-
-
-Now lets go for an example a little more complex:
-
-    from mongorest.collection import Collection
-    
-    class School(Collection):
-        meta = {
-            'required': {'name': str}
-            'optional': {'principal': str}
-        }
-        
-    class Student(Collection):
-        meta = {
-            'required': {
-               'name': str, 'age': int, 'school': ObjectId, 'grade': int,
-            }
-        }
-        
-Again, here we are simply defining our collections. <br />
-
-
-    from mongorest.resource import Resource
-    from mongorest.utils import deserialize, serialize
-    from werkzeug.wrappers import Response
-    
-    class SchoolResource(Resource):
-        collection = School
-        endpoint = 'schools'
-        
-        urls = [
-            Rule(
-                '/<_id>/students/<grade>/',
-                methods=['GET'],
-                endpoint='grade_students'
-            )
-        ]
-        
-        def grade_students(request, _id, grade):
-            school = self.collection.find_one(deserialize(_id)}
-            
-            if school:
-                return Response(
-                    Student.find(
-                        {'school': school['_id'], 'grade': deserialize(grade)}
-                        serialize=True
-                    ),
-                    content_type='application/json',
-                    status=200
-                )
-            else:
-                return Response(
-                    serialize({'error': 'School does not exist.'}),
-                    content_type='application/json',
-                    status=400
-                )
-                
-Now we have created a custom Resource, inheriting from the `Resource` class. <br />
-Again, we defined the collection and the endpoint for the resource, but we also defined the urls for the views we created. Only one in this case. <br />
-Then comes the view itself, that is a view with a nested route that returns all students from a given grade of a given school. <br />
 
     
 # License
@@ -219,3 +159,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [python]: https://www.python.org/
 [pymongo]: https://github.com/mongodb/mongo-python-driver/ 
 [werkzeug]: http://werkzeug.pocoo.org/
+[cerberus]: http://cerberus.readthedocs.io/
