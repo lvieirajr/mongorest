@@ -103,6 +103,8 @@ Now we just had to instantiate the application as a `WSGIDispatcher` passing it 
 After that, we started our server and the API is ready to be consumed.
 
 
+For more details, read the [MongoRest Documentation][mongorest_docs]
+
     
 # License
 
@@ -160,3 +162,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pymongo]: https://github.com/mongodb/mongo-python-driver/ 
 [werkzeug]: http://werkzeug.pocoo.org/
 [cerberus]: http://cerberus.readthedocs.io/
+
+[mongorest_docs]: https://mongorest.readthedocs.io/
