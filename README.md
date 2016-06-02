@@ -54,9 +54,11 @@ MONGODB = {
     'URI': '',
     'USERNAME': '',
     'PASSWORD': '',
-    'HOSTS': ['localhost'],
-    'PORTS': [27017],
-    'DATABASE': 'mongorest-test',
+    'HOST': 'localhost'
+    'HOSTS': [],
+    'PORT': 27017
+    'PORTS': [],
+    'DATABASE': 'mongorest',
     'OPTIONS': [],
 }
 ```
@@ -76,7 +78,8 @@ class Book(Collection):
     }
 ```
 
-First we created our Book collection that inherited from the `mongorest.Collection` class, then ee added a `schema` to specify the fields, and their types.
+First we created our Book collection that inherited from the `mongorest.Collection` class, 
+then we added a `schema` to specify the fields, and their types.
 For more details on schema creation visit the documentation for **Cerberus** in this [LINK][cerberus].
 
 ```python
@@ -101,9 +104,6 @@ if __name__ == '__main__':
 
 Now we just had to instantiate the application as a `WSGIDispatcher` passing it our list of resources.
 After that, we started our server and the API is ready to be consumed.
-
-
-For more details, read the [MongoRest Documentation][mongorest_docs]
 
     
 # License

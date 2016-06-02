@@ -110,7 +110,6 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'logo': 'mongorest.png',
     'logo_name': True,
     'logo_text_align': 'center',
     'github_user': 'lvieirajr',
@@ -118,9 +117,6 @@ html_theme_options = {
     'github_type': 'star',
     'show_powered_by': False,
     'description': 'Easy REST APIs with MongoDB',
-    #'travis_button': True,
-    #'show_related': True,
-    #'travis_button': True,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -131,16 +127,16 @@ html_theme_path = [alabaster.get_path()]
 html_title = 'Easy REST APIs with MongoDB'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = 'MongoRest Docs'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = '_static/mongorest.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = '_static/mongorest.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -158,12 +154,12 @@ html_static_path = ['_static']
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
     '**': [
-            'about.html',
-            'sidebarintro.html',
-            'navigation.html',
-            'relations.html',
-            'searchbox.html',
-            'donate.html',
+        'about.html',
+        'sidebarintro.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+        'donate.html',
     ]
 }
 
