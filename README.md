@@ -140,7 +140,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pypi-downloads]: https://img.shields.io/pypi/dm/MongoRest.svg
 [pypi]: https://pypi.python.org/pypi/mongorest
 
-[read-the-docs]: https://readthedocs.org/projects/docs/badge/?version=stable
+[read-the-docs]: https://readthedocs.org/projects/docs/badge/?version=latest
 [mongorest-read-the-docs]: https://mongorest.readthedocs.io/
 
 [build-status]: https://travis-ci.org/lvieirajr/mongorest.svg?branch=master
