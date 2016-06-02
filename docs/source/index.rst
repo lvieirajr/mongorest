@@ -12,6 +12,9 @@ Table of Contents
 .. toctree::
 
     Installation <install>
+    Usage <usage>
+    Authors <authors>
+    Contact <contact>
     License <license>
 
 Copyright Notice
