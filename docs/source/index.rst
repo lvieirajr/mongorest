@@ -13,6 +13,7 @@ Table of Contents
 
     Installation <install>
     Usage <usage>
+    API <api>
     Authors <authors>
     Contact <contact>
     License <license>

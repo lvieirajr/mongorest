@@ -18,6 +18,9 @@ __all__ = [
 
 
 class Request(WerkzeugRequest):
+    """
+    Wrapper around Werkzeug Request object, provides easier access to data
+    """
 
     def __init__(self, environ, populate_request=True, shallow=False):
         super(Request, self).__init__(environ, populate_request, shallow)
@@ -44,6 +47,9 @@ class Request(WerkzeugRequest):
 
 
 class Response(WerkzeugResponse):
+    """
+    Wrapper around Werkzeug Response object, provides easier access to data
+    """
 
     default_mimetype = 'application/json'
 

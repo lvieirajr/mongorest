@@ -13,6 +13,9 @@ __all__ = [
 
 
 class Validator(CerberusValidator):
+    """
+    Class used by the collection to validate documents
+    """
 
     def __init__(self, schema=None, allow_unknown=True, **kwargs):
         super(Validator, self).__init__(

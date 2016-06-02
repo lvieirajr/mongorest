@@ -16,6 +16,9 @@ __all__ = [
 
 
 class AuthenticationMiddleware(object):
+    """
+    Authentication Middleware works with Cookie and Token Authentication
+    """
 
     def __init__(self, app):
         self.app = app
@@ -84,6 +87,9 @@ class AuthenticationMiddleware(object):
 
 
 class CORSMiddleware(object):
+    """
+    CORS Middleware used to overcome CORS restrictions
+    """
 
     def __init__(self, app):
         self.app = app
