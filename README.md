@@ -1,6 +1,6 @@
 # MongoRest
 
-[![pypi-version]][pypi] [![pypi-downloads]][pypi] [![build-status]][travis] [![coveralls-status]][coveralls] [![landscape-health]][landscape] [![codacy-grade]][codacy] 
+[![pypi-version]][pypi] [![pypi-downloads]][pypi] [![read-the-docs]][mongorest-read-the-docs] [![build-status]][travis] [![coveralls-status]][coveralls] [![landscape-health]][landscape] [![codacy-grade]][codacy] 
 
 **Easy [REST][rest] [APIs][api] using [MongoDB][mongodb].**
 
@@ -140,6 +140,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pypi-downloads]: https://img.shields.io/pypi/dm/MongoRest.svg
 [pypi]: https://pypi.python.org/pypi/mongorest
 
+[read-the-docs]: https://readthedocs.org/projects/docs/badge/?version=stable
+[mongorest-read-the-docs]: https://mongorest.readthedocs.io/
+
 [build-status]: https://travis-ci.org/lvieirajr/mongorest.svg?branch=master
 [travis]: https://travis-ci.org/lvieirajr/mongorest
 
@@ -162,5 +165,3 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pymongo]: https://github.com/mongodb/mongo-python-driver/ 
 [werkzeug]: http://werkzeug.pocoo.org/
 [cerberus]: http://cerberus.readthedocs.io/
-
-[mongorest_docs]: https://mongorest.readthedocs.io/
