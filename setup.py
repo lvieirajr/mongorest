@@ -26,10 +26,10 @@ class Test(TestCommand):
 
 
 install_requires = [
-    'cerberus>=0.9',
-    'pymongo>=3.0.0',
-    'six>=1.10.0',
-    'werkzeug>=0.10',
+    'cerberus==0.9.2',
+    'pymongo==3.4.0',
+    'six==1.10.0',
+    'werkzeug==0.11.11',
 ]
 
 setup(
@@ -40,7 +40,6 @@ setup(
     author='Luis Vieira',
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
-    download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
     install_requires=install_requires,
     cmdclass={'test': Test},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
