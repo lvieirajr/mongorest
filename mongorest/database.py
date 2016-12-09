@@ -5,6 +5,7 @@ import logging
 import time
 
 from pymongo.collection import Collection
+from pymongo.cursor import Cursor
 from pymongo.database import Database
 from pymongo.errors import ConnectionFailure
 from pymongo.mongo_client import MongoClient
@@ -55,7 +56,8 @@ class ConnectionFailureProxy(object):
         retries = 0
         while retries < settings.RETRY_LIMIT:
             try:
-                return self.proxied(*args, **kwargs)
+                result = self.proxied(*args, **kwargs)
+                return list(result) if isinstance(result, Cursor) else result
             except ConnectionFailure:
                 if settings.LINEAR_RETRIES:
                     sleep_time = settings.BASE_RETRY_TIME

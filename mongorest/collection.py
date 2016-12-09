@@ -231,9 +231,9 @@ class Collection(six.with_metaclass(CollectionMeta, object)):
         """
         if self.is_valid:
             if '_id' in self._document:
-                to_update = self.find_one({'_id': self._id})
+                to_delete = self.find_one({'_id': self._id})
 
-                if to_update:
+                if to_delete:
                     before = self.before_delete()
                     if before:
                         return before
