@@ -70,9 +70,8 @@ class TestListResourceMixin(TestCase):
         self.assertEqual(response.json, [{'_id': 1, 'test': 'test1'}])
 
     def test_list_mixin_returns_list_of_collection_documents_sorted_by_given_sort_keys(self):
-        self.db.collection.insert_one({'_id': 1, 'test': 1, 'number': 1})
-        self.db.collection.insert_one({'_id': 2, 'test': 1, 'number': 2})
-        self.db.collection.insert_one({'_id': 3, 'test': 2, 'number': 2})
+        self.db.collection.insert_one({'_id': 1, 'test': 1, 'number': 2})
+        self.db.collection.insert_one({'_id': 2, 'test': 2, 'number': 2})
 
         response = self.documents_client.get('/?sort={"number": -1, "test": 1}&project={"number": 1, "test": 1, "_id": 0}')
 
@@ -80,7 +79,7 @@ class TestListResourceMixin(TestCase):
         self.assertEqual(
             response.json,
             [
-                {'number': 2, 'test': 1}, {'number': 2, 'test': 2},
-                {'number': 1, 'test': 1}
+                {'number': 2, 'test': 1},
+                {'number': 2, 'test': 2},
             ]
         )

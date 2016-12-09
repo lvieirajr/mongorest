@@ -40,7 +40,6 @@ setup(
     author='Luis Vieira',
     author_email='lvieira@lvieira.com',
     url='https://github.com/lvieirajr/mongorest',
-    download_url='github.com/lvieirajr/mongorest/tarball/{0}'.format(version),
     install_requires=install_requires,
     cmdclass={'test': Test},
     keywords=['mongodb', 'mongo', 'rest', 'api', 'pymongo', 'werkzeug'],
