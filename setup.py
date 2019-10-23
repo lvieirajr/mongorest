@@ -29,7 +29,7 @@ install_requires = [
     'cerberus==0.9.2',
     'pymongo==3.4.0',
     'six==1.10.0',
-    'werkzeug==0.11.11',
+    'werkzeug==0.15.3',
 ]
 
 setup(
